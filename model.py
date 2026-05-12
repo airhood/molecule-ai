@@ -186,6 +186,12 @@ def reconstruction_loss(
     return exist_loss + type_loss, exist_loss, type_loss
 
 
+def free_bits_kl(mu, logstd, lambda_=0.1):
+    # 차원별 KL을 lambda_ 이상으로 강제해 posterior collapse 방지
+    kl_per_dim = -0.5 * (1 + 2 * logstd - mu.pow(2) - (2 * logstd).exp())
+    return kl_per_dim.clamp(min=lambda_).sum(dim=-1).mean()
+
+
 class MoleculeCVAE(VGAE):
 
     def __init__(self, beta = 1.0):
@@ -212,7 +218,7 @@ class MoleculeCVAE(VGAE):
 
         exist_logit, type_logit, atom_mask = self.molecule_decoder(z, p, a)
         r_loss, e_loss, t_loss = reconstruction_loss(exist_logit, type_logit, atom_mask, batch)
-        kl = self.kl_loss()
+        kl = free_bits_kl(self.__mu__, self.__logstd__)
 
         return {
             "loss": r_loss + self.beta * kl,

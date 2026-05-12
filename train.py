@@ -65,7 +65,7 @@ def main():
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--n-cycles", type=int, default=4)
-    parser.add_argument("--max-beta", type=float, default=1.0)
+    parser.add_argument("--max-beta", type=float, default=0.5)
     parser.add_argument("--warmup-epochs", type=int, default=10)
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--num-workers", type=int, default=0)
