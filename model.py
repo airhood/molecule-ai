@@ -6,6 +6,7 @@ from torch_geometric.utils import to_dense_adj
 
 # C, H, O, N, S, P, F, Cl, Br, I
 ELEM_ATOMIC_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53]
+N_ELEM = 10
 
 LATENT_DIM = 128
 HIDDEN_DIM = 256
@@ -21,7 +22,7 @@ NODE_DIM = ATOM_EMB_DIM + 1 + 3
 EDGE_DIM = 4 + 5 + 1
 
 
-def mlp(dims, dropout = 0.0):
+def mlp(dims, dropout=0.0):
     layers = []
     for i in range(len(dims) - 1):
         layers.append(nn.Linear(dims[i], dims[i+1]))
@@ -32,12 +33,14 @@ def mlp(dims, dropout = 0.0):
                 layers += [nn.ReLU()]
     return nn.Sequential(*layers)
 
-def to_atom_tensors(a: torch.Tensor, device: torch.device):
+def to_atom_tensors(a_counts: torch.Tensor, device: torch.device):
     atom_lists = []
-    for row in a:
+    for row in a_counts:
         atoms = []
-        for atomic_num, cnt in zip(ELEM_ATOMIC_NUMS, row[:10].long().tolist()):
-            atoms.extend([atomic_num] * cnt)
+        for atomic_num, cnt in zip(ELEM_ATOMIC_NUMS, row[:N_ELEM].long().tolist()):
+            atoms.extend([atomic_num] * max(cnt, 0))
+        if not atoms:
+            atoms = [6]  # fallback: 빈 분자 방지
         atom_lists.append(atoms)
 
     N_max = max(len(al) for al in atom_lists)
@@ -69,7 +72,7 @@ class GraphEncoder(nn.Module):
         ])
         self.norms = nn.ModuleList([nn.LayerNorm(HIDDEN_DIM) for _ in range(ENCODER_LAYERS)])
 
-        self.pool_proj = mlp([HIDDEN_DIM + 5 + 11, HIDDEN_DIM])
+        self.pool_proj = mlp([HIDDEN_DIM + 5 + N_ELEM, HIDDEN_DIM])
 
     def forward(self, batch):
         h = torch.cat(
@@ -89,15 +92,15 @@ class GraphEncoder(nn.Module):
         g = global_mean_pool(h, batch.batch)
         B = g.size(0)
 
-        return self.pool_proj(torch.cat([g, batch.p.view(B, -1), batch.a.view(B, -1)], dim=-1))
-    
+        return self.pool_proj(torch.cat([g, batch.p.view(B, -1), batch.a_bin.view(B, -1)], dim=-1))
+
 
 class MoleculeDecoder(nn.Module):
 
     def __init__(self):
         super().__init__()
         self.atom_emb = nn.Embedding(120, ATOM_EMB_DIM)
-        self.cond_proj = mlp([LATENT_DIM + 5 + 11, COND_DIM])
+        self.cond_proj = mlp([LATENT_DIM + 5 + N_ELEM, COND_DIM])
         self.init_proj = mlp([ATOM_EMB_DIM + COND_DIM, HIDDEN_DIM])
 
         self.attn_layers = nn.ModuleList([
@@ -115,18 +118,19 @@ class MoleculeDecoder(nn.Module):
         self.bond_exist = mlp([pair_dim, HIDDEN_DIM, 1])
         self.bond_type = mlp([pair_dim, HIDDEN_DIM, N_BOND_TYPES])
 
-    def forward(self, z, p, a):
+    def forward(self, z, p, a_bin, a_counts, a_bin_cond=None):
         device = z.device
+        if a_bin_cond is None:
+            a_bin_cond = a_bin
 
-        c = self.cond_proj(torch.cat([z, p, a], dim=-1)) # [B, COND_DIM]
+        c = self.cond_proj(torch.cat([z, p, a_bin_cond], dim=-1))  # [B, COND_DIM]
 
-
-        atom_idx, atom_mask = to_atom_tensors(a, device) # [B, N_max]
+        atom_idx, atom_mask = to_atom_tensors(a_counts, device)  # [B, N_max]
         N_max = atom_idx.size(1)
 
-        h_atom = self.atom_emb(atom_idx) # [B, N_max, ATOM_EMB_DIM]
-        c_exp = c.unsqueeze(1).expand(-1, N_max, -1) # [B, N_max, COND_DIM]
-        h = self.init_proj(torch.cat([h_atom, c_exp], dim=-1)) # [B, N_max, HIDDEN_DIM]
+        h_atom = self.atom_emb(atom_idx)  # [B, N_max, ATOM_EMB_DIM]
+        c_exp = c.unsqueeze(1).expand(-1, N_max, -1)  # [B, N_max, COND_DIM]
+        h = self.init_proj(torch.cat([h_atom, c_exp], dim=-1))  # [B, N_max, HIDDEN_DIM]
 
         # atom_mask : True(원자), False(패딩)
         # key_pad_mask (MultiHeadAttention) : True(패딩), False(원자)
@@ -137,12 +141,12 @@ class MoleculeDecoder(nn.Module):
             h = a_norm(h + h2)
             h = f_norm(h + ffn(h))
 
-        hi = h.unsqueeze(2).expand(-1, -1, N_max, -1) # [B, N_max, N_max, H]
+        hi = h.unsqueeze(2).expand(-1, -1, N_max, -1)  # [B, N_max, N_max, H]
         hj = h.unsqueeze(1).expand(-1, N_max, -1, -1)
         pair = torch.cat([hi + hj, hi * hj], dim=-1)
 
         return self.bond_exist(pair).squeeze(-1), self.bond_type(pair), atom_mask
-    
+
 
 def reconstruction_loss(
     bond_exist_logit,
@@ -164,7 +168,7 @@ def reconstruction_loss(
     ).squeeze(-1).long()
 
     tri = torch.triu(torch.ones(N_max, N_max, dtype=torch.bool, device=device), diagonal=1)
-    pair_mask = atom_mask.unsqueeze(2) & atom_mask.unsqueeze(1) & tri # [B, N_max, N_max]
+    pair_mask = atom_mask.unsqueeze(2) & atom_mask.unsqueeze(1) & tri  # [B, N_max, N_max]
 
     n_pairs = pair_mask.sum().float()
     n_pos = (true_adj * pair_mask).sum().float().clamp(min=1)
@@ -194,19 +198,22 @@ def free_bits_kl(mu, logstd, lambda_=0.1):
 
 class MoleculeCVAE(VGAE):
 
-    def __init__(self, beta = 1.0):
+    def __init__(self, beta=1.0, a_dropout=0.15, a_pred_weight=1.0):
         super().__init__(encoder=GraphEncoder())
         self.mu_head = nn.Linear(HIDDEN_DIM, LATENT_DIM)
         self.logstd_head = nn.Linear(HIDDEN_DIM, LATENT_DIM)
+        self.a_pred_head = mlp([LATENT_DIM + 5 + N_ELEM, HIDDEN_DIM, N_ELEM])
         self.molecule_decoder = MoleculeDecoder()
         self.beta = beta
+        self.a_dropout = a_dropout
+        self.a_pred_weight = a_pred_weight
 
     def encode(self, batch):
         h = self.encoder(batch)
         self.__mu__ = self.mu_head(h)
         self.__logstd__ = self.logstd_head(h).clamp(max=10.0)
         return self.reparametrize(self.__mu__, self.__logstd__)
-    
+
     def forward(self, batch):
         h = self.encoder(batch)
         self.__mu__ = self.mu_head(h)
@@ -214,27 +221,46 @@ class MoleculeCVAE(VGAE):
         z = self.__mu__ if self.beta == 0 else self.reparametrize(self.__mu__, self.__logstd__)
         B = z.size(0)
         p = batch.p.view(B, -1)
-        a = batch.a.view(B, -1)
+        a_bin = batch.a_bin.view(B, -1)           # [B, 10] — 원소 종류 (0/1)
+        a_counts = batch.a.view(B, -1)[:, :N_ELEM] # [B, 10] — 원소 개수 (teacher forcing)
 
-        exist_logit, type_logit, atom_mask = self.molecule_decoder(z, p, a)
+        a_bin_cond = torch.zeros_like(a_bin) if (self.training and torch.rand(1).item() < self.a_dropout) else a_bin
+
+        a_pred = self.a_pred_head(torch.cat([z, p, a_bin], dim=-1))  # [B, 10]
+        a_pred_loss = F.mse_loss(a_pred, a_counts.float())
+
+        exist_logit, type_logit, atom_mask = self.molecule_decoder(z, p, a_bin, a_counts, a_bin_cond=a_bin_cond)
         r_loss, e_loss, t_loss = reconstruction_loss(exist_logit, type_logit, atom_mask, batch)
         kl = free_bits_kl(self.__mu__, self.__logstd__)
 
         return {
-            "loss": r_loss + self.beta * kl,
+            "loss": r_loss + self.beta * kl + self.a_pred_weight * a_pred_loss,
             "reconstruction_loss": r_loss,
             "exist_loss": e_loss,
             "type_loss": t_loss,
-            "kl_loss": kl
+            "kl_loss": kl,
+            "a_pred_loss": a_pred_loss
         }
-    
+
     @torch.no_grad()
-    def generate(self, p, a, threshold = 0.5):
+    def generate(self, p, a_bin, threshold=0.5):
         self.eval()
         B = p.size(0)
         z = torch.randn(B, LATENT_DIM, device=p.device)
 
-        exist_logit, type_logit, atom_mask = self.molecule_decoder(z, p, a)
+        a_pred = self.a_pred_head(torch.cat([z, p, a_bin], dim=-1))
+        a_counts = a_pred.round().clamp(min=0)  # [B, 10]
+
+        atom_types_list = []
+        for row in a_counts:
+            atoms = []
+            for atomic_num, cnt in zip(ELEM_ATOMIC_NUMS, row.long().tolist()):
+                atoms.extend([atomic_num] * max(cnt, 0))
+            if not atoms:
+                atoms = [6]
+            atom_types_list.append(atoms)
+
+        exist_logit, type_logit, atom_mask = self.molecule_decoder(z, p, a_bin, a_counts)
         bond_prob = exist_logit.sigmoid()
 
         results = []
@@ -253,7 +279,8 @@ class MoleculeCVAE(VGAE):
             results.append({
                 "edge_index": edge_index,
                 "bond_types": bond_types,
-                "n_atoms": n
+                "n_atoms": n,
+                "atom_types": atom_types_list[b][:n]
             })
 
         return results

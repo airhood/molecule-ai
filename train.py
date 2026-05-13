@@ -54,7 +54,8 @@ def run_epoch(model, loader, optimizer, beta, device, train, epoch):
         "reconstruction_loss": 0,
         "exist_loss": 0,
         "type_loss": 0,
-        "kl_loss": 0
+        "kl_loss": 0,
+        "a_pred_loss": 0
     }
 
     with torch.set_grad_enabled(train):
@@ -128,9 +129,9 @@ def main():
 
     print(f"  Warmup: {args.warmup_epochs} epochs ({warmup_steps:,} steps), then {args.n_cycles} cosine cycles")
     print(f"\n{'Epoch':>6} {'Beta':>6} {'T-loss':>8} {'T-recon':>8} "
-          f"{'T-exist':>8} {'T-type':>8} {'T-kl':>8} "
-          f"{'V-loss':>8} {'V-recon':>8}  Time")
-    print("-" * 95)
+          f"{'T-exist':>8} {'T-type':>8} {'T-kl':>8} {'T-apred':>8} "
+          f"{'V-loss':>8} {'V-recon':>8} {'V-apred':>8}  Time")
+    print("-" * 110)
 
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
@@ -148,9 +149,9 @@ def main():
             f"{epoch:>6} {beta:>6.3f} "
             f"{train_result['loss']:>8.4f} {train_result['reconstruction_loss']:>8.4f} "
             f"{train_result['exist_loss']:>8.4f} {train_result['type_loss']:>8.4f} "
-            f"{train_result['kl_loss']:>8.4f} "
+            f"{train_result['kl_loss']:>8.4f} {train_result['a_pred_loss']:>8.4f} "
             f"{val_result['loss']:>8.4f} {val_result['reconstruction_loss']:>8.4f} "
-            f" {time_elapsed:>5.1f}s"
+            f"{val_result['a_pred_loss']:>8.4f}  {time_elapsed:>5.1f}s"
         )
 
         if val_result["reconstruction_loss"] < best_val:

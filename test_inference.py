@@ -10,7 +10,7 @@ from rdkit.Chem import RWMol
 RDLogger.DisableLog("rdApp.*")
 
 from dataset import QMugsDataset
-from model import MoleculeCVAE, ELEM_ATOMIC_NUMS
+from model import MoleculeCVAE
 
 BOND_TYPE_MAP = {
     0: Chem.rdchem.BondType.SINGLE,
@@ -18,13 +18,6 @@ BOND_TYPE_MAP = {
     2: Chem.rdchem.BondType.TRIPLE,
     3: Chem.rdchem.BondType.AROMATIC,
 }
-
-
-def get_atom_types(a_row):
-    atoms = []
-    for atomic_num, cnt in zip(ELEM_ATOMIC_NUMS, a_row[:10].long().tolist()):
-        atoms.extend([atomic_num] * int(cnt))
-    return atoms
 
 
 def build_mol(n_atoms, edge_index, bond_types, atom_types):
@@ -61,19 +54,17 @@ def evaluate(model, loader, device, n_batches, threshold):
             batch = batch.to(device)
             B = batch.num_graphs
             p = batch.p.view(B, -1)
-            a = batch.a.view(B, -1)
+            a_bin = batch.a_bin.view(B, -1)
 
-            results = model.generate(p, a, threshold=threshold)
-            a_cpu = a.cpu()
+            results = model.generate(p, a_bin, threshold=threshold)
 
             for b, r in enumerate(results):
                 total += 1
-                atom_types = get_atom_types(a_cpu[b])
                 mol = build_mol(
                     r["n_atoms"],
                     r["edge_index"].cpu(),
                     r["bond_types"].cpu(),
-                    atom_types,
+                    r["atom_types"],
                 )
                 if mol is not None:
                     valid_count += 1

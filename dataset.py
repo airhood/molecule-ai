@@ -81,4 +81,5 @@ class QMugsDataset(Dataset):
         local_idx = global_idx - int(self._chunk_offsets[chunk_idx])
         data = self._load_chunk(chunk_idx)[local_idx].clone()
         data.p = (data.p_raw - self.mean) / self.std
+        data.a_bin = (data.a[:10] > 0).float()
         return data
