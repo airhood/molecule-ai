@@ -82,4 +82,27 @@ class QMugsDataset(Dataset):
         data = self._load_chunk(chunk_idx)[local_idx].clone()
         data.p = (data.p_raw - self.mean) / self.std
         data.a_bin = (data.a[:10] > 0).float()
+
+        # 원자를 원소 종류 순으로 재정렬 (C, H, O, N, S, P, F, Cl, Br, I)
+        # decoder가 원소 순서로 원자 시퀀스를 만드는 것과 ground truth를 일치시키기 위함
+        _ELEM_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53]
+        z_list = data.z.tolist()
+        perm = []
+        for atomic_num in _ELEM_NUMS:
+            for i, z in enumerate(z_list):
+                if z == atomic_num:
+                    perm.append(i)
+        for i in range(len(z_list)):  # 10종 외 원소 (있으면 마지막에 추가)
+            if i not in set(perm):
+                perm.append(i)
+        perm = torch.tensor(perm, dtype=torch.long)
+
+        inv_perm = torch.zeros(len(perm), dtype=torch.long)
+        inv_perm[perm] = torch.arange(len(perm), dtype=torch.long)
+
+        data.z = data.z[perm]
+        data.charge = data.charge[perm]
+        data.chirality = data.chirality[perm]
+        data.edge_index = inv_perm[data.edge_index]
+
         return data
