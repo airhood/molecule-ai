@@ -1,5 +1,7 @@
 import argparse
+import io
 import math
+import sys
 import time
 from pathlib import Path
 from tqdm import tqdm
@@ -11,6 +13,24 @@ from torch_geometric.loader import DataLoader
 
 from dataset import QMugsDataset
 from model import MoleculeCVAE
+
+
+class _Tee(io.TextIOBase):
+    def __init__(self, stream, file_path):
+        self._stream = stream
+        self._f = open(file_path, "a", encoding="utf-8")
+
+    def write(self, text):
+        self._stream.write(text)
+        self._f.write(text)
+        return len(text)
+
+    def flush(self):
+        self._stream.flush()
+        self._f.flush()
+
+    def close(self):
+        self._f.close()
 
 
 def cyclical_beta(step, total_steps, n_cycles=4, max_beta=1.0, ratio=0.5, warmup_steps=0):
@@ -70,20 +90,27 @@ def main():
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--max-samples", type=int, default=None)
+    parser.add_argument("--log-file", default="./train.log", help="로그 파일 경로")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device}")
 
     save_dir = Path(args.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
+
+    log_path = Path(args.log_file) if args.log_file else save_dir / "train.log"
+    tee = _Tee(sys.stdout, log_path)
+    sys.stdout = tee
+
+    print(f"Device: {device}")
+    print(f"Log: {log_path}")
 
     print("Loading datasets ...")
 
     train_set = QMugsDataset(args.processed_dir, split="train", max_samples=args.max_samples)
     val_set = QMugsDataset(
         args.processed_dir, split="val",
-        max_samples=args.max_samples // 5 if args.max_samples else None,
+        max_samples=args.max_samples // 5 if args.max_samples else None
     )
 
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
@@ -126,8 +153,8 @@ def main():
             f" {time_elapsed:>5.1f}s"
         )
 
-        if val_result["loss"] < best_val:
-            best_val = val_result["loss"]
+        if val_result["reconstruction_loss"] < best_val:
+            best_val = val_result["reconstruction_loss"]
             torch.save(model.state_dict(), save_dir / "best.pt")
 
         if args.save_every != 0 and epoch % args.save_every == 0:
@@ -139,7 +166,9 @@ def main():
                 "best_val": best_val
             }, save_dir / f"ckpt_epoch{epoch:04d}.pt")
 
-    print(f"\ntrain finished! Best val loss: {best_val:.4f}")
+    print(f"\ntrain finished! Best val recon loss: {best_val:.4f}")
+    sys.stdout = tee._stream
+    tee.close()
 
 
 if __name__ == "__main__":
