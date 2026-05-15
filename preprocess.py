@@ -70,6 +70,12 @@ def _compute_composition(smiles: str):
         return None
     mol = Chem.AddHs(mol)
     counts = Counter(atom.GetSymbol() for atom in mol.GetAtoms())
+    
+    # 지원하지 않는 원소가 있는지 확인
+    for sym in counts:
+        if sym not in ELEMENTS:
+            return None
+            
     a = [counts.get(e, 0) for e in ELEMENTS]
     a.append(mol.GetNumAtoms())
     return a

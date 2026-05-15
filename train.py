@@ -125,13 +125,13 @@ def main():
     total_steps = args.epochs * len(train_loader)
     warmup_steps = args.warmup_epochs * len(train_loader)
     step = 0
-    best_val = float("inf")
+    best_fixed_eval = float("inf")
 
     print(f"  Warmup: {args.warmup_epochs} epochs ({warmup_steps:,} steps), then {args.n_cycles} cosine cycles")
     print(f"\n{'Epoch':>6} {'Beta':>6} {'T-loss':>8} {'T-recon':>8} "
           f"{'T-exist':>8} {'T-type':>8} {'T-kl':>8} {'T-apred':>8} "
-          f"{'V-loss':>8} {'V-recon':>8} {'V-apred':>8}  Time")
-    print("-" * 110)
+          f"{'V-loss':>8} {'V-recon':>8} {'V-kl':>8} {'V-apred':>8}  Time")
+    print("-" * 120)
 
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
@@ -151,11 +151,14 @@ def main():
             f"{train_result['exist_loss']:>8.4f} {train_result['type_loss']:>8.4f} "
             f"{train_result['kl_loss']:>8.4f} {train_result['a_pred_loss']:>8.4f} "
             f"{val_result['loss']:>8.4f} {val_result['reconstruction_loss']:>8.4f} "
-            f"{val_result['a_pred_loss']:>8.4f}  {time_elapsed:>5.1f}s"
+            f"{val_result['kl_loss']:>8.4f} {val_result['a_pred_loss']:>8.4f}  {time_elapsed:>5.1f}s"
         )
 
-        if val_result["reconstruction_loss"] < best_val:
-            best_val = val_result["reconstruction_loss"]
+        fixed_eval = (val_result["reconstruction_loss"]
+                      + val_result["a_pred_loss"]
+                      + args.max_beta * val_result["kl_loss"])
+        if fixed_eval < best_fixed_eval:
+            best_fixed_eval = fixed_eval
             torch.save(model.state_dict(), save_dir / "best.pt")
 
         if args.save_every != 0 and epoch % args.save_every == 0:
@@ -164,10 +167,10 @@ def main():
                 "model": model.state_dict(),
                 "optimizer": optimizer.state_dict(),
                 "scheduler": scheduler.state_dict(),
-                "best_val": best_val
+                "best_fixed_eval": best_fixed_eval
             }, save_dir / f"ckpt_epoch{epoch:04d}.pt")
 
-    print(f"\ntrain finished! Best val recon loss: {best_val:.4f}")
+    print(f"\ntrain finished! Best fixed-beta eval: {best_fixed_eval:.4f}")
     sys.stdout = tee._stream
     tee.close()
 

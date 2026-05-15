@@ -114,6 +114,19 @@ class MoleculeDecoder(nn.Module):
         ])
         self.ffn_norms = nn.ModuleList([nn.LayerNorm(HIDDEN_DIM) for _ in range(DECODER_LAYERS)])
 
+        # Positional encoding: 동일 원소 원자들을 위치로 구별
+        self.pos_emb = nn.Embedding(200, HIDDEN_DIM)
+
+        # AdaLN: z → (γ_attn, β_attn, γ_ffn, β_ffn) per layer
+        # zero-init: 초기에는 γ=0, β=0 → 표준 LayerNorm과 동일하게 시작
+        self.z_adaln = nn.ModuleList([
+            nn.Linear(LATENT_DIM, HIDDEN_DIM * 4)
+            for _ in range(DECODER_LAYERS)
+        ])
+        for layer in self.z_adaln:
+            nn.init.zeros_(layer.weight)
+            nn.init.zeros_(layer.bias)
+
         pair_dim = HIDDEN_DIM * 2
         self.bond_exist = mlp([pair_dim, HIDDEN_DIM, 1])
         self.bond_type = mlp([pair_dim, HIDDEN_DIM, N_BOND_TYPES])
@@ -132,14 +145,15 @@ class MoleculeDecoder(nn.Module):
         c_exp = c.unsqueeze(1).expand(-1, N_max, -1)  # [B, N_max, COND_DIM]
         h = self.init_proj(torch.cat([h_atom, c_exp], dim=-1))  # [B, N_max, HIDDEN_DIM]
 
-        # atom_mask : True(원자), False(패딩)
-        # key_pad_mask (MultiHeadAttention) : True(패딩), False(원자)
+        h = h + self.pos_emb(torch.arange(N_max, device=device))
+
         key_pad_mask = ~atom_mask
-        for attn, a_norm, ffn, f_norm in zip(
-            self.attn_layers, self.attn_norms, self.ffns, self.ffn_norms):
+        for adaln, attn, a_norm, ffn, f_norm in zip(
+            self.z_adaln, self.attn_layers, self.attn_norms, self.ffns, self.ffn_norms):
+            g_attn, b_attn, g_ffn, b_ffn = adaln(z).chunk(4, dim=-1)  # 각 [B, HIDDEN]
             h2, _ = attn(h, h, h, key_padding_mask=key_pad_mask)
-            h = a_norm(h + h2)
-            h = f_norm(h + ffn(h))
+            h = a_norm(h + h2) * (1 + g_attn.unsqueeze(1)) + b_attn.unsqueeze(1)
+            h = f_norm(h + ffn(h)) * (1 + g_ffn.unsqueeze(1)) + b_ffn.unsqueeze(1)
 
         hi = h.unsqueeze(2).expand(-1, -1, N_max, -1)  # [B, N_max, N_max, H]
         hj = h.unsqueeze(1).expand(-1, N_max, -1, -1)

@@ -83,19 +83,30 @@ class QMugsDataset(Dataset):
         data.p = (data.p_raw - self.mean) / self.std
         data.a_bin = (data.a[:10] > 0).float()
 
-        # 원자를 원소 종류 순으로 재정렬 (C, H, O, N, S, P, F, Cl, Br, I)
-        # decoder가 원소 순서로 원자 시퀀스를 만드는 것과 ground truth를 일치시키기 위함
-        _ELEM_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53]
-        z_list = data.z.tolist()
-        perm = []
-        for atomic_num in _ELEM_NUMS:
-            for i, z in enumerate(z_list):
-                if z == atomic_num:
-                    perm.append(i)
-        for i in range(len(z_list)):  # 10종 외 원소 (있으면 마지막에 추가)
-            if i not in set(perm):
-                perm.append(i)
-        perm = torch.tensor(perm, dtype=torch.long)
+        # RDKit Canonical Ranking + Atomic Number로 원자 순서 고정
+        from rdkit import Chem
+        
+        mol = Chem.RWMol()
+        for z in data.z.tolist():
+            mol.AddAtom(Chem.Atom(int(z)))
+        
+        ei = data.edge_index
+        for i in range(ei.shape[1]):
+            u, v = int(ei[0, i]), int(ei[1, i])
+            if u < v:
+                mol.AddBond(u, v, Chem.rdchem.BondType.SINGLE)
+        
+        # 1순위: 원자 번호 (C, H, O... 순서), 2순위: Canonical Rank
+        # ELEM_ATOMIC_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53] 순서대로 가중치 부여
+        elem_order = {6:0, 1:1, 8:2, 7:3, 16:4, 15:5, 9:6, 17:7, 35:8, 53:9}
+        ranks = list(Chem.CanonicalRankAtoms(mol, breakTies=True))
+        
+        # (원소 순서, 랭킹) 튜플을 기준으로 정렬
+        sort_keys = []
+        for i, z in enumerate(data.z.tolist()):
+            sort_keys.append((elem_order.get(int(z), 99), ranks[i]))
+        
+        perm = torch.tensor(np.argsort([s[0]*1000 + s[1] for s in sort_keys]), dtype=torch.long)
 
         inv_perm = torch.zeros(len(perm), dtype=torch.long)
         inv_perm[perm] = torch.arange(len(perm), dtype=torch.long)
