@@ -92,6 +92,7 @@ def main():
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--max-samples", type=int, default=None)
     parser.add_argument("--log-file", default="./train.log", help="로그 파일 경로")
+    parser.add_argument("--resume", default=None, help="이어서 학습할 체크포인트 경로")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -126,6 +127,17 @@ def main():
     warmup_steps = args.warmup_epochs * len(train_loader)
     step = 0
     best_fixed_eval = float("inf")
+    start_epoch = 1
+
+    if args.resume:
+        ckpt = torch.load(args.resume, map_location=device)
+        model.load_state_dict(ckpt["model"])
+        optimizer.load_state_dict(ckpt["optimizer"])
+        scheduler.load_state_dict(ckpt["scheduler"])
+        start_epoch = ckpt["epoch"] + 1
+        step = ckpt["epoch"] * len(train_loader)
+        best_fixed_eval = ckpt.get("best_fixed_eval", float("inf"))
+        print(f"  Resumed from epoch {ckpt['epoch']} (step {step:,}, best fixed eval: {best_fixed_eval:.4f})")
 
     print(f"  Warmup: {args.warmup_epochs} epochs ({warmup_steps:,} steps), then {args.n_cycles} cosine cycles")
     print(f"\n{'Epoch':>6} {'Beta':>6} {'T-loss':>8} {'T-recon':>8} "
@@ -133,7 +145,7 @@ def main():
           f"{'V-loss':>8} {'V-recon':>8} {'V-kl':>8} {'V-apred':>8}  Time")
     print("-" * 120)
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(start_epoch, args.epochs + 1):
         t0 = time.time()
 
         beta = cyclical_beta(step, total_steps, args.n_cycles, args.max_beta, warmup_steps=warmup_steps)
