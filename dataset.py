@@ -72,6 +72,19 @@ class QMugsDataset(Dataset):
             weights_only=False,
         )
 
+    def reshuffle_indices(self):
+        chunk_of = np.searchsorted(self._chunk_offsets, self.indices, side="right") - 1
+        chunk_order = np.random.permutation(len(self._chunk_names))
+        ordered = []
+        for c in chunk_order:
+            mask = chunk_of == c
+            if mask.any():
+                items = self.indices[mask].copy()
+                np.random.shuffle(items)
+                ordered.append(items)
+        if ordered:
+            self.indices = np.concatenate(ordered)
+
     def __len__(self) -> int:
         return len(self.indices)
 
@@ -90,11 +103,18 @@ class QMugsDataset(Dataset):
         for z in data.z.tolist():
             mol.AddAtom(Chem.Atom(int(z)))
         
+        _BOND_TYPES = [
+            Chem.rdchem.BondType.SINGLE,
+            Chem.rdchem.BondType.DOUBLE,
+            Chem.rdchem.BondType.TRIPLE,
+            Chem.rdchem.BondType.AROMATIC,
+        ]
         ei = data.edge_index
         for i in range(ei.shape[1]):
             u, v = int(ei[0, i]), int(ei[1, i])
             if u < v:
-                mol.AddBond(u, v, Chem.rdchem.BondType.SINGLE)
+                bt_idx = int(data.bond_type[i].argmax())
+                mol.AddBond(u, v, _BOND_TYPES[bt_idx])
         
         # 1순위: 원자 번호 (C, H, O... 순서), 2순위: Canonical Rank
         # ELEM_ATOMIC_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53] 순서대로 가중치 부여

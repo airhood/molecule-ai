@@ -171,15 +171,18 @@ def reconstruction_loss(
     device = bond_exist_logit.device
     B, N_max, _ = bond_exist_logit.shape
 
-    true_adj = to_dense_adj(batch.edge_index, batch=batch.batch, max_num_nodes=N_max)
+    # PyG to_dense_adj는 중복 엣지(u,v), (v,u)의 속성을 합산하므로 한쪽 방향(u < v)만 추출
+    edge_mask = batch.edge_index[0] < batch.edge_index[1]
+    half_ei = batch.edge_index[:, edge_mask]
+    
+    # 0(결합없음)과 구분하기 위해 클래스에 1을 더해줌 (1:단일, 2:이중, 3:삼중, 4:방향족)
+    half_bt = batch.bond_type[edge_mask].argmax(dim=-1) + 1
 
-    # (B, N_max, N_max)
-    bond_class = batch.bond_type.argmax(dim=-1).float()
-    true_bond_type = to_dense_adj(
-        batch.edge_index, batch=batch.batch,
-        edge_attr=bond_class.unsqueeze(-1),
-        max_num_nodes=N_max,
-    ).squeeze(-1).long()
+    # [B, N_max, N_max] 크기의 정답 행렬 생성
+    true_adj_type = to_dense_adj(half_ei, batch=batch.batch, edge_attr=half_bt, max_num_nodes=N_max).squeeze(-1)
+    
+    true_adj = (true_adj_type > 0).float() # 결합 존재 여부
+    true_bond_type = (true_adj_type - 1).clamp(min=0).long() # 원래 클래스(0~3)로 복구
 
     tri = torch.triu(torch.ones(N_max, N_max, dtype=torch.bool, device=device), diagonal=1)
     pair_mask = atom_mask.unsqueeze(2) & atom_mask.unsqueeze(1) & tri  # [B, N_max, N_max]

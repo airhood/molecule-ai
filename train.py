@@ -147,6 +147,7 @@ def main():
 
     for epoch in range(start_epoch, args.epochs + 1):
         t0 = time.time()
+        train_set.reshuffle_indices()
 
         beta = cyclical_beta(step, total_steps, args.n_cycles, args.max_beta, warmup_steps=warmup_steps)
 
