@@ -119,6 +119,7 @@ class QMugsDataset(Dataset):
         # 1순위: 원자 번호 (C, H, O... 순서), 2순위: Canonical Rank
         # ELEM_ATOMIC_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53] 순서대로 가중치 부여
         elem_order = {6:0, 1:1, 8:2, 7:3, 16:4, 15:5, 9:6, 17:7, 35:8, 53:9}
+        mol.UpdatePropertyCache(strict=False)
         ranks = list(Chem.CanonicalRankAtoms(mol, breakTies=True))
         
         # (원소 순서, 랭킹) 튜플을 기준으로 정렬
