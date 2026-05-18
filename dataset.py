@@ -103,18 +103,11 @@ class QMugsDataset(Dataset):
         for z in data.z.tolist():
             mol.AddAtom(Chem.Atom(int(z)))
         
-        _BOND_TYPES = [
-            Chem.rdchem.BondType.SINGLE,
-            Chem.rdchem.BondType.DOUBLE,
-            Chem.rdchem.BondType.TRIPLE,
-            Chem.rdchem.BondType.AROMATIC,
-        ]
         ei = data.edge_index
         for i in range(ei.shape[1]):
             u, v = int(ei[0, i]), int(ei[1, i])
             if u < v:
-                bt_idx = int(data.bond_type[i].argmax())
-                mol.AddBond(u, v, _BOND_TYPES[bt_idx])
+                mol.AddBond(u, v, Chem.rdchem.BondType.SINGLE)
         
         # 1순위: 원자 번호 (C, H, O... 순서), 2순위: Canonical Rank
         # ELEM_ATOMIC_NUMS = [6, 1, 8, 7, 16, 15, 9, 17, 35, 53] 순서대로 가중치 부여
