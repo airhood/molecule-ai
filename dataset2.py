@@ -67,7 +67,15 @@ class QMugsDataset(Dataset):
         self._load_chunk = lru_cache(maxsize=cache_chunks)(self._load_chunk_uncached)
 
         # 원자 수 사전계산 — size bucketing용 (init 1회, 이후 reshuffle에서 재사용)
-        self._sizes = self._build_sizes()
+        sizes_path = processed_path / "sizes.npy"
+        if sizes_path.exists():
+            all_sizes = np.load(sizes_path)
+            self._sizes = all_sizes[self.indices]
+        else:
+            self._sizes = self._build_sizes()
+
+        # reshuffle용 chunk 소속 캐시 — 매 에폭 searchsorted 재계산 방지
+        self._chunk_of = np.searchsorted(self._chunk_offsets, self.indices, side="right") - 1
 
     def _load_chunk_uncached(self, chunk_idx: int) -> list:
         return torch.load(
@@ -87,11 +95,10 @@ class QMugsDataset(Dataset):
 
     def reshuffle_indices(self):
         # 청크 순서는 랜덤, 청크 내부는 원자 수 오름차순 → size bucketing
-        chunk_of = np.searchsorted(self._chunk_offsets, self.indices, side="right") - 1
         chunk_order = np.random.permutation(len(self._chunk_names))
         new_order = []
         for c in chunk_order:
-            mask = chunk_of == c
+            mask = self._chunk_of == c
             if mask.any():
                 pos = np.where(mask)[0]
                 sort = np.argsort(self._sizes[pos], kind="stable")
@@ -100,6 +107,7 @@ class QMugsDataset(Dataset):
             perm = np.concatenate(new_order)
             self.indices = self.indices[perm]
             self._sizes = self._sizes[perm]
+            self._chunk_of = self._chunk_of[perm]
 
     def __len__(self) -> int:
         return len(self.indices)
@@ -126,5 +134,6 @@ class QMugsDataset(Dataset):
         data.z = data.z[heavy_idx]
         data.edge_index = old_to_new[ei[:, edge_mask]]
         data.bond_type = data.bond_type[edge_mask]
+        data.num_nodes = len(heavy_idx)
 
         return data
