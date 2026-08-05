@@ -222,3 +222,6 @@ __marimo__/
 /data
 docs/
 checkpoints/
+checkpoints_diffusion/
+*.zip
+.claude-sync/
