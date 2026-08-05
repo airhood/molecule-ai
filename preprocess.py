@@ -29,11 +29,16 @@ ELEMENTS = ["C", "H", "O", "N", "S", "P", "F", "Cl", "Br", "I"]
 
 CHUNK_SIZE = 50_000
 
+# 2026-08-03: 방향족을 독립 클래스로 두면 그래프 생성 모델이 각 결합을 독립
+# 예측하는 방식과 상충 -- 방향족성은 고리 전체의 전역 속성이라, 개별 결합
+# 예측만으로는 유효한(kekulizable) 고리를 보장 못 함. ground-truth 재구성
+# 검증(devlog.md/research.md 2026-08-03)에서 이 표현 방식이 이론적 validity
+# 상한을 80.2%로 제한하고 있음을 실측 확인. kekulize로 방향족 클래스 자체를
+# 제거(단일/이중 교대로 명시) -> 상한 96.2%로 회복.
 BOND_TYPE_MAP = {
-    1.0: [1, 0, 0, 0],  # SINGLE
-    2.0: [0, 1, 0, 0],  # DOUBLE
-    3.0: [0, 0, 1, 0],  # TRIPLE
-    1.5: [0, 0, 0, 1],  # AROMATIC
+    1.0: [1, 0, 0],  # SINGLE
+    2.0: [0, 1, 0],  # DOUBLE
+    3.0: [0, 0, 1],  # TRIPLE
 }
 
 
@@ -104,6 +109,14 @@ def _process_sdf(args):
     if mol.GetNumConformers() == 0:
         return None
 
+    # 방향족 -> 명시적 단일/이중 교대로 변환 (BOND_TYPE_MAP 주석 참조).
+    # 켈쿨화 자체가 실패하는 분자는 애초에 이 표현으로 학습/생성 불가능한
+    # 케이스이므로 필터링.
+    try:
+        Chem.Kekulize(mol, clearAromaticFlags=True)
+    except Exception:
+        return None
+
     conf = mol.GetConformer()
     Chem.AssignStereochemistry(mol, cleanIt=True, force=True)
 
@@ -124,7 +137,7 @@ def _process_sdf(args):
         v = bond.GetEndAtomIdx()
 
         bt_val = bond.GetBondTypeAsDouble()
-        bt = BOND_TYPE_MAP.get(bt_val, [1, 0, 0, 0])
+        bt = BOND_TYPE_MAP.get(bt_val, [1, 0, 0])
         bs = STEREO_MAP.get(bond.GetStereo(), STEREO_DEFAULT)
 
         dih = 0.0
@@ -177,6 +190,33 @@ def _dict_to_data(d: dict) -> Data:
         chembl_id=d["chembl_id"],
         smiles=d["smiles"],
     )
+
+
+def _print_stats_light(stats_a: list, stats_p_raw: list) -> None:
+    """_print_stats와 동일한 출력을 만들되, 무거운 Data 객체 전체가 아니라
+    누적해둔 경량 정보(a, p_raw)만 사용 (메모리 절약을 위한 incremental flush와
+    호환)."""
+    if not stats_a:
+        return
+
+    total_atoms = 0
+    elem_counts: Counter = Counter()
+    for a in stats_a:
+        total_atoms += int(a[-1].item())
+        for i, e in enumerate(ELEMENTS):
+            elem_counts[e] += int(a[i].item())
+
+    print("\n원소 분포:")
+    for e in ELEMENTS:
+        pct = 100.0 * elem_counts[e] / total_atoms if total_atoms else 0.0
+        print(f"  {e:2s}: {pct:.1f}%")
+
+    p_raws = torch.stack(stats_p_raw)
+    prop_labels = ["HOMO", "LUMO", "gap", "total", "dipole"]
+    print("\n물성 분포 (원본값):")
+    for i, label in enumerate(prop_labels):
+        col = p_raws[:, i]
+        print(f"  {label:6s}: mean={col.mean():.4f}  std={col.std():.4f}")
 
 
 def _print_stats(data_list, stats: dict) -> None:
@@ -265,10 +305,31 @@ def main() -> None:
             skipped_no_match += 1
     print(f"  {len(tasks):,} tasks ({skipped_no_match:,} skipped: no CSV match)")
 
-    # --- Parallel SDF parsing ---
+    # --- Parallel SDF parsing (incremental flush to disk) ---
+    # 2026-08-03: 기존엔 전체 결과를 data_list에 다 쌓아놓고 루프가 끝난 뒤에야
+    # 청크를 저장했음 -> 66만+개 분자의 Data 객체(pos/edge_index/bond_type/
+    # bond_stereo/dihedral 포함)를 동시에 RAM에 들고 있어 30GB RAM + 8GB swap을
+    # 모두 채우고 시스템이 불안정해짐(터미널 세션 반복 종료). CHUNK_SIZE에 도달할
+    # 때마다 즉시 디스크에 쓰고 메모리에서 비우도록 수정. 통계 출력용 경량 정보
+    # (a, p_raw)만 별도로 누적.
     print(f"Processing with {args.workers} workers (chunksize={args.chunksize}) ...")
     data_list = []
     filtered = 0
+    n_saved_total = 0
+    chunk_sizes = []
+    stats_a = []
+    stats_p_raw = []
+
+    def _flush_chunk():
+        nonlocal data_list, n_saved_total
+        if not data_list:
+            return
+        chunk_path = out_dir / f"data_chunk_{len(chunk_sizes):04d}.pt"
+        torch.save(data_list, chunk_path)
+        chunk_sizes.append(len(data_list))
+        n_saved_total += len(data_list)
+        print(f"  Saved {chunk_path.name} ({len(data_list):,} items)")
+        data_list = []
 
     with multiprocessing.Pool(args.workers) as pool:
         for result in tqdm(
@@ -276,24 +337,20 @@ def main() -> None:
             total=len(tasks),
         ):
             if result is not None:
-                data_list.append(_dict_to_data(result))
+                d = _dict_to_data(result)
+                data_list.append(d)
+                stats_a.append(d.a)
+                stats_p_raw.append(d.p_raw)
+                if len(data_list) >= CHUNK_SIZE:
+                    _flush_chunk()
             else:
                 filtered += 1
+    _flush_chunk()
 
     total_skipped = filtered + skipped_no_match + skipped_smiles
     print(f"\n총 conformer 수:  {len(tasks):>10,}")
     print(f"필터링 제거:      {total_skipped:>10,}")
-    print(f"최종 저장:        {len(data_list):>10,}")
-
-    # --- Save chunks + meta.json ---
-    print()
-    chunk_sizes = []
-    for i in range(0, len(data_list), CHUNK_SIZE):
-        chunk = data_list[i:i + CHUNK_SIZE]
-        chunk_path = out_dir / f"data_chunk_{len(chunk_sizes):04d}.pt"
-        torch.save(chunk, chunk_path)
-        chunk_sizes.append(len(chunk))
-        print(f"  Saved {chunk_path.name} ({len(chunk):,} items)")
+    print(f"최종 저장:        {n_saved_total:>10,}")
 
     meta = {
         "chunk_files": [f"data_chunk_{i:04d}.pt" for i in range(len(chunk_sizes))],
@@ -303,7 +360,7 @@ def main() -> None:
         json.dump(meta, f)
     print(f"  Saved meta.json ({len(chunk_sizes)} chunks, {sum(chunk_sizes):,} total)")
 
-    _print_stats(data_list, stats)
+    _print_stats_light(stats_a, stats_p_raw)
 
 
 if __name__ == "__main__":
