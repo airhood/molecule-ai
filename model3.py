@@ -35,6 +35,15 @@ ATOMIC_NUM_TO_CLS = {
     53: 9  # I
 }
 
+# [R-5] 2026-08-28: DiGress Appendix B.2 구조 feature 중 valency/분자량 복원.
+# 2026-08-03 "명확한 차이 없음 REJECT" 판정은 review.md §2에 따라 검정력 없는
+# 표본(7/84 vs 8/84)에서 나온 것이라 무효 -- 다시 검증.
+# 표준 원자량(RDKit GetAtomicWeight 실측, g/mol). index 0(padding)은 0.
+_ATOMIC_WEIGHT = {
+    6: 12.011, 8: 15.999, 7: 14.007, 16: 32.067, 15: 30.974,
+    9: 18.998, 17: 35.453, 35: 79.904, 53: 126.904,
+}
+
 NODE_DIM = 256
 EDGE_DIM = 128
 N_HEADS = 8
@@ -203,13 +212,29 @@ class ScoreNetwork(nn.Module):
         self.t_proj  = nn.Linear(T_DIM, NODE_DIM)
         self.layers  = nn.ModuleList([GTLayer() for _ in range(N_LAYERS)])
 
+        # [R-5] 매 denoising step마다 현재(노이즈) 그래프 상태로부터 재계산되는
+        # 구조 feature: 현재 원자가(E_t 행 합, 결합 차수 그대로) + 원자량(X_t 기준).
+        # 학습 데이터 통계가 아닌 매 forward 호출 시 즉석 계산 -- 고정 입력 아님.
+        weight_table = torch.zeros(K_X)
+        for _anum, _cls in ATOMIC_NUM_TO_CLS.items():
+            weight_table[_cls] = _ATOMIC_WEIGHT[_anum]
+        self.register_buffer("atomic_weight", weight_table)
+        self.struct_proj = nn.Linear(2, NODE_DIM)
+
         # 원자: padding(0) 제외한 K_X-1개 실제 원소 예측.
         # 결합: MASK 클래스가 없으므로 no-bond(0) 포함 전체 K_E개 예측.
         self.x_head  = nn.Sequential(nn.LayerNorm(NODE_DIM), nn.Linear(NODE_DIM, K_X - 1))
         self.e_head  = nn.Sequential(nn.LayerNorm(EDGE_DIM), nn.Linear(EDGE_DIM, K_E))
 
     def forward(self, X_t, E_t, node_mask, t):
-        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1)
+        # [R-5] 현재 원자가(no-bond=0..triple=3, 값 자체가 결합 차수) + 원자량.
+        # 스케일이 서로/다른 입력과 크게 달라 대략적인 크기로만 정규화(학습 가능한
+        # struct_proj가 나머지를 흡수).
+        cur_valence = E_t.float().sum(dim=-1, keepdim=True) / 4.0
+        atomic_weight = self.atomic_weight[X_t.clamp(min=0, max=K_X - 1)].unsqueeze(-1) / 100.0
+        struct_feat = self.struct_proj(torch.cat([cur_valence, atomic_weight], dim=-1))
+
+        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat
         e   = self.e_embed(E_t)
         pad = ~node_mask
 
@@ -224,7 +249,14 @@ class ScoreNetwork(nn.Module):
 
 class MoleculeGraphDiffusion(nn.Module):
 
-    def __init__(self, m_X, m_E, T = T_STEPS, edge_loss_coeff = 0.2, class_weights = None, edge_class_weights = None):
+    # [R-4] 2026-08-27: docs/review.md 지적 -- 0.2의 도입 근거("엣지 수가 N배라
+    # gradient 독점")가 실제로는 성립하지 않음 (F.cross_entropy가 이미 mean
+    # reduction이라 쌍 개수로 인한 독점이 없음). DiGress 원논문은 반대로 λ=5를
+    # 사용. 08-26 스모크런(diagnostic_fixed_t)에서 t=140(맥락 거의 없음)의
+    # bond_acc가 EMA/RAW/두 epoch 전부 0.000으로 나온 것이 "결합 예측이 병목인데
+    # 정확히 거기에 가장 적은 gradient 비중을 주고 있었다"는 이 가설과 일치.
+    # T-x가 H(m_X)=0.8258 위로 되올라가면 과한 신호이므로 2.0으로 완화할 것.
+    def __init__(self, m_X, m_E, T = T_STEPS, edge_loss_coeff = 5.0, class_weights = None, edge_class_weights = None):
         super().__init__()
         self.schedule = MarginalNoiseSchedule(m_X, m_E, T)
         self.net = ScoreNetwork()
