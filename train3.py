@@ -6,7 +6,9 @@ import time
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 from rdkit import Chem, RDLogger
+from rdkit.Chem import QED
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch_geometric.loader import DataLoader
@@ -27,12 +29,16 @@ _BOND_TYPE = {
 }
 _CLS_TO_ANUM = {v: k for k, v in ATOMIC_NUM_TO_CLS.items()}
 
-# [R-1] 원자가 위반 판정용 원소별 표준 원자가 (RDKit 실측: C4/N3/O2/S2/P3/할로겐1).
-# index 0(padding)=0.
+# [V-1] 2026-08-31: review2.md 지적 -- GetDefaultValence()는 원소당 "기본" 원자가
+# 하나만 준다(S=2, P=3, I=1). RDKit이 실제로 sanitize에서 허용하는 목록은
+# GetValenceList()이고 최댓값을 써야 함(S=[2,4,6], P=[3,5], I=[1,3,5]).
+# 술폰/술폰아미드(S 원자가 6), 인산염(P 원자가 5)은 약물형 분자에서 흔함.
+# 실측: 구버전 표로 실제 학습 데이터를 채점하면 0.69%가 오탐 위반으로 집계됨
+# (S 원자의 41%, P 원자의 100%가 오탐). index 0(padding)=0.
 _PT = Chem.GetPeriodicTable()
 _MAX_VALENCE = torch.zeros(K_X)
 for _anum, _cls in ATOMIC_NUM_TO_CLS.items():
-    _MAX_VALENCE[_cls] = _PT.GetDefaultValence(_anum)
+    _MAX_VALENCE[_cls] = max(_PT.GetValenceList(_anum))
 
 
 class _Tee(io.TextIOBase):
@@ -131,23 +137,29 @@ def atom_valence_violations(X, E):
 
 
 def analyze_molecule(X, E):
-    """[R-1] 분자 하나에 대해 strict/largest-fragment validity와 fragment 비율을 계산.
+    """[R-1, V-3] 분자 하나에 대해 strict/largest-fragment/single validity와
+    fragment 관련 통계를 계산.
 
     - strict: 현행 기준 그대로 유지 (SanitizeMol 통과 + 최대 조각 비율 >= 0.85,
       고립 원자 나열로 validity를 교란하는 꼼수 방지 필터 포함).
     - largest-fragment: 최대 조각만 추출해 그것만 sanitize (MOSES/DiGress 등
       문헌이 쓰는 관대한 정의, 논문 대비 비교용 -- [R-9]).
+    - single: [V-3] review2.md 지적 -- 학습 데이터는 fragment 개수가 100% 1개인데
+      strict는 15%까지 조각남을 허용해 학습 데이터 분포보다 관대하다. sanitize
+      통과 + fragment 개수 == 1만 요구하는 더 엄격한(데이터 분포 기준) 지표.
     """
     real = ((X > 0) & (X < K_X)).nonzero(as_tuple=True)[0].tolist()
+    empty = {"strict_valid": False, "frag_valid": False, "single_valid": False,
+             "frag_ratio": 0.0, "n_fragments": 0, "mol": None}
     if len(real) < 2:
-        return {"strict_valid": False, "frag_valid": False, "frag_ratio": 0.0, "mol": None}
+        return empty
 
     mol = Chem.RWMol()
     idx_map = {}
     for ai in real:
         anum = _CLS_TO_ANUM.get(int(X[ai]))
         if anum is None:
-            return {"strict_valid": False, "frag_valid": False, "frag_ratio": 0.0, "mol": None}
+            return empty
         idx_map[ai] = mol.AddAtom(Chem.Atom(anum))
 
     for i, ai in enumerate(real):
@@ -167,8 +179,9 @@ def analyze_molecule(X, E):
     except Exception:
         frags = ()
     if not frags:
-        return {"strict_valid": False, "frag_valid": False, "frag_ratio": 0.0, "mol": None}
+        return empty
 
+    n_fragments = len(frags)
     largest = max(frags, key=lambda f: f.GetNumAtoms())
     frag_ratio = largest.GetNumAtoms() / len(real)
 
@@ -183,6 +196,8 @@ def analyze_molecule(X, E):
     except Exception:
         pass
 
+    single_valid = strict_valid and n_fragments == 1
+
     frag_valid = False
     frag_mol = None
     try:
@@ -196,8 +211,39 @@ def analyze_molecule(X, E):
     return {
         "strict_valid": strict_valid,
         "frag_valid": frag_valid,
+        "single_valid": single_valid,
         "frag_ratio": frag_ratio,
+        "n_fragments": n_fragments,
         "mol": strict_mol if strict_mol is not None else frag_mol,
+    }
+
+
+# [V-3] 2026-08-31: review2.md 권고 -- 학습 데이터 실측 참조 분포(3,000분자 중
+# sanitize 성공 2,868개 기준, 로컬 직접 측정으로 review2.md 수치와 대조 확인됨).
+# "그럴듯함"은 단일 점수가 아니라 이 분포와의 거리로 진단할 것 -- 최적화 목표가
+# 아니라 진단 용도.
+REF_SINGLE_FRAGMENT_RATE = 1.0000
+REF_RING_COUNT_MEAN = 3.55       # 0:.6% 1:2.9% 2:11.9% 3:28.3% 4:31.1% 5:18.2% 6:5.5% 7:1.0% 8:.4%
+REF_RING_SIZE_56_RATE = 0.9671   # 5원 23.5% + 6원 73.2%
+REF_DEGREE_MEAN = 2.185          # 1:15.7% 2:51.8% 3:30.9% 4:1.6%
+REF_QED_MEAN = 0.5377
+REF_QED_MEDIAN = 0.5397
+
+
+def mol_diagnostics(mol):
+    """[V-3] 분자 하나의 "그럴듯함" 진단 통계. strict-valid 분자에 대해서만 호출."""
+    ri = mol.GetRingInfo()
+    ring_sizes = [len(r) for r in ri.AtomRings()]
+    degrees = [a.GetDegree() for a in mol.GetAtoms()]
+    try:
+        qed = QED.qed(mol)
+    except Exception:
+        qed = None
+    return {
+        "n_rings": ri.NumRings(),
+        "ring_sizes": ring_sizes,
+        "degrees": degrees,
+        "qed": qed,
     }
 
 
@@ -260,11 +306,13 @@ def evaluate_validity(model, size_dist, n_eval, device):
 
     n_strict = 0
     n_frag = 0
+    n_single = 0
     strict_mols = []
     total_atoms = 0
     total_violations = 0
     violations_per_mol = []
     frag_ratios = []
+    n_fragments_list = []
 
     for n_atoms, count in size_counts.items():
         if n_atoms > MAX_ATOMS:
@@ -283,11 +331,14 @@ def evaluate_validity(model, size_dist, n_eval, device):
 
             info = analyze_molecule(xi, ei)
             frag_ratios.append(info["frag_ratio"])
+            n_fragments_list.append(info["n_fragments"])
             if info["strict_valid"]:
                 n_strict += 1
                 strict_mols.append(info["mol"])
             if info["frag_valid"]:
                 n_frag += 1
+            if info["single_valid"]:
+                n_single += 1
 
     if strict_mols:
         smiles = {Chem.MolToSmiles(m) for m in strict_mols}
@@ -295,26 +346,55 @@ def evaluate_validity(model, size_dist, n_eval, device):
     else:
         uniqueness = 0.0
 
+    # [V-3] strict-valid 분자들의 "그럴듯함" 분포 진단. 참조값(REF_*)과 나란히
+    # 볼 것 -- 이 지표들은 최적화 목표가 아니라 진단용.
+    ring_counts, ring_sizes_flat, degrees_flat, qed_vals = [], [], [], []
+    for m in strict_mols:
+        d = mol_diagnostics(m)
+        ring_counts.append(d["n_rings"])
+        ring_sizes_flat.extend(d["ring_sizes"])
+        degrees_flat.extend(d["degrees"])
+        if d["qed"] is not None:
+            qed_vals.append(d["qed"])
+
+    n_single_frag = sum(1 for n in n_fragments_list if n == 1)
+    ring56 = sum(1 for s in ring_sizes_flat if s in (5, 6))
+
     return {
         "validity_strict": n_strict / n_eval,
         "validity_frag": n_frag / n_eval,
+        "validity_single": n_single / n_eval,
         "uniqueness": uniqueness,
         "atom_violation_rate": (total_violations / total_atoms) if total_atoms > 0 else float("nan"),
         "mean_violations_per_mol": (sum(violations_per_mol) / len(violations_per_mol)) if violations_per_mol else float("nan"),
         "mean_frag_ratio": (sum(frag_ratios) / len(frag_ratios)) if frag_ratios else float("nan"),
+        "single_fragment_rate": (n_single_frag / len(n_fragments_list)) if n_fragments_list else float("nan"),
+        "mean_ring_count": (sum(ring_counts) / len(ring_counts)) if ring_counts else float("nan"),
+        "ring_size_56_rate": (ring56 / len(ring_sizes_flat)) if ring_sizes_flat else float("nan"),
+        "mean_degree": (sum(degrees_flat) / len(degrees_flat)) if degrees_flat else float("nan"),
+        "mean_qed": (sum(qed_vals) / len(qed_vals)) if qed_vals else float("nan"),
     }
 
 
 @torch.no_grad()
-def diagnostic_fixed_t(model, val_loader, device, t_values=(10, 75, 140), n_batches=4):
-    """[R-2] 고정 t에서 q_sample -> forward 한 번만으로 x0 재구성 정확도를
+def diagnostic_fixed_t(model, val_loader, device, t_values=(10, 40, 75, 110), n_batches=4):
+    """[R-2, V-2] 고정 t에서 q_sample -> forward 한 번만으로 x0 재구성 정확도를
     측정한다 (150-step 전체 샘플링 불필요, forward pass 몇 번이라 비용 거의 0).
-    원자/결합/무결합 정확도를 분리해서, "맥락이 거의 없을 때(t 큼) 결합 쪽으로
-    쏠리는 편향"이 marginal transition에서도 남아있는지 확인한다
-    (devlog 2026-07-26 absorbing 진단 방법론을 marginal에 재적용).
+
+    [V-2] 2026-08-31: review2.md 지적 -- 코사인 스케줄에서 t=140은 ac(alpha_bar)
+    ≈0.0108로 원본 정보가 1%만 남아, 이 지점의 Bayes-최적 예측은 marginal
+    분포 그 자체(argmax가 항상 no-bond)다. 즉 t=140에서 bond_acc=0.000은
+    "실패"가 아니라 모델이 정확히 옳게 행동한다는 신호일 수 있어 argmax 정확도만
+    으로는 이 구간에서 아무것도 측정하지 못한다. t 격자를 정보가 남아있는 구간
+    {10,40,75,110}(ac≈0.99/0.85/0.49/0.13)으로 바꾸고, 포화되지 않는 확률 기반
+    지표(참-결합/무결합 위치의 평균 P(bond), edge CE vs H(m_E)=0.3076 기준선)를
+    추가한다.
     """
+    H_M_E = 0.3076  # 마진 분포 m_E의 엔트로피 -- 상수 예측기 CE 하한
     model.eval()
-    stats = {t: {"atom_c": 0, "atom_n": 0, "bond_c": 0, "bond_n": 0, "nobond_c": 0, "nobond_n": 0}
+    stats = {t: {"atom_c": 0, "atom_n": 0, "bond_c": 0, "bond_n": 0, "nobond_c": 0, "nobond_n": 0,
+                  "p_bond_true_bond_sum": 0.0, "p_bond_true_nobond_sum": 0.0,
+                  "edge_ce_sum": 0.0, "edge_ce_n": 0}
               for t in t_values}
 
     it = iter(val_loader)
@@ -340,6 +420,8 @@ def diagnostic_fixed_t(model, val_loader, device, t_values=(10, 75, 140), n_batc
             x_logits, e_logits = model.net(X_t, E_t, node_mask, t)
             x_pred = x_logits.argmax(-1) + 1
             e_pred = e_logits.argmax(-1)
+            e_probs = e_logits.softmax(-1)
+            p_bond = 1.0 - e_probs[..., 0]  # P(no-bond 아님) = P(어떤 결합이든 존재)
 
             s = stats[t_val]
             s["atom_c"] += int(((x_pred == X0) & node_mask).sum().item())
@@ -352,12 +434,29 @@ def diagnostic_fixed_t(model, val_loader, device, t_values=(10, 75, 140), n_batc
             s["nobond_c"] += int(((e_pred == E0) & nobond_mask).sum().item())
             s["nobond_n"] += int(nobond_mask.sum().item())
 
+            # [V-2] 확률 기반 지표 -- argmax와 달리 높은 t에서도 포화되지 않음
+            s["p_bond_true_bond_sum"] += float(p_bond[bond_mask].sum().item())
+            s["p_bond_true_nobond_sum"] += float(p_bond[nobond_mask].sum().item())
+            if em.sum().item() > 0:
+                ce = F.cross_entropy(e_logits[em], E0[em], reduction="sum")
+                s["edge_ce_sum"] += float(ce.item())
+                s["edge_ce_n"] += int(em.sum().item())
+
     result = {}
     for t_val, s in stats.items():
         result[t_val] = {
             "atom_acc":   s["atom_c"] / s["atom_n"] if s["atom_n"] > 0 else float("nan"),
             "bond_acc":   s["bond_c"] / s["bond_n"] if s["bond_n"] > 0 else float("nan"),
             "nobond_acc": s["nobond_c"] / s["nobond_n"] if s["nobond_n"] > 0 else float("nan"),
+            # [V-2] true-bond 위치와 true-nobond 위치의 평균 P(bond) 차이.
+            # argmax가 전부 no-bond로 포화돼도(예: t=140) 이 차이는 0이 아닐 수
+            # 있음 -- 모델이 맥락을 실제로 구분해서 쓰는지 보여주는 연속 지표.
+            "p_bond_true_bond":   s["p_bond_true_bond_sum"] / s["bond_n"] if s["bond_n"] > 0 else float("nan"),
+            "p_bond_true_nobond": s["p_bond_true_nobond_sum"] / s["nobond_n"] if s["nobond_n"] > 0 else float("nan"),
+            # [V-2] H(m_E)=0.3076보다 낮으면 상수 예측기(항상 marginal 출력)보다
+            # 낫다는 뜻 -- 그 t에서 모델이 그래프 맥락으로부터 정보를 실제로 쓰고 있음.
+            "edge_ce":     s["edge_ce_sum"] / s["edge_ce_n"] if s["edge_ce_n"] > 0 else float("nan"),
+            "edge_ce_ref": H_M_E,
         }
     return result
 
@@ -366,13 +465,26 @@ def _print_eval_block(tag, metrics, diag):
     print(
         f"    [{tag}] valid(strict)={metrics['validity_strict']:.3f} "
         f"valid(frag)={metrics['validity_frag']:.3f} "
+        f"valid(single)={metrics['validity_single']:.3f} "
         f"atomViolRate={metrics['atom_violation_rate']:.3f} "
         f"meanViol/mol={metrics['mean_violations_per_mol']:.2f} "
         f"fragRatio={metrics['mean_frag_ratio']:.3f} "
         f"uniq={metrics['uniqueness']:.3f}"
     )
+    # [V-3] 생성 분포 vs 학습 데이터 참조 분포(REF_*) 나란히 출력. 진단용이지
+    # 최적화 목표 아님.
+    print(
+        f"    [{tag}] singleFragRate={metrics['single_fragment_rate']:.3f}"
+        f"(ref {REF_SINGLE_FRAGMENT_RATE:.3f}) "
+        f"ringCount={metrics['mean_ring_count']:.2f}(ref {REF_RING_COUNT_MEAN:.2f}) "
+        f"ring56Rate={metrics['ring_size_56_rate']:.3f}(ref {REF_RING_SIZE_56_RATE:.3f}) "
+        f"degree={metrics['mean_degree']:.2f}(ref {REF_DEGREE_MEAN:.2f}) "
+        f"QED={metrics['mean_qed']:.3f}(ref {REF_QED_MEAN:.3f})"
+    )
     parts = " | ".join(
-        f"t={t_val:<3} atom={d['atom_acc']:.3f} bond={d['bond_acc']:.3f} nobond={d['nobond_acc']:.3f}"
+        f"t={t_val:<3} atom={d['atom_acc']:.3f} bond={d['bond_acc']:.3f} nobond={d['nobond_acc']:.3f} "
+        f"P(b|bond)={d['p_bond_true_bond']:.3f} P(b|nobond)={d['p_bond_true_nobond']:.3f} "
+        f"CE={d['edge_ce']:.3f}(ref {d['edge_ce_ref']:.3f})"
         for t_val, d in diag.items()
     )
     print(f"    [{tag}] {parts}")
