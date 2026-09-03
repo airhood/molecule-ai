@@ -121,7 +121,15 @@ class MarginalNoiseSchedule(nn.Module):
         post_given_c = unnorm / norm_c
 
         result = (x0_probs.unsqueeze(-1) * post_given_c).sum(-2)
-        result = result / result.sum(-1, keepdim=True).clamp(min=1e-8)
+        # 2026-09-03 (Y-1 진단 중 발견): x0_probs가 모든 실제 클래스(c=1..K-1)에서
+        # 0인 위치(예: 패딩) -- 원래 sample()은 패딩 없는 입력에서만 쓰여
+        # 노출된 적 없던 경로 -- 에서는 result 행 전체가 정확히 0이 될 수 있고,
+        # multinomial이 "sum of probabilities <= 0"으로 CUDA device-side assert를
+        # 던져 이후 모든 연산이 cublas 오류로 오염됨. 실제 분포에는 영향 없는
+        # 작은 균등 바닥을 더해 이런 행도 항상 유효한 분포가 되도록 함
+        # (해당 위치는 호출부에서 어차피 node_mask로 덮어써짐).
+        result = result.clamp(min=0.0) + 1e-8
+        result = result / result.sum(-1, keepdim=True)
 
         stoch = torch.multinomial(result.reshape(-1, K), 1).view(shape)
         determ = x0_probs.argmax(dim=-1)
