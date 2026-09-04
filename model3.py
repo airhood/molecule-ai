@@ -58,6 +58,42 @@ def _cosine_ac(T, s = 0.008):
     return (f / f[0]).float()[1:]
 
 
+# [R-6] 2026-09-04: docs/review7.md [Z-4] 1순위 방침 -- Laplacian 고유값 0의
+# 중복도 = 연결 성분 개수이지만, 매 step [N,N] 고유분해(DiGress 원논문 방식,
+# 2순위)를 쓰지 않고 인접행렬의 불리언 전이적 폐포(transitive closure)로
+# 대체한다. N<=50이므로 ceil(log2(N))<=6번의 (B,N,N) 행렬곱이면 충분 -- 사실상
+# 비용 0. 학습 가능한 파라미터 없이 매 forward 호출 시 현재 E_t에서 즉석 계산
+# (R-5와 동일 원칙, 고정 통계 아님).
+def _connectivity_features(E_t, node_mask):
+    """반환: n_components (B,) 그래프별 연결 성분 개수(실제 노드만 집계),
+    comp_size_ratio (B,N) 노드별 자기 성분 크기/실제 노드 수."""
+    B, N, _ = E_t.shape
+    eye = torch.eye(N, dtype=torch.bool, device=E_t.device).unsqueeze(0)
+    both_real = node_mask.unsqueeze(1) & node_mask.unsqueeze(2)
+
+    adj = (E_t > 0) & both_real
+    adj = adj | eye  # 자기 자신 포함 (실/패딩 공통) -- 패딩 행은 이후에도 자기자신만 유지
+    adj = adj & (both_real | eye)  # 실-패딩 교차 결합 제거, 패딩 자기 루프는 유지
+
+    reach = adj.float()
+    n_iter = max(1, math.ceil(math.log2(max(N, 2))))
+    for _ in range(n_iter):
+        reach = (reach @ reach) > 0
+        reach = reach.float()
+    reach_b = reach > 0  # (B,N,N)
+
+    idx = torch.arange(N, device=E_t.device)
+    canon = reach.argmax(dim=-1)  # 행별 첫 True 인덱스 (성분 내 최솟값 노드)
+    is_repr = (canon == idx.unsqueeze(0)) & node_mask
+    n_components = is_repr.float().sum(-1)  # (B,)
+
+    comp_size = (reach_b & node_mask.unsqueeze(1)).float().sum(-1)  # (B,N)
+    n_real = node_mask.float().sum(-1, keepdim=True).clamp(min=1.0)
+    comp_size_ratio = comp_size / n_real
+
+    return n_components, comp_size_ratio
+
+
 class MarginalNoiseSchedule(nn.Module):
     """Marginal-transition discrete noise schedule (DiGress Sec 4.1).
 
@@ -229,6 +265,10 @@ class ScoreNetwork(nn.Module):
         self.register_buffer("atomic_weight", weight_table)
         self.struct_proj = nn.Linear(2, NODE_DIM)
 
+        # [R-6] 연결성 feature 투영 (n_components 그래프 스칼라를 노드마다
+        # broadcast + comp_size_ratio 노드별 값). review7.md [Z-4] 1순위.
+        self.conn_proj = nn.Linear(2, NODE_DIM)
+
         # 원자: padding(0) 제외한 K_X-1개 실제 원소 예측.
         # 결합: MASK 클래스가 없으므로 no-bond(0) 포함 전체 K_E개 예측.
         self.x_head  = nn.Sequential(nn.LayerNorm(NODE_DIM), nn.Linear(NODE_DIM, K_X - 1))
@@ -242,7 +282,14 @@ class ScoreNetwork(nn.Module):
         atomic_weight = self.atomic_weight[X_t.clamp(min=0, max=K_X - 1)].unsqueeze(-1) / 100.0
         struct_feat = self.struct_proj(torch.cat([cur_valence, atomic_weight], dim=-1))
 
-        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat
+        # [R-6] 연결 성분 개수/노드별 성분 크기 비율 -- 학습 불가 파라미터 없이
+        # 현재 E_t에서 즉석 계산 (review7.md [Z-4]).
+        n_components, comp_size_ratio = _connectivity_features(E_t, node_mask)
+        n_comp_bcast = (n_components / 10.0).unsqueeze(1).expand(-1, X_t.shape[1])
+        conn_feat = torch.stack([n_comp_bcast, comp_size_ratio], dim=-1)
+        conn_struct = self.conn_proj(conn_feat)
+
+        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat + conn_struct
         e   = self.e_embed(E_t)
         pad = ~node_mask
 

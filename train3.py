@@ -513,7 +513,12 @@ def main():
     parser.add_argument("--log-file",       default="./train_diffusion_marginal.log")
     parser.add_argument("--resume",         default=None,
                         help="체크포인트 경로 (.pt). model/ema/optimizer/scheduler/epoch 복원.")
+    # [R-6] review7.md [Z-4] matched-budget A/B -- 모델 가중치 초기화/학습 중
+    # 확률적 요소(q_sample 등)를 고정해 재현 가능하게 함.
+    parser.add_argument("--seed",           type=int,   default=42)
     args = parser.parse_args()
+
+    torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
