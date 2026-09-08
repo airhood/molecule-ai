@@ -269,12 +269,26 @@ class ScoreNetwork(nn.Module):
         # broadcast + comp_size_ratio 노드별 값). review7.md [Z-4] 1순위.
         self.conn_proj = nn.Linear(2, NODE_DIM)
 
+        # [C-3] 2026-09-05: review8.md 지시로 conditioning 배선을 물성보다
+        # 먼저 a_bin(9차원)으로 스모크 테스트해 통과함(off-distribution 타겟
+        # 4개 전부 CI 비겹침, docs/review_followup_20260905b.md §3).
+        # [C-4] 2026-09-05: review9.md 지시로 물성 conditioning 본 실험 착수.
+        # 같은 메커니즘(cond_proj + 학습 가능한 null_cond로 CFG 드롭 시 대입 +
+        # COND_DROPOUT_P)을 재사용하되 입력을 a_bin(9차원)에서 HOMO/LUMO
+        # 정규화 값(2차원, batch.p 순서 0,1)으로 교체 -- GAP은 LUMO-HOMO로
+        # 선형종속(review9.md §0, 상관계수 1.0)이라 조건에서 제외, E_total은
+        # 조성만으로 R²=1.0(§0/[C-2])이라 제외, Dipole은 GNN_R²=0.303으로
+        # 2D 그래프로는 70%가 설명 안 돼 조건 경로에 잡음만 주입하므로 제외.
+        COND_DIM = 2
+        self.cond_proj = nn.Linear(COND_DIM, NODE_DIM)
+        self.null_cond = nn.Parameter(torch.zeros(COND_DIM))
+
         # 원자: padding(0) 제외한 K_X-1개 실제 원소 예측.
         # 결합: MASK 클래스가 없으므로 no-bond(0) 포함 전체 K_E개 예측.
         self.x_head  = nn.Sequential(nn.LayerNorm(NODE_DIM), nn.Linear(NODE_DIM, K_X - 1))
         self.e_head  = nn.Sequential(nn.LayerNorm(EDGE_DIM), nn.Linear(EDGE_DIM, K_E))
 
-    def forward(self, X_t, E_t, node_mask, t):
+    def forward(self, X_t, E_t, node_mask, t, cond=None):
         # [R-5] 현재 원자가(no-bond=0..triple=3, 값 자체가 결합 차수) + 원자량.
         # 스케일이 서로/다른 입력과 크게 달라 대략적인 크기로만 정규화(학습 가능한
         # struct_proj가 나머지를 흡수).
@@ -289,7 +303,13 @@ class ScoreNetwork(nn.Module):
         conn_feat = torch.stack([n_comp_bcast, comp_size_ratio], dim=-1)
         conn_struct = self.conn_proj(conn_feat)
 
-        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat + conn_struct
+        # [C-3] cond가 안 주어지면(기존 무조건부 호출과의 하위호환)
+        # null_cond를 배치 전체에 broadcast -- 학습된 "조건 없음" 임베딩.
+        if cond is None:
+            cond = self.null_cond.unsqueeze(0).expand(X_t.shape[0], -1)
+        cond_struct = self.cond_proj(cond).unsqueeze(1).expand(-1, X_t.shape[1], -1)
+
+        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat + conn_struct + cond_struct
         e   = self.e_embed(E_t)
         pad = ~node_mask
 
@@ -311,6 +331,11 @@ class MoleculeGraphDiffusion(nn.Module):
     # bond_acc가 EMA/RAW/두 epoch 전부 0.000으로 나온 것이 "결합 예측이 병목인데
     # 정확히 거기에 가장 적은 gradient 비중을 주고 있었다"는 이 가설과 일치.
     # T-x가 H(m_X)=0.8258 위로 되올라가면 과한 신호이므로 2.0으로 완화할 것.
+    # [C-3] 2026-09-05: 학습 중 확률 COND_DROPOUT_P로 조건을 null_cond로
+    # 대체(classifier-free guidance 준비, review8.md [C-4] 지시). a_bin
+    # 스모크 테스트와 향후 물성 conditioning이 재학습 없이 이 경로를 공유.
+    COND_DROPOUT_P = 0.15
+
     def __init__(self, m_X, m_E, T = T_STEPS, edge_loss_coeff = 5.0, class_weights = None, edge_class_weights = None):
         super().__init__()
         self.schedule = MarginalNoiseSchedule(m_X, m_E, T)
@@ -343,7 +368,13 @@ class MoleculeGraphDiffusion(nn.Module):
         e_mask = node_mask.unsqueeze(1) & node_mask.unsqueeze(2)
         E_t = torch.where(e_mask, E_t, torch.zeros_like(E_t))
 
-        x_logits, e_logits = self.net(X_t, E_t, node_mask, t)
+        # [C-4] HOMO/LUMO 물성 조건 + CFG 학습용 랜덤 드롭.
+        cond = self._extract_property_cond(batch, B, device)
+        if self.training:
+            drop = torch.rand(B, device=device) < self.COND_DROPOUT_P
+            cond = torch.where(drop.unsqueeze(-1), self.net.null_cond.unsqueeze(0).expand(B, -1), cond)
+
+        x_logits, e_logits = self.net(X_t, E_t, node_mask, t, cond)
 
         # 원자: 실제 클래스 1..9 -> head 출력 0..8로 매핑
         nm = node_mask.view(-1)
@@ -368,9 +399,39 @@ class MoleculeGraphDiffusion(nn.Module):
             "loss_e": loss_e
         }
 
+    @staticmethod
+    def _extract_heavy_a_bin(batch, B, device):
+        """[C-3] dataset2.py의 a_bin(10차원, 순서 C,H,O,N,S,P,F,Cl,Br,I)에서
+        H를 제외한 heavy 9종만 뽑아 ATOMIC_NUM_TO_CLS(class 1..9) 순서로 정렬.
+        스모크 테스트 전용, [C-4] 이후로는 _extract_property_cond를 쓴다."""
+        a_bin10 = batch.a_bin.view(B, -1)
+        idx = torch.tensor([0, 2, 3, 4, 5, 6, 7, 8, 9], device=device)
+        return a_bin10[:, idx]
+
+    @staticmethod
+    def _extract_property_cond(batch, B, device):
+        """[C-4] dataset2.py의 batch.p(5차원 정규화값, stats.json 순서
+        HOMO,LUMO,GAP,E_total,Dipole)에서 HOMO/LUMO(인덱스 0,1)만 뽑는다.
+        GAP=LUMO-HOMO 선형종속/E_total 조성 누설/Dipole 2D 예측불가로 제외
+        (review9.md §0, §4)."""
+        p = batch.p.view(B, -1)
+        return p[:, [0, 1]]
+
     @torch.no_grad()
-    def sample(self, n, n_atoms, device):
+    def sample(self, n, n_atoms, device, cond=None, guidance_w=None):
+        """[D-3] review10.md §4 Q1 지시로 classifier-free guidance 추가.
+        guidance_w가 None이면 기존과 동일(순수 조건부 forward 1회, w=1과
+        동치). guidance_w가 주어지면(cond 필수) 매 step에서 조건부/무조건부
+        (null_cond) 로짓을 함께 계산해 로짓 공간에서 외삽한다:
+            guided = uncond + w * (cond - uncond)
+        w=0 -> 순수 무조건부, w=1 -> 순수 조건부(위와 동일), w>1 -> 조건 신호
+        증폭. 배치를 2배로 합쳐 한 번의 forward로 처리(속도 손실 최소화).
+        """
         node_mask = torch.ones(n, n_atoms, dtype=torch.bool, device=device)
+        if cond is not None:
+            cond = cond.to(device)
+        if guidance_w is not None:
+            assert cond is not None, "guidance_w는 cond가 있을 때만 의미가 있다"
         m_X, m_E = self.schedule.m_X, self.schedule.m_E
 
         # 초기 상태를 marginal 분포에서 샘플링 (DiGress Algorithm 2)
@@ -383,7 +444,21 @@ class MoleculeGraphDiffusion(nn.Module):
 
         for step in range(self.T, 0, -1):
             t = torch.full((n,), step, dtype=torch.long, device=device)
-            xl, el = self.net(X_t, E_t, node_mask, t)
+
+            if guidance_w is None:
+                xl, el = self.net(X_t, E_t, node_mask, t, cond)
+            else:
+                null_cond = self.net.null_cond.unsqueeze(0).expand(n, -1)
+                X2 = torch.cat([X_t, X_t], dim=0)
+                E2 = torch.cat([E_t, E_t], dim=0)
+                mask2 = torch.cat([node_mask, node_mask], dim=0)
+                t2 = torch.cat([t, t], dim=0)
+                cond2 = torch.cat([cond, null_cond], dim=0)
+                xl2, el2 = self.net(X2, E2, mask2, t2, cond2)
+                xl_cond, xl_uncond = xl2[:n], xl2[n:]
+                el_cond, el_uncond = el2[:n], el2[n:]
+                xl = xl_uncond + guidance_w * (xl_cond - xl_uncond)
+                el = el_uncond + guidance_w * (el_cond - el_uncond)
 
             # x_head는 실제 원자 클래스(1..9)만 예측 -> K_X 차원으로 복원 후 posterior 계산
             x0_probs_full = torch.zeros(n, n_atoms, K_X, device=device)

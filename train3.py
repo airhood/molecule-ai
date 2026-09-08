@@ -222,9 +222,16 @@ def analyze_molecule(X, E):
 # sanitize 성공 2,868개 기준, 로컬 직접 측정으로 review2.md 수치와 대조 확인됨).
 # "그럴듯함"은 단일 점수가 아니라 이 분포와의 거리로 진단할 것 -- 최적화 목표가
 # 아니라 진단 용도.
-REF_SINGLE_FRAGMENT_RATE = 1.0000
-REF_RING_COUNT_MEAN = 3.55       # 0:.6% 1:2.9% 2:11.9% 3:28.3% 4:31.1% 5:18.2% 6:5.5% 7:1.0% 8:.4%
-REF_RING_SIZE_56_RATE = 0.9671   # 5원 23.5% + 6원 73.2%
+# [review9.md] 2026-09-05: 위 3,000분자(청크0) 기반 상수는 표본이 작고
+# 청크마다 흔들려(2.97~3.25) review8.md/review9.md에서 부정확함이 지적됨.
+# val split n=2048(형식전하 미모델링으로 인한 sanitize 실패 65건 제외
+# n=1983)로 재확정한 값으로 교체. REF_SINGLE_FRAGMENT_RATE도 1.0000이
+# 아니라 0.9683 -- 실패 원인은 전부 4차 암모늄/피리디늄류(N 원자가 4,
+# formal charge 미모델링) 였으며 atomViolRate의 floor(review2.md V-1)와
+# 동일 원인. docs/review_followup_20260905b.md §1 참조.
+REF_SINGLE_FRAGMENT_RATE = 0.9683
+REF_RING_COUNT_MEAN = 3.6884     # val n=2048, strict-valid n=1983 기준 분자당 전체 고리 개수
+REF_RING_SIZE_56_RATE = 0.9668   # 같은 표본, Sigma56/SigmaTotal (56ring/mol 상한 = 3.5658)
 REF_DEGREE_MEAN = 2.185          # 1:15.7% 2:51.8% 3:30.9% 4:1.6%
 REF_QED_MEAN = 0.5377
 REF_QED_MEDIAN = 0.5397
