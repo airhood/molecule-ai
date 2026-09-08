@@ -1,0 +1,14 @@
+/home/cbgpu/molecule-AI/d1_dist_check.py:18: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_gen = torch.load("checkpoints_c4/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/d1_dist_check.py:23: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  reg_ckpt = torch.load("c1_regressor.pt", map_location=device)
+REAL data (val)  HOMO        n= 8000  mean=-0.2890  p10=-0.3131  p50=-0.2883  p90=-0.2663
+REAL data (val)  LUMO        n= 8000  mean=+0.0143  p10=-0.0189  p50=+0.0133  p90=+0.0489
+UNCOND gen (GNN est.) HOMO   n=  320  mean=-0.2865  p10=-0.3028  p50=-0.2857  p90=-0.2724
+UNCOND gen (GNN est.) LUMO   n=  320  mean=+0.0129  p10=-0.0116  p50=+0.0112  p90=+0.0407
+
+=== 차이 (생성물 평균 - 실제 데이터 평균) ===
+HOMO: +0.0025 Hartree
+LUMO: -0.0014 Hartree
+
+DONE

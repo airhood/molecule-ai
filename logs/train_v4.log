@@ -1,0 +1,190 @@
+Device: cuda
+Log: ./train_v4.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  Parameters: 5,635,261
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+     1    1.5564   0.5476   0.2018    1.4426   0.5382   0.1809   888.2s
+    [EMA] valid(strict)=0.422 valid(frag)=0.562 valid(single)=0.336 atomViolRate=0.021 meanViol/mol=0.61 fragRatio=0.928 uniq=1.000
+    [EMA] singleFragRate=0.664(ref 1.000) ringCount=3.46(ref 3.55) ring56Rate=0.230(ref 0.967) degree=2.14(ref 2.19) QED=0.484(ref 0.538)
+    [EMA] t=10  atom=0.995 bond=0.988 nobond=0.999 P(b|bond)=0.983 P(b|nobond)=0.001 CE=0.007(ref 0.308) | t=40  atom=0.938 bond=0.824 nobond=0.993 P(b|bond)=0.778 P(b|nobond)=0.018 CE=0.073(ref 0.308) | t=75  atom=0.793 bond=0.367 nobond=0.983 P(b|bond)=0.323 P(b|nobond)=0.054 CE=0.217(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.072 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.234 valid(frag)=0.633 valid(single)=0.117 atomViolRate=0.016 meanViol/mol=0.48 fragRatio=0.781 uniq=1.000
+    [RAW] singleFragRate=0.250(ref 1.000) ringCount=2.63(ref 3.55) ring56Rate=0.101(ref 0.967) degree=2.05(ref 2.19) QED=0.343(ref 0.538)
+    [RAW] t=10  atom=0.995 bond=0.986 nobond=0.999 P(b|bond)=0.981 P(b|nobond)=0.001 CE=0.006(ref 0.308) | t=40  atom=0.940 bond=0.809 nobond=0.994 P(b|bond)=0.744 P(b|nobond)=0.013 CE=0.074(ref 0.308) | t=75  atom=0.792 bond=0.206 nobond=0.993 P(b|bond)=0.265 P(b|nobond)=0.036 CE=0.219(ref 0.308) | t=110 atom=0.745 bond=0.000 nobond=1.000 P(b|bond)=0.062 P(b|nobond)=0.041 CE=0.301(ref 0.308)
+     2    1.5282   0.5378   0.1981    1.4300   0.5335   0.1793   886.1s
+    [EMA] valid(strict)=0.570 valid(frag)=0.773 valid(single)=0.469 atomViolRate=0.011 meanViol/mol=0.34 fragRatio=0.916 uniq=1.000
+    [EMA] singleFragRate=0.664(ref 1.000) ringCount=3.78(ref 3.55) ring56Rate=0.261(ref 0.967) degree=2.17(ref 2.19) QED=0.565(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.991 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.942 bond=0.822 nobond=0.993 P(b|bond)=0.782 P(b|nobond)=0.017 CE=0.071(ref 0.308) | t=75  atom=0.804 bond=0.353 nobond=0.984 P(b|bond)=0.325 P(b|nobond)=0.053 CE=0.214(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.096 P(b|nobond)=0.070 CE=0.294(ref 0.308)
+    [RAW] valid(strict)=0.234 valid(frag)=0.797 valid(single)=0.094 atomViolRate=0.009 meanViol/mol=0.27 fragRatio=0.705 uniq=1.000
+    [RAW] singleFragRate=0.156(ref 1.000) ringCount=2.20(ref 3.55) ring56Rate=0.227(ref 0.967) degree=2.02(ref 2.19) QED=0.313(ref 0.538)
+    [RAW] t=10  atom=0.994 bond=0.985 nobond=1.000 P(b|bond)=0.978 P(b|nobond)=0.001 CE=0.006(ref 0.308) | t=40  atom=0.944 bond=0.801 nobond=0.994 P(b|bond)=0.741 P(b|nobond)=0.012 CE=0.074(ref 0.308) | t=75  atom=0.804 bond=0.203 nobond=0.993 P(b|bond)=0.265 P(b|nobond)=0.036 CE=0.219(ref 0.308) | t=110 atom=0.743 bond=0.000 nobond=1.000 P(b|bond)=0.060 P(b|nobond)=0.042 CE=0.303(ref 0.308)
+     3    1.5267   0.5374   0.1979    1.4340   0.5348   0.1798   835.3s
+    [EMA] valid(strict)=0.641 valid(frag)=0.852 valid(single)=0.578 atomViolRate=0.006 meanViol/mol=0.17 fragRatio=0.912 uniq=1.000
+    [EMA] singleFragRate=0.703(ref 1.000) ringCount=4.04(ref 3.55) ring56Rate=0.293(ref 0.967) degree=2.18(ref 2.19) QED=0.591(ref 0.538)
+    [EMA] t=10  atom=0.995 bond=0.990 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.935 bond=0.821 nobond=0.993 P(b|bond)=0.782 P(b|nobond)=0.018 CE=0.070(ref 0.308) | t=75  atom=0.807 bond=0.359 nobond=0.983 P(b|bond)=0.331 P(b|nobond)=0.054 CE=0.213(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.073 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.352 valid(frag)=0.914 valid(single)=0.242 atomViolRate=0.004 meanViol/mol=0.12 fragRatio=0.734 uniq=1.000
+    [RAW] singleFragRate=0.281(ref 1.000) ringCount=3.09(ref 3.55) ring56Rate=0.302(ref 0.967) degree=2.10(ref 2.19) QED=0.400(ref 0.538)
+    [RAW] t=10  atom=0.995 bond=0.990 nobond=1.000 P(b|bond)=0.986 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.939 bond=0.808 nobond=0.995 P(b|bond)=0.745 P(b|nobond)=0.013 CE=0.070(ref 0.308) | t=75  atom=0.793 bond=0.175 nobond=0.995 P(b|bond)=0.256 P(b|nobond)=0.036 CE=0.216(ref 0.308) | t=110 atom=0.746 bond=0.000 nobond=1.000 P(b|bond)=0.060 P(b|nobond)=0.043 CE=0.302(ref 0.308)
+     4    1.5184   0.5343   0.1968    1.4294   0.5320   0.1795   898.5s
+    [EMA] valid(strict)=0.625 valid(frag)=0.883 valid(single)=0.570 atomViolRate=0.006 meanViol/mol=0.16 fragRatio=0.902 uniq=1.000
+    [EMA] singleFragRate=0.648(ref 1.000) ringCount=4.25(ref 3.55) ring56Rate=0.338(ref 0.967) degree=2.19(ref 2.19) QED=0.554(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.988 nobond=1.000 P(b|bond)=0.986 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.942 bond=0.820 nobond=0.993 P(b|bond)=0.781 P(b|nobond)=0.018 CE=0.071(ref 0.308) | t=75  atom=0.802 bond=0.382 nobond=0.983 P(b|bond)=0.339 P(b|nobond)=0.054 CE=0.210(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.104 P(b|nobond)=0.073 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.289 valid(frag)=0.922 valid(single)=0.180 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.713 uniq=1.000
+    [RAW] singleFragRate=0.219(ref 1.000) ringCount=2.68(ref 3.55) ring56Rate=0.404(ref 0.967) degree=2.07(ref 2.19) QED=0.408(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.986 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.935 bond=0.808 nobond=0.995 P(b|bond)=0.750 P(b|nobond)=0.012 CE=0.071(ref 0.308) | t=75  atom=0.789 bond=0.246 nobond=0.990 P(b|bond)=0.278 P(b|nobond)=0.038 CE=0.218(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.064 P(b|nobond)=0.043 CE=0.299(ref 0.308)
+     5    1.5133   0.5325   0.1962    1.4212   0.5292   0.1784   864.6s
+    [EMA] valid(strict)=0.664 valid(frag)=0.875 valid(single)=0.578 atomViolRate=0.005 meanViol/mol=0.14 fragRatio=0.922 uniq=1.000
+    [EMA] singleFragRate=0.688(ref 1.000) ringCount=4.41(ref 3.55) ring56Rate=0.352(ref 0.967) degree=2.20(ref 2.19) QED=0.573(ref 0.538)
+    [EMA] t=10  atom=0.995 bond=0.989 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.939 bond=0.821 nobond=0.993 P(b|bond)=0.785 P(b|nobond)=0.018 CE=0.071(ref 0.308) | t=75  atom=0.794 bond=0.378 nobond=0.983 P(b|bond)=0.337 P(b|nobond)=0.055 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.074 CE=0.294(ref 0.308)
+    [RAW] valid(strict)=0.273 valid(frag)=0.961 valid(single)=0.141 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.692 uniq=1.000
+    [RAW] singleFragRate=0.148(ref 1.000) ringCount=2.91(ref 3.55) ring56Rate=0.490(ref 0.967) degree=2.07(ref 2.19) QED=0.344(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.990 nobond=1.000 P(b|bond)=0.985 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.930 bond=0.800 nobond=0.994 P(b|bond)=0.751 P(b|nobond)=0.012 CE=0.076(ref 0.308) | t=75  atom=0.789 bond=0.186 nobond=0.993 P(b|bond)=0.262 P(b|nobond)=0.037 CE=0.218(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.063 P(b|nobond)=0.042 CE=0.300(ref 0.308)
+     6    1.5098   0.5312   0.1957    1.4298   0.5329   0.1794   904.8s
+    [EMA] valid(strict)=0.641 valid(frag)=0.891 valid(single)=0.562 atomViolRate=0.004 meanViol/mol=0.12 fragRatio=0.909 uniq=1.000
+    [EMA] singleFragRate=0.641(ref 1.000) ringCount=4.54(ref 3.55) ring56Rate=0.382(ref 0.967) degree=2.20(ref 2.19) QED=0.544(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.991 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.943 bond=0.835 nobond=0.993 P(b|bond)=0.794 P(b|nobond)=0.017 CE=0.067(ref 0.308) | t=75  atom=0.803 bond=0.379 nobond=0.983 P(b|bond)=0.339 P(b|nobond)=0.054 CE=0.209(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.102 P(b|nobond)=0.074 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.336 valid(frag)=0.930 valid(single)=0.242 atomViolRate=0.003 meanViol/mol=0.10 fragRatio=0.733 uniq=1.000
+    [RAW] singleFragRate=0.258(ref 1.000) ringCount=2.84(ref 3.55) ring56Rate=0.459(ref 0.967) degree=2.09(ref 2.19) QED=0.407(ref 0.538)
+    [RAW] t=10  atom=0.998 bond=0.987 nobond=1.000 P(b|bond)=0.982 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.943 bond=0.817 nobond=0.995 P(b|bond)=0.760 P(b|nobond)=0.011 CE=0.067(ref 0.308) | t=75  atom=0.799 bond=0.207 nobond=0.994 P(b|bond)=0.267 P(b|nobond)=0.036 CE=0.216(ref 0.308) | t=110 atom=0.746 bond=0.000 nobond=1.000 P(b|bond)=0.061 P(b|nobond)=0.043 CE=0.301(ref 0.308)
+     7    1.5130   0.5327   0.1961    1.4213   0.5295   0.1784   912.7s
+    [EMA] valid(strict)=0.625 valid(frag)=0.883 valid(single)=0.562 atomViolRate=0.004 meanViol/mol=0.13 fragRatio=0.913 uniq=1.000
+    [EMA] singleFragRate=0.664(ref 1.000) ringCount=4.28(ref 3.55) ring56Rate=0.462(ref 0.967) degree=2.18(ref 2.19) QED=0.572(ref 0.538)
+    [EMA] t=10  atom=0.995 bond=0.991 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.942 bond=0.839 nobond=0.994 P(b|bond)=0.802 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.793 bond=0.366 nobond=0.984 P(b|bond)=0.331 P(b|nobond)=0.054 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.073 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.258 valid(frag)=0.930 valid(single)=0.211 atomViolRate=0.002 meanViol/mol=0.07 fragRatio=0.724 uniq=1.000
+    [RAW] singleFragRate=0.234(ref 1.000) ringCount=3.21(ref 3.55) ring56Rate=0.443(ref 0.967) degree=2.12(ref 2.19) QED=0.467(ref 0.538)
+    [RAW] t=10  atom=0.995 bond=0.990 nobond=1.000 P(b|bond)=0.986 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.933 bond=0.811 nobond=0.995 P(b|bond)=0.752 P(b|nobond)=0.012 CE=0.069(ref 0.308) | t=75  atom=0.787 bond=0.172 nobond=0.995 P(b|bond)=0.248 P(b|nobond)=0.037 CE=0.222(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.060 P(b|nobond)=0.043 CE=0.303(ref 0.308)
+     8    1.5101   0.5317   0.1957    1.4180   0.5284   0.1779   924.6s
+    [EMA] valid(strict)=0.617 valid(frag)=0.867 valid(single)=0.523 atomViolRate=0.005 meanViol/mol=0.15 fragRatio=0.901 uniq=1.000
+    [EMA] singleFragRate=0.625(ref 1.000) ringCount=4.41(ref 3.55) ring56Rate=0.471(ref 0.967) degree=2.18(ref 2.19) QED=0.561(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.994 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.939 bond=0.825 nobond=0.993 P(b|bond)=0.788 P(b|nobond)=0.017 CE=0.068(ref 0.308) | t=75  atom=0.796 bond=0.372 nobond=0.983 P(b|bond)=0.332 P(b|nobond)=0.054 CE=0.213(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.073 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.305 valid(frag)=0.961 valid(single)=0.164 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.728 uniq=1.000
+    [RAW] singleFragRate=0.180(ref 1.000) ringCount=2.54(ref 3.55) ring56Rate=0.576(ref 0.967) degree=2.06(ref 2.19) QED=0.408(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.990 nobond=1.000 P(b|bond)=0.986 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.944 bond=0.808 nobond=0.995 P(b|bond)=0.756 P(b|nobond)=0.012 CE=0.069(ref 0.308) | t=75  atom=0.785 bond=0.213 nobond=0.993 P(b|bond)=0.269 P(b|nobond)=0.036 CE=0.216(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.062 P(b|nobond)=0.043 CE=0.303(ref 0.308)
+     9    1.5105   0.5313   0.1958    1.4139   0.5264   0.1775   924.5s
+    [EMA] valid(strict)=0.695 valid(frag)=0.953 valid(single)=0.633 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.909 uniq=1.000
+    [EMA] singleFragRate=0.664(ref 1.000) ringCount=4.29(ref 3.55) ring56Rate=0.516(ref 0.967) degree=2.19(ref 2.19) QED=0.534(ref 0.538)
+    [EMA] t=10  atom=0.998 bond=0.990 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.005(ref 0.308) | t=40  atom=0.941 bond=0.841 nobond=0.994 P(b|bond)=0.804 P(b|nobond)=0.017 CE=0.063(ref 0.308) | t=75  atom=0.794 bond=0.362 nobond=0.984 P(b|bond)=0.330 P(b|nobond)=0.055 CE=0.212(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.104 P(b|nobond)=0.075 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.445 valid(frag)=0.922 valid(single)=0.305 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.796 uniq=1.000
+    [RAW] singleFragRate=0.328(ref 1.000) ringCount=3.32(ref 3.55) ring56Rate=0.587(ref 0.967) degree=2.11(ref 2.19) QED=0.450(ref 0.538)
+    [RAW] t=10  atom=0.995 bond=0.992 nobond=1.000 P(b|bond)=0.988 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.934 bond=0.811 nobond=0.995 P(b|bond)=0.759 P(b|nobond)=0.012 CE=0.066(ref 0.308) | t=75  atom=0.795 bond=0.198 nobond=0.994 P(b|bond)=0.267 P(b|nobond)=0.037 CE=0.215(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.064 P(b|nobond)=0.044 CE=0.300(ref 0.308)
+    10    1.5148   0.5327   0.1964    1.4312   0.5337   0.1795   862.6s
+    [EMA] valid(strict)=0.633 valid(frag)=0.898 valid(single)=0.594 atomViolRate=0.004 meanViol/mol=0.11 fragRatio=0.906 uniq=1.000
+    [EMA] singleFragRate=0.680(ref 1.000) ringCount=4.52(ref 3.55) ring56Rate=0.445(ref 0.967) degree=2.20(ref 2.19) QED=0.550(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.995 nobond=1.000 P(b|bond)=0.993 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.939 bond=0.842 nobond=0.994 P(b|bond)=0.806 P(b|nobond)=0.016 CE=0.062(ref 0.308) | t=75  atom=0.796 bond=0.353 nobond=0.983 P(b|bond)=0.326 P(b|nobond)=0.054 CE=0.214(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.073 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.336 valid(frag)=0.945 valid(single)=0.227 atomViolRate=0.003 meanViol/mol=0.08 fragRatio=0.761 uniq=1.000
+    [RAW] singleFragRate=0.273(ref 1.000) ringCount=3.12(ref 3.55) ring56Rate=0.597(ref 0.967) degree=2.10(ref 2.19) QED=0.450(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.991 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.938 bond=0.807 nobond=0.995 P(b|bond)=0.748 P(b|nobond)=0.012 CE=0.068(ref 0.308) | t=75  atom=0.795 bond=0.168 nobond=0.994 P(b|bond)=0.252 P(b|nobond)=0.037 CE=0.220(ref 0.308) | t=110 atom=0.746 bond=0.000 nobond=1.000 P(b|bond)=0.061 P(b|nobond)=0.044 CE=0.301(ref 0.308)
+    11    1.5092   0.5314   0.1955    1.4273   0.5327   0.1789   931.3s
+    [EMA] valid(strict)=0.633 valid(frag)=0.914 valid(single)=0.602 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.889 uniq=1.000
+    [EMA] singleFragRate=0.664(ref 1.000) ringCount=4.41(ref 3.55) ring56Rate=0.524(ref 0.967) degree=2.20(ref 2.19) QED=0.554(ref 0.538)
+    [EMA] t=10  atom=0.998 bond=0.992 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.940 bond=0.835 nobond=0.993 P(b|bond)=0.798 P(b|nobond)=0.016 CE=0.065(ref 0.308) | t=75  atom=0.792 bond=0.371 nobond=0.984 P(b|bond)=0.337 P(b|nobond)=0.052 CE=0.209(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.477 valid(frag)=0.938 valid(single)=0.367 atomViolRate=0.003 meanViol/mol=0.10 fragRatio=0.818 uniq=1.000
+    [RAW] singleFragRate=0.391(ref 1.000) ringCount=3.16(ref 3.55) ring56Rate=0.580(ref 0.967) degree=2.11(ref 2.19) QED=0.446(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.994 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.946 bond=0.815 nobond=0.995 P(b|bond)=0.763 P(b|nobond)=0.012 CE=0.066(ref 0.308) | t=75  atom=0.787 bond=0.204 nobond=0.993 P(b|bond)=0.264 P(b|nobond)=0.037 CE=0.217(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.065 P(b|nobond)=0.043 CE=0.300(ref 0.308)
+    12    1.5095   0.5310   0.1957    1.4161   0.5281   0.1776   897.1s
+    [EMA] valid(strict)=0.609 valid(frag)=0.922 valid(single)=0.547 atomViolRate=0.004 meanViol/mol=0.11 fragRatio=0.890 uniq=1.000
+    [EMA] singleFragRate=0.625(ref 1.000) ringCount=4.17(ref 3.55) ring56Rate=0.529(ref 0.967) degree=2.19(ref 2.19) QED=0.568(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.993 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.943 bond=0.840 nobond=0.994 P(b|bond)=0.805 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.801 bond=0.367 nobond=0.984 P(b|bond)=0.338 P(b|nobond)=0.054 CE=0.210(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.104 P(b|nobond)=0.074 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.484 valid(frag)=0.977 valid(single)=0.391 atomViolRate=0.001 meanViol/mol=0.03 fragRatio=0.801 uniq=1.000
+    [RAW] singleFragRate=0.406(ref 1.000) ringCount=2.71(ref 3.55) ring56Rate=0.649(ref 0.967) degree=2.09(ref 2.19) QED=0.417(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.943 bond=0.809 nobond=0.995 P(b|bond)=0.762 P(b|nobond)=0.012 CE=0.069(ref 0.308) | t=75  atom=0.793 bond=0.259 nobond=0.991 P(b|bond)=0.282 P(b|nobond)=0.037 CE=0.214(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.065 P(b|nobond)=0.045 CE=0.299(ref 0.308)
+    13    1.5094   0.5311   0.1957    1.4159   0.5279   0.1776   946.7s
+    [EMA] valid(strict)=0.656 valid(frag)=0.906 valid(single)=0.617 atomViolRate=0.004 meanViol/mol=0.11 fragRatio=0.912 uniq=1.000
+    [EMA] singleFragRate=0.703(ref 1.000) ringCount=4.35(ref 3.55) ring56Rate=0.521(ref 0.967) degree=2.19(ref 2.19) QED=0.561(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.937 bond=0.842 nobond=0.994 P(b|bond)=0.808 P(b|nobond)=0.016 CE=0.062(ref 0.308) | t=75  atom=0.801 bond=0.359 nobond=0.984 P(b|bond)=0.330 P(b|nobond)=0.054 CE=0.212(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.105 P(b|nobond)=0.075 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.430 valid(frag)=0.938 valid(single)=0.344 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.782 uniq=1.000
+    [RAW] singleFragRate=0.367(ref 1.000) ringCount=2.75(ref 3.55) ring56Rate=0.616(ref 0.967) degree=2.09(ref 2.19) QED=0.473(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.992 nobond=1.000 P(b|bond)=0.988 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.941 bond=0.828 nobond=0.995 P(b|bond)=0.777 P(b|nobond)=0.011 CE=0.063(ref 0.308) | t=75  atom=0.794 bond=0.202 nobond=0.994 P(b|bond)=0.272 P(b|nobond)=0.037 CE=0.213(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.066 P(b|nobond)=0.045 CE=0.299(ref 0.308)
+    14    1.5147   0.5329   0.1964    1.4127   0.5265   0.1772   969.4s
+    [EMA] valid(strict)=0.664 valid(frag)=0.953 valid(single)=0.602 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.901 uniq=1.000
+    [EMA] singleFragRate=0.648(ref 1.000) ringCount=4.54(ref 3.55) ring56Rate=0.487(ref 0.967) degree=2.20(ref 2.19) QED=0.569(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.995 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.940 bond=0.837 nobond=0.994 P(b|bond)=0.797 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.796 bond=0.373 nobond=0.984 P(b|bond)=0.335 P(b|nobond)=0.054 CE=0.212(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.105 P(b|nobond)=0.075 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.398 valid(frag)=0.906 valid(single)=0.281 atomViolRate=0.004 meanViol/mol=0.12 fragRatio=0.776 uniq=1.000
+    [RAW] singleFragRate=0.328(ref 1.000) ringCount=3.00(ref 3.55) ring56Rate=0.595(ref 0.967) degree=2.11(ref 2.19) QED=0.525(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.991 nobond=1.000 P(b|bond)=0.988 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.935 bond=0.828 nobond=0.995 P(b|bond)=0.777 P(b|nobond)=0.012 CE=0.064(ref 0.308) | t=75  atom=0.786 bond=0.216 nobond=0.994 P(b|bond)=0.270 P(b|nobond)=0.037 CE=0.214(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.066 P(b|nobond)=0.045 CE=0.298(ref 0.308)
+    15    1.5074   0.5304   0.1954    1.4206   0.5297   0.1782   921.8s
+    [EMA] valid(strict)=0.695 valid(frag)=0.930 valid(single)=0.664 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.909 uniq=1.000
+    [EMA] singleFragRate=0.719(ref 1.000) ringCount=4.26(ref 3.55) ring56Rate=0.515(ref 0.967) degree=2.19(ref 2.19) QED=0.535(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.995 nobond=1.000 P(b|bond)=0.993 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.932 bond=0.836 nobond=0.994 P(b|bond)=0.798 P(b|nobond)=0.016 CE=0.066(ref 0.308) | t=75  atom=0.803 bond=0.354 nobond=0.984 P(b|bond)=0.329 P(b|nobond)=0.053 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.100 P(b|nobond)=0.072 CE=0.293(ref 0.308)
+    [RAW] valid(strict)=0.516 valid(frag)=0.953 valid(single)=0.406 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.812 uniq=1.000
+    [RAW] singleFragRate=0.430(ref 1.000) ringCount=3.61(ref 3.55) ring56Rate=0.525(ref 0.967) degree=2.12(ref 2.19) QED=0.443(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.992 nobond=1.000 P(b|bond)=0.988 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.941 bond=0.815 nobond=0.994 P(b|bond)=0.766 P(b|nobond)=0.012 CE=0.068(ref 0.308) | t=75  atom=0.793 bond=0.204 nobond=0.993 P(b|bond)=0.266 P(b|nobond)=0.038 CE=0.217(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.066 P(b|nobond)=0.046 CE=0.299(ref 0.308)
+    16    1.5069   0.5296   0.1955    1.4300   0.5337   0.1793   889.2s
+    [EMA] valid(strict)=0.703 valid(frag)=0.906 valid(single)=0.672 atomViolRate=0.003 meanViol/mol=0.10 fragRatio=0.928 uniq=1.000
+    [EMA] singleFragRate=0.758(ref 1.000) ringCount=4.41(ref 3.55) ring56Rate=0.569(ref 0.967) degree=2.21(ref 2.19) QED=0.577(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.942 bond=0.842 nobond=0.994 P(b|bond)=0.807 P(b|nobond)=0.016 CE=0.062(ref 0.308) | t=75  atom=0.799 bond=0.368 nobond=0.984 P(b|bond)=0.331 P(b|nobond)=0.054 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.104 P(b|nobond)=0.073 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.516 valid(frag)=0.945 valid(single)=0.453 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.844 uniq=1.000
+    [RAW] singleFragRate=0.492(ref 1.000) ringCount=2.98(ref 3.55) ring56Rate=0.609(ref 0.967) degree=2.12(ref 2.19) QED=0.534(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.990 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.941 bond=0.828 nobond=0.995 P(b|bond)=0.782 P(b|nobond)=0.012 CE=0.060(ref 0.308) | t=75  atom=0.801 bond=0.235 nobond=0.992 P(b|bond)=0.274 P(b|nobond)=0.039 CE=0.214(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.069 P(b|nobond)=0.047 CE=0.297(ref 0.308)
+    17    1.5055   0.5292   0.1953    1.4165   0.5272   0.1778   924.8s
+    [EMA] valid(strict)=0.672 valid(frag)=0.969 valid(single)=0.594 atomViolRate=0.001 meanViol/mol=0.04 fragRatio=0.895 uniq=1.000
+    [EMA] singleFragRate=0.625(ref 1.000) ringCount=4.55(ref 3.55) ring56Rate=0.522(ref 0.967) degree=2.20(ref 2.19) QED=0.556(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.992 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.943 bond=0.845 nobond=0.994 P(b|bond)=0.811 P(b|nobond)=0.015 CE=0.061(ref 0.308) | t=75  atom=0.797 bond=0.358 nobond=0.984 P(b|bond)=0.332 P(b|nobond)=0.053 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.102 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.516 valid(frag)=0.961 valid(single)=0.398 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.821 uniq=1.000
+    [RAW] singleFragRate=0.422(ref 1.000) ringCount=3.47(ref 3.55) ring56Rate=0.633(ref 0.967) degree=2.13(ref 2.19) QED=0.514(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.992 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.940 bond=0.823 nobond=0.995 P(b|bond)=0.779 P(b|nobond)=0.012 CE=0.064(ref 0.308) | t=75  atom=0.799 bond=0.203 nobond=0.993 P(b|bond)=0.263 P(b|nobond)=0.039 CE=0.219(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.069 P(b|nobond)=0.048 CE=0.297(ref 0.308)
+    18    1.5037   0.5289   0.1950    1.4240   0.5301   0.1788   933.0s
+    [EMA] valid(strict)=0.656 valid(frag)=0.969 valid(single)=0.625 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.880 uniq=1.000
+    [EMA] singleFragRate=0.641(ref 1.000) ringCount=4.25(ref 3.55) ring56Rate=0.529(ref 0.967) degree=2.19(ref 2.19) QED=0.563(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.942 bond=0.832 nobond=0.994 P(b|bond)=0.798 P(b|nobond)=0.016 CE=0.065(ref 0.308) | t=75  atom=0.793 bond=0.362 nobond=0.984 P(b|bond)=0.332 P(b|nobond)=0.053 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.562 valid(frag)=0.977 valid(single)=0.469 atomViolRate=0.001 meanViol/mol=0.02 fragRatio=0.855 uniq=1.000
+    [RAW] singleFragRate=0.484(ref 1.000) ringCount=2.90(ref 3.55) ring56Rate=0.574(ref 0.967) degree=2.10(ref 2.19) QED=0.524(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.938 bond=0.810 nobond=0.995 P(b|bond)=0.764 P(b|nobond)=0.013 CE=0.069(ref 0.308) | t=75  atom=0.797 bond=0.223 nobond=0.993 P(b|bond)=0.275 P(b|nobond)=0.039 CE=0.213(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.071 P(b|nobond)=0.048 CE=0.297(ref 0.308)
+    19    1.5049   0.5287   0.1952    1.4181   0.5282   0.1780   956.3s
+    [EMA] valid(strict)=0.719 valid(frag)=0.922 valid(single)=0.695 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.922 uniq=1.000
+    [EMA] singleFragRate=0.758(ref 1.000) ringCount=4.33(ref 3.55) ring56Rate=0.545(ref 0.967) degree=2.20(ref 2.19) QED=0.552(ref 0.538)
+    [EMA] t=10  atom=0.998 bond=0.992 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.947 bond=0.848 nobond=0.994 P(b|bond)=0.812 P(b|nobond)=0.015 CE=0.060(ref 0.308) | t=75  atom=0.801 bond=0.360 nobond=0.984 P(b|bond)=0.335 P(b|nobond)=0.052 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.469 valid(frag)=0.938 valid(single)=0.398 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.835 uniq=1.000
+    [RAW] singleFragRate=0.445(ref 1.000) ringCount=3.30(ref 3.55) ring56Rate=0.601(ref 0.967) degree=2.12(ref 2.19) QED=0.422(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.000 CE=0.003(ref 0.308) | t=40  atom=0.944 bond=0.827 nobond=0.995 P(b|bond)=0.781 P(b|nobond)=0.012 CE=0.062(ref 0.308) | t=75  atom=0.782 bond=0.217 nobond=0.992 P(b|bond)=0.266 P(b|nobond)=0.040 CE=0.221(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.071 P(b|nobond)=0.049 CE=0.297(ref 0.308)
+    20    1.5056   0.5289   0.1953    1.4091   0.5253   0.1768   965.6s
+    [EMA] valid(strict)=0.625 valid(frag)=0.922 valid(single)=0.578 atomViolRate=0.004 meanViol/mol=0.11 fragRatio=0.890 uniq=1.000
+    [EMA] singleFragRate=0.641(ref 1.000) ringCount=4.47(ref 3.55) ring56Rate=0.595(ref 0.967) degree=2.19(ref 2.19) QED=0.527(ref 0.538)
+    [EMA] t=10  atom=0.998 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.943 bond=0.839 nobond=0.994 P(b|bond)=0.805 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.798 bond=0.373 nobond=0.984 P(b|bond)=0.343 P(b|nobond)=0.052 CE=0.206(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.555 valid(frag)=0.930 valid(single)=0.414 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.860 uniq=1.000
+    [RAW] singleFragRate=0.461(ref 1.000) ringCount=3.45(ref 3.55) ring56Rate=0.604(ref 0.967) degree=2.13(ref 2.19) QED=0.493(ref 0.538)
+    [RAW] t=10  atom=0.995 bond=0.994 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.952 bond=0.825 nobond=0.995 P(b|bond)=0.787 P(b|nobond)=0.012 CE=0.061(ref 0.308) | t=75  atom=0.803 bond=0.225 nobond=0.992 P(b|bond)=0.270 P(b|nobond)=0.040 CE=0.216(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.072 P(b|nobond)=0.050 CE=0.296(ref 0.308)
+    21    1.5083   0.5299   0.1957    1.4183   0.5287   0.1779   946.9s
+    [EMA] valid(strict)=0.664 valid(frag)=0.922 valid(single)=0.594 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.905 uniq=1.000
+    [EMA] singleFragRate=0.648(ref 1.000) ringCount=4.09(ref 3.55) ring56Rate=0.578(ref 0.967) degree=2.18(ref 2.19) QED=0.594(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.991 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.941 bond=0.852 nobond=0.994 P(b|bond)=0.819 P(b|nobond)=0.015 CE=0.058(ref 0.308) | t=75  atom=0.797 bond=0.370 nobond=0.986 P(b|bond)=0.334 P(b|nobond)=0.053 CE=0.207(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.103 P(b|nobond)=0.073 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.617 valid(frag)=0.969 valid(single)=0.477 atomViolRate=0.001 meanViol/mol=0.04 fragRatio=0.873 uniq=1.000
+    [RAW] singleFragRate=0.492(ref 1.000) ringCount=2.82(ref 3.55) ring56Rate=0.592(ref 0.967) degree=2.10(ref 2.19) QED=0.501(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.990 nobond=1.000 P(b|bond)=0.987 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.947 bond=0.811 nobond=0.995 P(b|bond)=0.773 P(b|nobond)=0.013 CE=0.066(ref 0.308) | t=75  atom=0.791 bond=0.252 nobond=0.991 P(b|bond)=0.279 P(b|nobond)=0.041 CE=0.216(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.075 P(b|nobond)=0.052 CE=0.295(ref 0.308)
+    22    1.5095   0.5306   0.1958    1.4104   0.5265   0.1768   910.4s
+    [EMA] valid(strict)=0.656 valid(frag)=0.953 valid(single)=0.594 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.896 uniq=1.000
+    [EMA] singleFragRate=0.641(ref 1.000) ringCount=3.71(ref 3.55) ring56Rate=0.564(ref 0.967) degree=2.16(ref 2.19) QED=0.546(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.992 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.941 bond=0.840 nobond=0.994 P(b|bond)=0.803 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.804 bond=0.365 nobond=0.984 P(b|bond)=0.333 P(b|nobond)=0.052 CE=0.210(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.071 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.516 valid(frag)=0.938 valid(single)=0.461 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.849 uniq=1.000
+    [RAW] singleFragRate=0.500(ref 1.000) ringCount=3.32(ref 3.55) ring56Rate=0.644(ref 0.967) degree=2.13(ref 2.19) QED=0.524(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.991 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.944 bond=0.824 nobond=0.995 P(b|bond)=0.783 P(b|nobond)=0.013 CE=0.066(ref 0.308) | t=75  atom=0.806 bond=0.279 nobond=0.991 P(b|bond)=0.294 P(b|nobond)=0.041 CE=0.210(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.077 P(b|nobond)=0.053 CE=0.295(ref 0.308)
+    23    1.5061   0.5287   0.1955    1.4146   0.5282   0.1773   906.3s
+    [EMA] valid(strict)=0.664 valid(frag)=0.938 valid(single)=0.633 atomViolRate=0.003 meanViol/mol=0.08 fragRatio=0.905 uniq=1.000
+    [EMA] singleFragRate=0.695(ref 1.000) ringCount=4.16(ref 3.55) ring56Rate=0.554(ref 0.967) degree=2.19(ref 2.19) QED=0.585(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.996 nobond=1.000 P(b|bond)=0.993 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.946 bond=0.835 nobond=0.993 P(b|bond)=0.800 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.792 bond=0.356 nobond=0.984 P(b|bond)=0.330 P(b|nobond)=0.052 CE=0.212(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.071 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.586 valid(frag)=0.953 valid(single)=0.531 atomViolRate=0.002 meanViol/mol=0.06 fragRatio=0.861 uniq=1.000
+    [RAW] singleFragRate=0.570(ref 1.000) ringCount=3.60(ref 3.55) ring56Rate=0.648(ref 0.967) degree=2.15(ref 2.19) QED=0.532(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.995 nobond=1.000 P(b|bond)=0.993 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.942 bond=0.816 nobond=0.994 P(b|bond)=0.770 P(b|nobond)=0.014 CE=0.070(ref 0.308) | t=75  atom=0.787 bond=0.270 nobond=0.989 P(b|bond)=0.284 P(b|nobond)=0.043 CE=0.219(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.080 P(b|nobond)=0.055 CE=0.294(ref 0.308)
+    24    1.5056   0.5295   0.1952    1.4195   0.5299   0.1779   916.1s
+    [EMA] valid(strict)=0.711 valid(frag)=0.945 valid(single)=0.688 atomViolRate=0.002 meanViol/mol=0.06 fragRatio=0.900 uniq=1.000
+    [EMA] singleFragRate=0.727(ref 1.000) ringCount=4.11(ref 3.55) ring56Rate=0.591(ref 0.967) degree=2.19(ref 2.19) QED=0.591(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.995 nobond=1.000 P(b|bond)=0.993 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.943 bond=0.823 nobond=0.993 P(b|bond)=0.790 P(b|nobond)=0.017 CE=0.068(ref 0.308) | t=75  atom=0.811 bond=0.358 nobond=0.984 P(b|bond)=0.333 P(b|nobond)=0.053 CE=0.211(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.102 P(b|nobond)=0.071 CE=0.292(ref 0.308)
+    [RAW] valid(strict)=0.688 valid(frag)=0.945 valid(single)=0.617 atomViolRate=0.002 meanViol/mol=0.06 fragRatio=0.892 uniq=1.000
+    [RAW] singleFragRate=0.648(ref 1.000) ringCount=3.86(ref 3.55) ring56Rate=0.597(ref 0.967) degree=2.16(ref 2.19) QED=0.533(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.991 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.951 bond=0.831 nobond=0.994 P(b|bond)=0.790 P(b|nobond)=0.013 CE=0.062(ref 0.308) | t=75  atom=0.806 bond=0.274 nobond=0.990 P(b|bond)=0.294 P(b|nobond)=0.044 CE=0.213(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.083 P(b|nobond)=0.057 CE=0.294(ref 0.308)
+    25    1.4999   0.5269   0.1946    1.4225   0.5312   0.1783   921.2s
+    [EMA] valid(strict)=0.734 valid(frag)=0.953 valid(single)=0.672 atomViolRate=0.002 meanViol/mol=0.06 fragRatio=0.921 uniq=1.000
+    [EMA] singleFragRate=0.703(ref 1.000) ringCount=4.03(ref 3.55) ring56Rate=0.588(ref 0.967) degree=2.19(ref 2.19) QED=0.605(ref 0.538)
+    [EMA] t=10  atom=0.997 bond=0.994 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.940 bond=0.834 nobond=0.994 P(b|bond)=0.799 P(b|nobond)=0.016 CE=0.065(ref 0.308) | t=75  atom=0.796 bond=0.361 nobond=0.985 P(b|bond)=0.336 P(b|nobond)=0.052 CE=0.209(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.104 P(b|nobond)=0.072 CE=0.291(ref 0.308)
+    [RAW] valid(strict)=0.695 valid(frag)=0.922 valid(single)=0.688 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.928 uniq=1.000
+    [RAW] singleFragRate=0.758(ref 1.000) ringCount=4.01(ref 3.55) ring56Rate=0.599(ref 0.967) degree=2.17(ref 2.19) QED=0.540(ref 0.538)
+    [RAW] t=10  atom=0.998 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.944 bond=0.829 nobond=0.994 P(b|bond)=0.791 P(b|nobond)=0.014 CE=0.065(ref 0.308) | t=75  atom=0.807 bond=0.308 nobond=0.988 P(b|bond)=0.309 P(b|nobond)=0.046 CE=0.210(ref 0.308) | t=110 atom=0.747 bond=0.000 nobond=1.000 P(b|bond)=0.087 P(b|nobond)=0.060 CE=0.293(ref 0.308)
+
+Done. Best val loss: 1.4091

@@ -1,0 +1,24 @@
+/home/cbgpu/molecule-AI/c3_wiring_eval.py:16: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load("checkpoints_c3/best.pt", map_location=device)
+target                              off-target rate               95% CI    n_atoms
+[C+halogens (N,O excluded)]
+  conditional  : 0.0076 [0.0059,0.0099]  (n_atoms=7486)
+  unconditional: 0.2323 [0.2229,0.2420]  (n_atoms=7486)
+  => 배선 정상
+
+[C+S only (S required)]
+  conditional  : 0.0341 [0.0302,0.0384]  (n_atoms=7486)
+  unconditional: 0.2371 [0.2276,0.2469]  (n_atoms=7486)
+  => 배선 정상
+
+[C+P only (P required)]
+  conditional  : 0.1880 [0.1793,0.1970]  (n_atoms=7486)
+  unconditional: 0.2486 [0.2389,0.2585]  (n_atoms=7486)
+  => 배선 정상
+
+[C+Cl only]
+  conditional  : 0.0175 [0.0148,0.0207]  (n_atoms=7486)
+  unconditional: 0.2402 [0.2306,0.2500]  (n_atoms=7486)
+  => 배선 정상
+
+DONE

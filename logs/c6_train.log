@@ -1,0 +1,56 @@
+[epoch  1] train_loss=0.5971  time=175.1s
+    R2:  HOMO=0.381 LUMO=0.634 GAP=0.334 E_total=-3.494 Dipole=-0.285
+    MAE: HOMO=0.0116 LUMO=0.0123 GAP=0.0187 E_total=1414.2039 Dipole=2.0969
+[epoch  2] train_loss=0.4805  time=105.4s
+    R2:  HOMO=0.251 LUMO=0.676 GAP=0.231 E_total=-2.809 Dipole=-0.225
+    MAE: HOMO=0.0131 LUMO=0.0121 GAP=0.0213 E_total=1324.1760 Dipole=2.0268
+[epoch  3] train_loss=0.4546  time=75.4s
+    R2:  HOMO=0.306 LUMO=0.668 GAP=0.201 E_total=-2.425 Dipole=-0.285
+    MAE: HOMO=0.0127 LUMO=0.0122 GAP=0.0220 E_total=1224.9991 Dipole=2.0763
+[epoch  4] train_loss=0.4190  time=100.6s
+    R2:  HOMO=0.248 LUMO=0.717 GAP=0.231 E_total=-2.115 Dipole=-0.224
+    MAE: HOMO=0.0135 LUMO=0.0112 GAP=0.0217 E_total=1168.2252 Dipole=2.0263
+[epoch  5] train_loss=0.4092  time=102.7s
+    R2:  HOMO=0.477 LUMO=0.690 GAP=0.368 E_total=-1.283 Dipole=-0.027
+    MAE: HOMO=0.0108 LUMO=0.0118 GAP=0.0194 E_total=986.4880 Dipole=1.8308
+[epoch  6] train_loss=0.3912  time=106.4s
+    R2:  HOMO=0.420 LUMO=0.730 GAP=0.367 E_total=-1.637 Dipole=-0.084
+    MAE: HOMO=0.0116 LUMO=0.0107 GAP=0.0192 E_total=1053.0598 Dipole=1.8836
+[epoch  7] train_loss=0.3767  time=106.3s
+    R2:  HOMO=0.625 LUMO=0.665 GAP=0.412 E_total=-0.646 Dipole=-0.148
+    MAE: HOMO=0.0090 LUMO=0.0122 GAP=0.0183 E_total=809.1118 Dipole=1.9536
+[epoch  8] train_loss=0.3577  time=135.2s
+    R2:  HOMO=0.636 LUMO=0.648 GAP=0.400 E_total=-0.660 Dipole=-0.124
+    MAE: HOMO=0.0088 LUMO=0.0126 GAP=0.0186 E_total=828.1448 Dipole=1.9283
+[epoch  9] train_loss=0.3505  time=78.0s
+    R2:  HOMO=0.670 LUMO=0.717 GAP=0.513 E_total=-0.346 Dipole=0.045
+    MAE: HOMO=0.0084 LUMO=0.0114 GAP=0.0167 E_total=740.1396 Dipole=1.7588
+[epoch 10] train_loss=0.3360  time=77.7s
+    R2:  HOMO=0.683 LUMO=0.738 GAP=0.556 E_total=-0.105 Dipole=0.084
+    MAE: HOMO=0.0082 LUMO=0.0107 GAP=0.0157 E_total=650.9678 Dipole=1.7125
+[epoch 11] train_loss=0.3335  time=78.0s
+    R2:  HOMO=0.660 LUMO=0.722 GAP=0.497 E_total=0.198 Dipole=0.179
+    MAE: HOMO=0.0086 LUMO=0.0113 GAP=0.0172 E_total=548.3254 Dipole=1.6086
+[epoch 12] train_loss=0.3327  time=136.1s
+    R2:  HOMO=0.709 LUMO=0.733 GAP=0.564 E_total=0.502 Dipole=0.203
+    MAE: HOMO=0.0079 LUMO=0.0110 GAP=0.0158 E_total=410.5282 Dipole=1.5776
+[epoch 13] train_loss=0.3162  time=73.9s
+    R2:  HOMO=0.704 LUMO=0.716 GAP=0.533 E_total=0.540 Dipole=0.192
+    MAE: HOMO=0.0080 LUMO=0.0114 GAP=0.0164 E_total=391.8405 Dipole=1.5850
+[epoch 14] train_loss=0.3167  time=109.2s
+    R2:  HOMO=0.762 LUMO=0.780 GAP=0.670 E_total=0.662 Dipole=0.260
+    MAE: HOMO=0.0071 LUMO=0.0099 GAP=0.0135 E_total=319.7172 Dipole=1.5037
+[epoch 15] train_loss=0.3046  time=77.5s
+    R2:  HOMO=0.776 LUMO=0.836 GAP=0.745 E_total=0.707 Dipole=0.269
+    MAE: HOMO=0.0069 LUMO=0.0084 GAP=0.0116 E_total=289.4662 Dipole=1.4859
+
+=== FINAL (held-out val) ===
+prop        comp_R2(floor)  GNN_R2(ceiling)    GNN_MAE  beats_floor
+HOMO                0.1510           0.7763     0.0069          YES
+LUMO                0.3440           0.8356     0.0084          YES
+GAP                 0.3440           0.7450     0.0116          YES
+E_total             1.0000           0.7074   289.4662           NO
+Dipole              0.1300           0.2690     1.4859          YES
+saved c1_regressor_v2.pt
+
+DONE

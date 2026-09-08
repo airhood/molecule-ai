@@ -1,0 +1,6 @@
+# 실데이터 검증 결과: marginal transition 단독 (2026-07-27~28, subset 8000개/40epoch)
+
+```
+raw model : validity 0.4% (약 1/256)  uniqueness 1.000
+EMA  model: validity 0.0%
+```

@@ -1,0 +1,15 @@
+### 장기 학습 검증 런 준비 (2026-08-03)
+
+"학습량 부족" 가설 검증. `max_samples=8000` 그대로 유지, `epochs`만 40→200으로 늘려 변수 하나만 바꿈. 총 step 수 250×200=50,000으로 `ema_decay=0.9999`(시간상수 10,000)도 이번엔 안전하게 수렴 — 별도 조정 불필요.
+
+`save_dir="./checkpoints_diffusion_marginal_longtrain"`, `eval_every=20`(10개 평가 지점), `save_every=20`. Test/Inference 셀 `CKPT_PATH`도 동일 경로로 동기화.
+
+**예상 소요시간**: 이전 8000개/epoch당 ~30초 관측 기준 200epoch ≈ 100분 + eval 오버헤드 → 대략 1.5~2시간. 이전 빠른 검증 런(20~25분)보다 훨씬 긺 — 진행 전 사용자에게 명시적으로 고지함.
+
+노트북 문법 검증 + 프로젝트 파일(model3.py/train3.py) 통합 스모크 테스트(GPU) 통과.
+
+[비고 — devlog.md 원문 아님, 2026-09-09 원본 세션 아카이브(4a394511.jsonl) 확인 결과]
+이 런은 실행되지 않았음. 준비 다음날(08-04) 코드 점검에서 구버전 설정(K_E=5,
+방향족 포함)과 비용 문제(실규모 970만 step)가 발견됐고, 08-05에 완전히 다른
+계획(전체 155만개/5epoch 스모크런, save_dir="checkpoints_diffusion_marginal_full_smoke")
+으로 대체됨. 실행 로그 없음.

@@ -1,0 +1,17 @@
+/home/cbgpu/molecule-AI/final_ab_eval.py:100: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_r6 = torch.load("/home/cbgpu/molecule-AI/checkpoints_r6/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/final_ab_eval.py:111: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_base = torch.load("/home/cbgpu/molecule-AI/checkpoints_v4/best.pt", map_location=device)
+Building size distribution ...
+=== R-6 (spectral, checkpoints_r6/best.pt) (n_mol=512, n_eval=512) ===
+  singleFragRate(strict&single) = 0.7852  95%CI=[0.7475,0.8185]  (ref 1.000)
+  56ring/mol(절대개수)          = 2.2676  95%CI=[2.1540,2.3811]  (ref 3.512)
+  diag: t=10 bond=0.993 P(b|bond)=0.991 CE=0.004 | t=40 bond=0.836 P(b|bond)=0.803 CE=0.064 | t=75 bond=0.366 P(b|bond)=0.333 CE=0.212 | t=110 bond=0.000 P(b|bond)=0.101 CE=0.291
+=== baseline W-2 (checkpoints_v4/best.pt) (n_mol=512, n_eval=512) ===
+  singleFragRate(strict&single) = 0.6172  95%CI=[0.5744,0.6583]  (ref 1.000)
+  56ring/mol(절대개수)          = 1.9199  95%CI=[1.8214,2.0185]  (ref 3.512)
+  diag: t=10 bond=0.994 P(b|bond)=0.992 CE=0.003 | t=40 bond=0.841 P(b|bond)=0.808 CE=0.062 | t=75 bond=0.351 P(b|bond)=0.324 CE=0.215 | t=110 bond=0.000 P(b|bond)=0.103 CE=0.291
+
+=== 요약: baseline 대비 CI 비교 ===
+singleFragRate: R-6=0.7852  baseline=0.6172
+56ring/mol:     R-6=2.2676  baseline=1.9199

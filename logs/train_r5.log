@@ -1,0 +1,25 @@
+Device: cuda
+Log: ./train_r5.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  Parameters: 5,635,261
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+     1    1.5561   0.5477   0.2017    1.4428   0.5376   0.1810   859.1s
+    [EMA] valid(strict)=0.320 valid(frag)=0.523 atomViolRate=0.030 meanViol/mol=0.85 fragRatio=0.901 uniq=1.000
+    [EMA] t=10  atom=0.996 bond=0.989 nobond=0.999 | t=75  atom=0.796 bond=0.383 nobond=0.982 | t=140 atom=0.747 bond=0.000 nobond=1.000
+    [RAW] valid(strict)=0.148 valid(frag)=0.711 atomViolRate=0.025 meanViol/mol=0.71 fragRatio=0.688 uniq=1.000
+    [RAW] t=10  atom=0.996 bond=0.990 nobond=1.000 | t=75  atom=0.788 bond=0.143 nobond=0.995 | t=140 atom=0.747 bond=0.000 nobond=1.000
+     2    1.5298   0.5373   0.1985    1.4287   0.5328   0.1792   875.7s
+    [EMA] valid(strict)=0.609 valid(frag)=0.805 atomViolRate=0.012 meanViol/mol=0.35 fragRatio=0.909 uniq=1.000
+    [EMA] t=10  atom=0.995 bond=0.990 nobond=1.000 | t=75  atom=0.803 bond=0.362 nobond=0.984 | t=140 atom=0.747 bond=0.000 nobond=1.000
+    [RAW] valid(strict)=0.344 valid(frag)=0.891 atomViolRate=0.012 meanViol/mol=0.36 fragRatio=0.749 uniq=1.000
+    [RAW] t=10  atom=0.995 bond=0.990 nobond=1.000 | t=75  atom=0.791 bond=0.145 nobond=0.996 | t=140 atom=0.747 bond=0.000 nobond=1.000
+
+Done. Best val loss: 1.4287

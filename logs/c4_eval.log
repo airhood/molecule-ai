@@ -1,0 +1,46 @@
+/home/cbgpu/molecule-AI/c4_eval.py:19: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_gen = torch.load("checkpoints_c4/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/c4_eval.py:24: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  reg_ckpt = torch.load("c1_regressor.pt", map_location=device)
+=== [C-4] conditioning pilot evaluation (LUMO-stratified) ===
+
+/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch_geometric/data/data.py:187: UserWarning: Unable to accurately infer 'num_nodes' from the attribute set '{'edge_index', 'bond_type', 'z'}'. Please explicitly set 'num_nodes' as an attribute of 'data' to suppress this warning
+  return sum([v.num_nodes for v in self.node_stores])
+/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch_geometric/data/collate.py:142: UserWarning: Unable to accurately infer 'num_nodes' from the attribute set '{'edge_index', 'bond_type', 'z'}'. Please explicitly set 'num_nodes' as an attribute of 'data' to suppress this warning
+  repeats = [store.num_nodes or 0 for store in stores]
+[unconditional pool] n=320
+[structural regression check] singleFragRate=0.7625 (R-6 unconditional ref 0.7852)  56ring/mol=2.3770 (R-6 unconditional ref 2.2676)  n_mol=320
+
+quantile metric   (a)cond |pred-tgt| med              95%CI (b)GNN MAE   (c)uncond |pred-tgt| med
+Traceback (most recent call last):
+  File "/home/cbgpu/molecule-AI/c4_eval.py", line 225, in <module>
+    res = run_condition(cond_pairs)  # (th, tl, ph, pl)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/molecule-AI/c4_eval.py", line 140, in run_condition
+    preds = predict_properties(X.cpu(), E.cpu())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/molecule-AI/c4_eval.py", line 119, in predict_properties
+    pred = reg_model(batch)  # normalized space, (k,5)
+           ^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/molecule-AI/c1_prop_regressor.py", line 49, in forward
+    g = global_mean_pool(h, batch.batch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch_geometric/nn/pool/glob.py", line 63, in global_mean_pool
+    return scatter(x, batch, dim=dim, dim_size=size, reduce='mean')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch_geometric/utils/_scatter.py", line 77, in scatter
+    index = broadcast(index, src, dim)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cbgpu/miniconda3/envs/molai/lib/python3.11/site-packages/torch_geometric/utils/_scatter.py", line 144, in broadcast
+    return src.view(size).expand_as(ref)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The expanded size of the tensor (16) must match the existing size (15) at non-singleton dimension 0.  Target sizes: [16, 128].  Tensor sizes: [15, 1]

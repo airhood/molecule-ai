@@ -1,0 +1,16 @@
+### 실규모 스모크런 결과 (2026-08-26/27, Colab T4, max_samples=150000, 2 epoch)
+
+- **validity_strict(EMA)가 처음으로 0이 아님을 확인**: epoch1 3.1% → epoch2 7.8%.
+  atomViolRate도 17.9%→13.5%로 단조 감소 — R-1이 의도한 대로 원자 단위 연속 지표가
+  기존 validity(항상 0.000)보다 훨씬 이른 신호를 보여줌.
+- **RAW vs EMA 비대칭 발견**: RAW는 원자가 위반이 훨씬 적은데(4.0% vs EMA 17.9%)
+  `validity_frag`는 오히려 훨씬 높음(54.7~72.7% vs EMA 6.2~20.3%). 원인은 `fragRatio`
+  — RAW는 여러 조각으로 쪼개진(조각 개별은 원자가 정상) 분자를 만드는 경향
+  (fragRatio 0.38~0.54), EMA는 한 덩어리를 유지하되(fragRatio 0.89~0.92) 그 안에
+  결합 오류가 더 많음. validity 단일 값으로는 볼 수 없던 정보 — R-1 확장의 실질적 성과.
+- **R-4 근거 확보**: `diagnostic_fixed_t`에서 t=140(맥락 거의 없음)의 `bond_acc`가
+  EMA/RAW/두 epoch 전부 정확히 0.000, `nobond_acc`는 반대로 0.999~1.000. 같은 t=140의
+  atom_acc(0.747)는 훨씬 나음 → 결합 head가 맥락 부족 시 완전히 포기하고 no-bond만
+  찍는 패턴. review.md R-4("결합 loss 비중 0.2가 병목에 정반대로 작용")와 정확히 일치.
+- T-x(0.539~0.550)가 H(m_X)=0.8258보다 한참 낮음 재확인 — 원자 head는 처음부터
+  학습되고 있었다는 review.md 정정이 실측으로도 재확인됨.

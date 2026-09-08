@@ -1,0 +1,6 @@
+# 우선순위2(valency+분자량 feature) 로컬 검증 (2026-08-03, A/B 21개 실제 분자)
+
+```
+A no-feature : validity 8.3% (7/84)  recovered 0/21
+B +val/MW    : validity 9.5% (8/84)  recovered 1/21
+```

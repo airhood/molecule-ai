@@ -1,0 +1,25 @@
+/home/cbgpu/molecule-AI/d3_guidance_sweep.py:20: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_gen = torch.load("checkpoints_c4/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/d3_guidance_sweep.py:25: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  reg_ckpt = torch.load("c1_regressor.pt", map_location=device)
+
+=== guidance_w=0.0 ===
+n_total=48 n_strict=38 n_single=35 singleFragRate=0.7292 56ring/mol=1.7708 LUMO_median_abs_err=0.0360 (n=38)
+
+=== guidance_w=1.0 ===
+n_total=48 n_strict=35 n_single=32 singleFragRate=0.6667 56ring/mol=1.3958 LUMO_median_abs_err=0.0126 (n=35)
+
+=== guidance_w=2.0 ===
+n_total=48 n_strict=29 n_single=27 singleFragRate=0.5625 56ring/mol=1.1875 LUMO_median_abs_err=0.0054 (n=29)
+
+=== guidance_w=3.0 ===
+n_total=48 n_strict=27 n_single=26 singleFragRate=0.5417 56ring/mol=1.2917 LUMO_median_abs_err=0.0091 (n=27)
+
+=== SUMMARY ===
+    w  singleFragRate  56ring/mol  LUMO_med_err
+  0.0          0.7292      1.7708        0.0360
+  1.0          0.6667      1.3958        0.0126
+  2.0          0.5625      1.1875        0.0054
+  3.0          0.5417      1.2917        0.0091
+
+DONE

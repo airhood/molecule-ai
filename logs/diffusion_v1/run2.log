@@ -1,0 +1,9 @@
+# 실데이터 검증 런 1차 (subset 8000개, size 8~50/median 28, 40 epoch)
+
+```
+Train: 8,000  Val: 1,600
+Epoch  1: T-loss 1.35  V-loss 2.78  Valid   -
+Epoch  5: T-loss 1.19  V-loss 2.27  Valid 0.000
+Epoch 20: T-loss 1.12  V-loss 1.27  Valid 0.000
+Epoch 40: T-loss 1.08  V-loss 1.09  Valid 0.000
+```

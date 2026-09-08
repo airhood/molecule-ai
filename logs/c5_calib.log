@@ -1,0 +1,12 @@
+Running xtb on 100 molecules with 32 workers...
+xtb succeeded on 59/100 molecules
+[HOMO] n=59  corr=0.7530  mean_bias(xtb-DFT)=-0.0775 Hartree  resid_SD=0.0165 Hartree  (-2.108 / 0.449 eV)
+[LUMO] n=59  corr=0.9416  mean_bias(xtb-DFT)=-7.5286 Hartree  resid_SD=0.7490 Hartree  (-204.863 / 20.380 eV)
+
+Stratified by heavy-atom count:
+  n_heavy <=15   (n=  5): HOMO resid mean=-0.0684 sd=0.0191  LUMO resid mean=-7.4823 sd=1.2138
+  n_heavy 16-25  (n= 27): HOMO resid mean=-0.0797 sd=0.0139  LUMO resid mean=-7.4155 sd=0.7135
+  n_heavy 26-35  (n= 21): HOMO resid mean=-0.0748 sd=0.0176  LUMO resid mean=-7.6310 sd=0.6716
+  n_heavy >35    (n=  6): HOMO resid mean=-0.0842 sd=0.0158  LUMO resid mean=-7.7172 sd=0.5362
+
+DONE

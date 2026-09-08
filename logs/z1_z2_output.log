@@ -1,0 +1,14 @@
+/home/cbgpu/molecule-AI/z1_z2.py:17: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load("/home/cbgpu/molecule-AI/checkpoints_v4/best.pt", map_location=device)
+=== [Z-1] argmax@t (단일 forward x0 예측) ===
+argmax@t=20        n_mol= 256  singleFragRate=0.688  ring56Rate=0.912  n_rings=  765  meanRings/mol=3.26
+argmax@t=40        n_mol= 256  singleFragRate=0.234  ring56Rate=0.746  n_rings=  374  meanRings/mol=2.16
+역과정@t_start=40     (Y-1 기존 결과)  singleFragRate=0.738  ring56Rate=0.644  n_rings=936  meanRings/mol=3.97
+
+=== [Z-2] 역과정 부분 샘플링, t_start in {5,10,20} ===
+t_start=5 done
+t_start=10 done
+t_start=20 done
+역과정@t_start=5      n_mol= 256  singleFragRate=0.977  ring56Rate=0.940  n_rings=  919  meanRings/mol=3.71
+역과정@t_start=10     n_mol= 256  singleFragRate=0.938  ring56Rate=0.903  n_rings=  925  meanRings/mol=3.74
+역과정@t_start=20     n_mol= 256  singleFragRate=0.812  ring56Rate=0.835  n_rings=  917  meanRings/mol=3.76

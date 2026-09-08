@@ -1,0 +1,22 @@
+/home/cbgpu/molecule-AI/c4_eval.py:19: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_gen = torch.load("checkpoints_c4/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/c4_eval.py:24: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  reg_ckpt = torch.load("c1_regressor.pt", map_location=device)
+=== [C-4] conditioning pilot evaluation (LUMO-stratified) ===
+
+[unconditional pool] n=320
+[structural regression check] singleFragRate=0.7625 (R-6 unconditional ref 0.7852)  56ring/mol=2.3770 (R-6 unconditional ref 2.2676)  n_mol=320
+
+quantile metric   (a)cond |pred-tgt| med              95%CI (b)GNN MAE   (c)uncond |pred-tgt| med
+    0.10   LUMO                   0.0127 [0.0110,0.0164]       0.0080                     0.0339  (n=64)
+           HOMO                   0.0100 [0.0067,0.0124]       0.0070                     0.0175
+    0.30   LUMO                   0.0134 [0.0105,0.0177]       0.0080                     0.0164  (n=64)
+           HOMO                   0.0094 [0.0074,0.0110]       0.0070                     0.0147
+    0.50   LUMO                   0.0141 [0.0101,0.0191]       0.0080                     0.0136  (n=64)
+           HOMO                   0.0120 [0.0101,0.0144]       0.0070                     0.0148
+    0.70   LUMO                   0.0139 [0.0098,0.0176]       0.0080                     0.0176  (n=64)
+           HOMO                   0.0079 [0.0069,0.0108]       0.0070                     0.0133
+    0.90   LUMO                   0.0103 [0.0068,0.0148]       0.0080                     0.0339  (n=64)
+           HOMO                   0.0119 [0.0089,0.0143]       0.0070                     0.0105
+
+DONE

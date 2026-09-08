@@ -1,0 +1,7 @@
+# 재검증 런 v2 (2026-07-26, edge_class_weights=None, 균등)
+
+```
+                v1 (원래 가중치)   v2 (균등 가중치)
+mask90 nobondAcc      0.076             0.092
+validity (raw/EMA)    0.000             0.000
+```
