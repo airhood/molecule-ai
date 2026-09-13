@@ -50,6 +50,9 @@ N_HEADS = 8
 N_LAYERS = 6
 FF_DIM = 512
 T_DIM = 128
+# [G-5] 2026-09-13: AdaLN류 조건 재주입에서 GTLayer가 참조할 수 있도록
+# 모듈 레벨로 승격(원래 ScoreNetwork.__init__ 지역변수였음). HOMO/LUMO 2차원.
+COND_DIM = 2
 
 
 def _cosine_ac(T, s = 0.008):
@@ -215,7 +218,18 @@ class GTLayer(nn.Module):
         )
         self.enorm = nn.LayerNorm(EDGE_DIM)
 
-    def forward(self, h, e, pad_mask):
+        # [G-5] 2026-09-13: AdaLN류 조건 재주입 -- 지금까지 cond는 입력
+        # 단(ScoreNetwork.forward)에서 한 번만 h에 더해지고, 이후 6개
+        # GTLayer를 통과하며 다시 주입되지 않았다(review13 이후 논의,
+        # conditioning 정밀도 격차의 원인 후보). 매 레이어 끝에서 cond로
+        # scale/shift를 예측해 h를 다시 변조. zero-init으로 학습 시작
+        # 시점엔 항등변환(gamma=0,beta=0 -> h 그대로) -- 기존
+        # checkpoints_c4/best.pt에서 이어받아도 초기 성능 저하 없음.
+        self.cond_mod = nn.Linear(COND_DIM, NODE_DIM * 2)
+        nn.init.zeros_(self.cond_mod.weight)
+        nn.init.zeros_(self.cond_mod.bias)
+
+    def forward(self, h, e, pad_mask, cond=None):
         B, N, _ = h.shape
         nh = N_HEADS
         dh = NODE_DIM // N_HEADS
@@ -234,6 +248,12 @@ class GTLayer(nn.Module):
         out = out.transpose(1, 2).reshape(B, N, -1)
         h = self.norm1(h + self.attn_out(out))
         h = self.norm2(h + self.ff(h))
+
+        # [G-5] AdaLN류 재주입 -- 노드·엣지 업데이트 둘 다에 영향(엣지는
+        # 아래에서 이 h로부터 hi/hj를 만들므로 자동 전파).
+        if cond is not None:
+            gamma, beta = self.cond_mod(cond).chunk(2, dim=-1)
+            h = h * (1 + gamma.unsqueeze(1)) + beta.unsqueeze(1)
 
         hi = h.unsqueeze(2).expand(-1, -1, N, -1) # (B, N, N, D)
         hj = h.unsqueeze(1).expand(-1, N, -1, -1) # (B, N, N, D)
@@ -279,7 +299,6 @@ class ScoreNetwork(nn.Module):
         # 선형종속(review9.md §0, 상관계수 1.0)이라 조건에서 제외, E_total은
         # 조성만으로 R²=1.0(§0/[C-2])이라 제외, Dipole은 GNN_R²=0.303으로
         # 2D 그래프로는 70%가 설명 안 돼 조건 경로에 잡음만 주입하므로 제외.
-        COND_DIM = 2
         self.cond_proj = nn.Linear(COND_DIM, NODE_DIM)
         self.null_cond = nn.Parameter(torch.zeros(COND_DIM))
 
@@ -314,7 +333,7 @@ class ScoreNetwork(nn.Module):
         pad = ~node_mask
 
         for layer in self.layers:
-            h, e = layer(h, e, pad)
+            h, e = layer(h, e, pad, cond)
 
         x_logits = self.x_head(h)
         e_logits = self.e_head(e)
@@ -334,6 +353,11 @@ class MoleculeGraphDiffusion(nn.Module):
     # [C-3] 2026-09-05: 학습 중 확률 COND_DROPOUT_P로 조건을 null_cond로
     # 대체(classifier-free guidance 준비, review8.md [C-4] 지시). a_bin
     # 스모크 테스트와 향후 물성 conditioning이 재학습 없이 이 경로를 공유.
+    # [G-4] 2026-09-13: 0.15->0.10 파인튜닝 시도 -- GPU를 [G-5](AdaLN)에
+    # 넘기려고 학습 중단, 미채택. **원복 완료**: G-5 실행 중 이 값이
+    # 0.10으로 남아있던 걸 뒤늦게 발견 -- AdaLN 재주입 효과와 dropout
+    # 변화가 뒤섞여 결과를 해석할 수 없게 되는 오염이었음. 0.15(원본,
+    # checkpoints_c4/ 학습 시 값)로 되돌리고 G-5를 재시작함.
     COND_DROPOUT_P = 0.15
 
     def __init__(self, m_X, m_E, T = T_STEPS, edge_loss_coeff = 5.0, class_weights = None, edge_class_weights = None):

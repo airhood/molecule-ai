@@ -520,6 +520,13 @@ def main():
     parser.add_argument("--log-file",       default="./train_diffusion_marginal.log")
     parser.add_argument("--resume",         default=None,
                         help="체크포인트 경로 (.pt). model/ema/optimizer/scheduler/epoch 복원.")
+    parser.add_argument("--init-weights",   default=None,
+                        help="[G-2 파인튜닝] 순수 state_dict(.pt, best.pt 형식)만 로드 -- "
+                             "optimizer/scheduler/epoch는 새로 시작. --resume과 동시 사용 금지.")
+    parser.add_argument("--train-only",     default=None,
+                        help="[G-5] 콤마로 구분된 부분문자열. 파라미터 이름에 하나라도 "
+                             "포함되면 학습, 아니면 동결(requires_grad=False). "
+                             "예: 'cond_mod' -> AdaLN 재주입 파라미터만 학습.")
     # [R-6] review7.md [Z-4] matched-budget A/B -- 모델 가중치 초기화/학습 중
     # 확률적 요소(q_sample 등)를 고정해 재현 가능하게 함.
     parser.add_argument("--seed",           type=int,   default=42)
@@ -592,11 +599,42 @@ def main():
     ema = EMA(model, decay=args.ema_decay)
     ema.model.to(device)
 
-    optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
-
     best_val_loss = float('inf')
     start_epoch = 1
+
+    if args.init_weights:
+        assert not args.resume, "--init-weights와 --resume은 동시 사용 금지"
+        sd = torch.load(args.init_weights, map_location=device)
+        # [G-5] strict=False: cond_mod(AdaLN 재주입)처럼 새 아키텍처에서
+        # 추가된 파라미터는 옛 체크포인트에 없음 -- zero-init 상태로 남겨둠
+        # (GTLayer.__init__에서 이미 0으로 초기화됨, 항등변환이라 안전).
+        missing, unexpected = model.load_state_dict(sd, strict=False)
+        ema.model.load_state_dict(sd, strict=False)
+        print(f"  [G-2] {args.init_weights}에서 가중치만 로드 (optimizer/scheduler/epoch는 새로 시작)")
+        if missing:
+            print(f"  [G-5] 새 아키텍처 파라미터(zero-init 유지): {missing}")
+        if unexpected:
+            print(f"  [경고] 체크포인트에만 있고 현재 모델엔 없는 키: {unexpected}")
+
+    # [G-5] --train-only: 이름에 지정된 부분문자열이 포함된 파라미터만 학습.
+    # zero-init으로 새로 추가된 conditioning 경로(cond_mod)만 움직이고
+    # 이미 검증된 backbone은 그대로 둬서, 학습이 잘못될 때 backbone까지
+    # 같이 흔들리는 위험을 없앤다.
+    if args.train_only:
+        substrs = args.train_only.split(",")
+        n_trainable = 0
+        for name, p in model.named_parameters():
+            p.requires_grad = any(s in name for s in substrs)
+            if p.requires_grad:
+                n_trainable += p.numel()
+        trainable_params = [p for p in model.parameters() if p.requires_grad]
+        print(f"  [G-5] --train-only={args.train_only} -- 학습 파라미터 "
+              f"{n_trainable:,} / 전체 {sum(p.numel() for p in model.parameters()):,}")
+    else:
+        trainable_params = model.parameters()
+
+    optimizer = AdamW(trainable_params, lr=args.lr, weight_decay=1e-4)
+    scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
     if args.resume:
         ckpt = torch.load(args.resume, map_location=device)
