@@ -1,0 +1,18 @@
+loaded n=200000 in 127.5s
+descriptors n_valid=200000/200000 in 107.5s
+CKPT-free real-data control, pool_n=200000
+q=10 w=0.02 n=160   scaf_ratio window=0.406 baseline=0.980 | heavy_std window=5.95 baseline=7.34 | ring_std window=0.94 baseline=1.24 | tanimoto window=0.140 baseline=0.127
+q=10 w=0.05 n=822   scaf_ratio window=0.383 baseline=0.953 | heavy_std window=6.44 baseline=7.50 | ring_std window=1.00 baseline=1.28 | tanimoto window=0.131 baseline=0.125
+q=10 w=0.10 n=3351  scaf_ratio window=0.348 baseline=0.895 | heavy_std window=6.88 baseline=7.47 | ring_std window=1.08 baseline=1.28 | tanimoto window=0.130 baseline=0.126
+q=30 w=0.02 n=297   scaf_ratio window=0.411 baseline=0.978 | heavy_std window=6.70 baseline=7.46 | ring_std window=0.95 baseline=1.27 | tanimoto window=0.141 baseline=0.125
+q=30 w=0.05 n=2139  scaf_ratio window=0.368 baseline=0.916 | heavy_std window=7.25 baseline=7.43 | ring_std window=1.13 baseline=1.26 | tanimoto window=0.135 baseline=0.126
+q=30 w=0.10 n=8625  scaf_ratio window=0.338 baseline=0.817 | heavy_std window=7.00 baseline=7.47 | ring_std window=1.13 baseline=1.27 | tanimoto window=0.134 baseline=0.125
+q=50 w=0.02 n=410   scaf_ratio window=0.402 baseline=0.968 | heavy_std window=6.44 baseline=7.42 | ring_std window=1.04 baseline=1.27 | tanimoto window=0.135 baseline=0.125
+q=50 w=0.05 n=2366  scaf_ratio window=0.382 baseline=0.915 | heavy_std window=6.92 baseline=7.45 | ring_std window=1.11 baseline=1.27 | tanimoto window=0.135 baseline=0.126
+q=50 w=0.10 n=9462  scaf_ratio window=0.337 baseline=0.808 | heavy_std window=6.95 baseline=7.46 | ring_std window=1.11 baseline=1.27 | tanimoto window=0.134 baseline=0.125
+q=70 w=0.02 n=252   scaf_ratio window=0.385 baseline=0.977 | heavy_std window=7.12 baseline=7.58 | ring_std window=1.05 baseline=1.26 | tanimoto window=0.139 baseline=0.125
+q=70 w=0.05 n=1412  scaf_ratio window=0.377 baseline=0.940 | heavy_std window=7.18 baseline=7.45 | ring_std window=1.13 baseline=1.27 | tanimoto window=0.136 baseline=0.125
+q=70 w=0.10 n=5430  scaf_ratio window=0.343 baseline=0.859 | heavy_std window=7.02 baseline=7.47 | ring_std window=1.10 baseline=1.27 | tanimoto window=0.134 baseline=0.125
+q=90 w=0.02 n=55    scaf_ratio window=0.455 baseline=0.992 | heavy_std window=8.04 baseline=7.38 | ring_std window=1.12 baseline=1.24 | tanimoto window=0.154 baseline=0.125
+q=90 w=0.05 n=397   scaf_ratio window=0.365 baseline=0.970 | heavy_std window=8.23 baseline=7.47 | ring_std window=1.16 baseline=1.26 | tanimoto window=0.147 baseline=0.126
+q=90 w=0.10 n=1596  scaf_ratio window=0.318 baseline=0.930 | heavy_std window=8.54 baseline=7.47 | ring_std window=1.15 baseline=1.26 | tanimoto window=0.142 baseline=0.126

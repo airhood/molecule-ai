@@ -1,0 +1,50 @@
+Device: cuda
+Log: ./train_c4_b1.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  [G-2] checkpoints_c4_a1/best.pt에서 가중치만 로드 (optimizer/scheduler/epoch는 새로 시작)
+  [A-1] shape 불일치로 제외(현재 모델 초기화 유지): ['net.conn_proj.weight']
+  [G-5] 새 아키텍처 파라미터(zero-init 유지): ['net.conn_proj.weight']
+  Parameters: 5,754,308
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+     1    1.4788   0.5074   0.1932    1.4092   0.5145   0.1787  1233.7s
+     2    1.4763   0.5064   0.1929    1.4047   0.5127   0.1781  1313.7s
+     3    1.4811   0.5084   0.1935    1.3951   0.5089   0.1770  1326.2s
+     4    1.4826   0.5091   0.1937    1.4017   0.5103   0.1780  1262.5s
+     5    1.4834   0.5089   0.1939    1.3952   0.5074   0.1773  1289.4s
+     6    1.4815   0.5083   0.1937    1.4084   0.5127   0.1790  1374.6s
+     7    1.4794   0.5076   0.1934    1.4054   0.5130   0.1783  1328.2s
+     8    1.4809   0.5080   0.1936    1.3918   0.5073   0.1767  1318.6s
+     9    1.4749   0.5066   0.1927    1.3932   0.5076   0.1770  1405.1s
+    10    1.4781   0.5075   0.1932    1.3946   0.5079   0.1772  1350.0s
+    [EMA] valid(strict)=0.699 valid(frag)=0.953 valid(single)=0.668 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.909 uniq=1.000
+    [EMA] singleFragRate=0.703(ref 0.968) ringCount=3.94(ref 3.69) ring56Rate=0.605(ref 0.967) degree=2.18(ref 2.19) QED=0.590(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.994 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.944 bond=0.852 nobond=0.995 P(b|bond)=0.812 P(b|nobond)=0.014 CE=0.060(ref 0.308) | t=75  atom=0.801 bond=0.362 nobond=0.985 P(b|bond)=0.333 P(b|nobond)=0.048 CE=0.208(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.093 P(b|nobond)=0.065 CE=0.296(ref 0.308)
+    [RAW] valid(strict)=0.652 valid(frag)=0.961 valid(single)=0.586 atomViolRate=0.001 meanViol/mol=0.04 fragRatio=0.884 uniq=1.000
+    [RAW] singleFragRate=0.617(ref 0.968) ringCount=3.15(ref 3.69) ring56Rate=0.686(ref 0.967) degree=2.13(ref 2.19) QED=0.551(ref 0.538)
+    [RAW] t=10  atom=0.994 bond=0.996 nobond=1.000 P(b|bond)=0.992 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.946 bond=0.828 nobond=0.995 P(b|bond)=0.783 P(b|nobond)=0.012 CE=0.065(ref 0.308) | t=75  atom=0.803 bond=0.248 nobond=0.993 P(b|bond)=0.277 P(b|nobond)=0.040 CE=0.217(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.070 P(b|nobond)=0.049 CE=0.302(ref 0.308)
+    11    1.4785   0.5073   0.1933    1.3885   0.5043   0.1767  1313.3s
+    12    1.4758   0.5061   0.1931    1.3868   0.5032   0.1766  1313.7s
+    13    1.4775   0.5065   0.1933    1.3874   0.5023   0.1769  1339.7s
+    14    1.4762   0.5062   0.1932    1.3834   0.5009   0.1764  1371.7s
+    15    1.4733   0.5057   0.1927    1.3850   0.5015   0.1766  1408.0s
+    16    1.4794   0.5068   0.1937    1.3844   0.5017   0.1765  1368.0s
+    17    1.4763   0.5065   0.1932    1.3749   0.4971   0.1755  1362.1s
+    18    1.4706   0.5040   0.1925    1.3844   0.5006   0.1767  1356.9s
+    19    1.4717   0.5048   0.1926    1.3833   0.4998   0.1766  1374.2s
+    20    1.4705   0.5037   0.1926    1.3763   0.4982   0.1756  1366.5s
+    [EMA] valid(strict)=0.840 valid(frag)=0.965 valid(single)=0.824 atomViolRate=0.001 meanViol/mol=0.04 fragRatio=0.954 uniq=1.000
+    [EMA] singleFragRate=0.852(ref 0.968) ringCount=3.96(ref 3.69) ring56Rate=0.640(ref 0.967) degree=2.18(ref 2.19) QED=0.568(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.991 nobond=1.000 P(b|bond)=0.990 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.942 bond=0.826 nobond=0.995 P(b|bond)=0.798 P(b|nobond)=0.016 CE=0.067(ref 0.308) | t=75  atom=0.814 bond=0.362 nobond=0.985 P(b|bond)=0.329 P(b|nobond)=0.052 CE=0.214(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.098 P(b|nobond)=0.068 CE=0.295(ref 0.308)
+    [RAW] valid(strict)=0.773 valid(frag)=0.926 valid(single)=0.750 atomViolRate=0.003 meanViol/mol=0.08 fragRatio=0.943 uniq=1.000
+    [RAW] singleFragRate=0.809(ref 0.968) ringCount=3.98(ref 3.69) ring56Rate=0.619(ref 0.967) degree=2.17(ref 2.19) QED=0.537(ref 0.538)
+    [RAW] t=10  atom=0.994 bond=0.997 nobond=1.000 P(b|bond)=0.994 P(b|nobond)=0.001 CE=0.002(ref 0.308) | t=40  atom=0.936 bond=0.820 nobond=0.993 P(b|bond)=0.783 P(b|nobond)=0.016 CE=0.069(ref 0.308) | t=75  atom=0.819 bond=0.358 nobond=0.986 P(b|bond)=0.334 P(b|nobond)=0.046 CE=0.209(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.085 P(b|nobond)=0.060 CE=0.298(ref 0.308)
+
+Done. Best val loss: 1.3749

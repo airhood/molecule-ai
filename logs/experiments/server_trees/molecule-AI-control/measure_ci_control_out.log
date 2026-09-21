@@ -1,0 +1,16 @@
+/home/cbgpu/molecule-AI-control/measure_ci_raw.py:43: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load(CKPT, map_location=device)
+CKPT=checkpoints_c4_control/best.pt guidance_w=1.0 N_PER_Q=48
+
+총 valid 분자 수: 163 (목표 240개 시도)
+
+물성                 n  median|err|     CI_low    CI_high
+HOMO             163       0.0082     0.0070     0.0103
+LUMO             163       0.0116     0.0096     0.0155
+LogP             163       0.8216     0.6992     1.0163
+TPSA             163       9.4500     7.7700    10.7100
+HBA              163       1.0000     1.0000     1.0000
+RotBonds         163       2.0000     2.0000     3.0000
+AromaticRings    163       1.0000     1.0000     1.0000
+
+저장: raw_errors_control.json

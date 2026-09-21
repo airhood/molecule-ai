@@ -1,0 +1,41 @@
+/home/cbgpu/molecule-AI/e1_guidance_sweep.py:20: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd_gen = torch.load("checkpoints_c4/best.pt", map_location=device)
+/home/cbgpu/molecule-AI/e1_guidance_sweep.py:25: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  reg_ckpt = torch.load("c1_regressor.pt", map_location=device)
+
+=== guidance_w=0.0 ===
+n_total=128 n_strict=101 n_single=96
+  singleFragRate=0.7500 CI=[0.6684,0.8170]
+  56ring/mol=1.8438 CI=[1.5983,2.0892]
+  LUMO_median_abs_err=0.0481 CI=[0.0423,0.0530] (n=101)
+  mean_heavy_atoms(strict-valid)=29.27  (population mean=28.3)  mean_target_size=28.70
+
+=== guidance_w=1.0 ===
+n_total=128 n_strict=91 n_single=85
+  singleFragRate=0.6641 CI=[0.5785,0.7400]
+  56ring/mol=1.3438 CI=[1.1082,1.5793]
+  LUMO_median_abs_err=0.0125 CI=[0.0091,0.0169] (n=91)
+  mean_heavy_atoms(strict-valid)=29.66  (population mean=28.3)  mean_target_size=28.70
+
+=== guidance_w=2.0 ===
+n_total=128 n_strict=81 n_single=79
+  singleFragRate=0.6172 CI=[0.5307,0.6968]
+  56ring/mol=1.2344 CI=[0.9957,1.4730]
+  LUMO_median_abs_err=0.0071 CI=[0.0061,0.0090] (n=81)
+  mean_heavy_atoms(strict-valid)=29.07  (population mean=28.3)  mean_target_size=28.70
+
+=== guidance_w=3.0 ===
+n_total=128 n_strict=75 n_single=70
+  singleFragRate=0.5469 CI=[0.4605,0.6305]
+  56ring/mol=1.0938 CI=[0.8705,1.3170]
+  LUMO_median_abs_err=0.0075 CI=[0.0053,0.0109] (n=75)
+  mean_heavy_atoms(strict-valid)=28.81  (population mean=28.3)  mean_target_size=28.70
+
+=== SUMMARY ===
+    w            singleFragRate             56ring/mol              LUMO_med_err  mean_heavy
+  0.0        0.750[0.668,0.817]     1.844[1.598,2.089]     0.0481[0.0423,0.0530]       29.27
+  1.0        0.664[0.579,0.740]     1.344[1.108,1.579]     0.0125[0.0091,0.0169]       29.66
+  2.0        0.617[0.531,0.697]     1.234[0.996,1.473]     0.0071[0.0061,0.0090]       29.07
+  3.0        0.547[0.461,0.630]     1.094[0.871,1.317]     0.0075[0.0053,0.0109]       28.81
+
+DONE

@@ -1,0 +1,24 @@
+{
+  "purpose": "propose-evaluate-correct (PEC) 1단계 base module 고정 -- astra_review_20260920b.md 지시",
+  "created": "2026-09-20",
+  "base_architecture": "circuit-rank/cycle 없는 A-1 (checkpoints_c4_a1와 architecturally 동일, molecule-AI-control/model3.py와 identical, sha256 확인됨)",
+  "directory": "/home/cbgpu/molecule-AI-pec/",
+  "files_sha256": {
+    "model3.py": "efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad",
+    "dataset2.py": "2312ad6110ec618dad7fd294b347c1c11e6b38ef48a57235b50993257a04537a",
+    "train3.py": "56d434ba7713744ff52906c26f204242faf627ce33cf4d82da7b15ee3fbe936d",
+    "checkpoints_c4_a1/best.pt": "c6041051a844cb84f2f61653667387d392650038bf86ac8946a440e46dd22f41",
+    "data/processed_ext7/stats.json": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd"
+  },
+  "load_verification": {
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "param_count": 5754052,
+    "verified": "2026-09-20, CUDA_VISIBLE_DEVICES=2, molecule-AI-pec/"
+  },
+  "notes": [
+    "model3.py는 molecule-AI-control/model3.py(B-1/C-1 대조군에 쓰인 circuit-rank-free 버전)와 sha256 완전 동일 -- diff 0줄 확인됨.",
+    "main /molecule-AI/model3.py와는 다름(circuit_rank + cycle_proj 포함돼 있어 A-1과 architecturally 다름, astra_review_20260920b.md §0 지적).",
+    "이 base는 evaluator/corrector 개발 전체 기간 동안 절대 수정하지 않음 -- frozen A-1으로만 사용."
+  ]
+}

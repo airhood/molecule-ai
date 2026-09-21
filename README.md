@@ -150,7 +150,7 @@ Colab 환경에서는 `train.ipynb` 사용을 권장합니다.
 ## Dataset 사용법
 
 ```python
-from dataset import QMugsDataset  # models_legacy/stage1_cvae/dataset.py (2026-09-21 이동)
+from dataset import QMugsDataset  # models/stage1_cvae/dataset.py (2026-09-21 이동)
 from torch_geometric.loader import DataLoader
 
 train_set = QMugsDataset("./data/processed", split="train")
@@ -208,7 +208,7 @@ QMugsDataset(processed_path, split="train", split_ratio=(0.8, 0.1, 0.1), seed=42
 
 ```python
 import torch
-from model import MoleculeCVAE  # models_legacy/stage1_cvae/model.py (2026-09-21 이동)
+from model import MoleculeCVAE  # models/stage1_cvae/model.py (2026-09-21 이동)
 
 model = MoleculeCVAE()
 model.load_state_dict(torch.load("checkpoints/best.pt"))

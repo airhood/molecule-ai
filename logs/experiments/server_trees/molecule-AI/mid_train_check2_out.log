@@ -1,0 +1,21 @@
+/home/cbgpu/molecule-AI/mid_train_check2.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load(CKPT, map_location=device)
+타겟 분자 물성(raw): {'HOMO': -0.31066426634788513, 'LUMO': -0.02470923215150833, 'LogP': 3.799099922180176, 'TPSA': 137.63999938964844, 'HBA': 10.0, 'RotBonds': 4.0, 'AromaticRings': 1.0}
+
+=== 전체 조건(7개 다 줌) (n_valid=22/32) ===
+  HOMO           target=-0.3107  gen_mean=-0.3085  gen_std=0.0105  pop_mean=-0.2886  |err_gen|=0.0021  |err_pop|=0.0220  OK(타겟에 더 가까움)
+  LUMO           target=-0.0247  gen_mean=-0.0067  gen_std=0.0136  pop_mean=0.0144  |err_gen|=0.0180  |err_pop|=0.0392  OK(타겟에 더 가까움)
+  LogP           target=3.7991  gen_mean=2.7043  gen_std=1.0593  pop_mean=3.7698  |err_gen|=1.0948  |err_pop|=0.0293  미흡(모집단평균보다 안 가까움)
+  TPSA           target=137.6400  gen_mean=159.6273  gen_std=14.8052  pop_mean=83.5367  |err_gen|=21.9873  |err_pop|=54.1033  OK(타겟에 더 가까움)
+  HBA            target=10.0000  gen_mean=10.7273  gen_std=1.0947  pop_mean=4.9475  |err_gen|=0.7273  |err_pop|=5.0525  OK(타겟에 더 가까움)
+  RotBonds       target=4.0000  gen_mean=3.1818  gen_std=2.4797  pop_mean=5.8276  |err_gen|=0.8182  |err_pop|=1.8276  OK(타겟에 더 가까움)
+  AromaticRings  target=1.0000  gen_mean=0.8636  gen_std=0.6249  pop_mean=2.7603  |err_gen|=0.1364  |err_pop|=1.7603  OK(타겟에 더 가까움)
+
+=== 완전 무조건(비교 기준) (n_valid=24/32) ===
+  HOMO           target=-0.3107  gen_mean=-0.2928  gen_std=0.0119  pop_mean=-0.2886  |err_gen|=0.0179  |err_pop|=0.0220  OK(타겟에 더 가까움)
+  LUMO           target=-0.0247  gen_mean=0.0172  gen_std=0.0100  pop_mean=0.0144  |err_gen|=0.0419  |err_pop|=0.0392  미흡(모집단평균보다 안 가까움)
+  LogP           target=3.7991  gen_mean=4.5229  gen_std=1.3379  pop_mean=3.7698  |err_gen|=0.7238  |err_pop|=0.0293  미흡(모집단평균보다 안 가까움)
+  TPSA           target=137.6400  gen_mean=120.2546  gen_std=29.5301  pop_mean=83.5367  |err_gen|=17.3854  |err_pop|=54.1033  OK(타겟에 더 가까움)
+  HBA            target=10.0000  gen_mean=7.5833  gen_std=1.5253  pop_mean=4.9475  |err_gen|=2.4167  |err_pop|=5.0525  OK(타겟에 더 가까움)
+  RotBonds       target=4.0000  gen_mean=5.4167  gen_std=3.3655  pop_mean=5.8276  |err_gen|=1.4167  |err_pop|=1.8276  OK(타겟에 더 가까움)
+  AromaticRings  target=1.0000  gen_mean=2.6250  gen_std=1.2183  pop_mean=2.7603  |err_gen|=1.6250  |err_pop|=1.7603  OK(타겟에 더 가까움)

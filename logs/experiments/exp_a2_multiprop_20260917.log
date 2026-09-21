@@ -1,0 +1,41 @@
+# [Exp A2] "물성 7개면 충분한가" -- 실행 프로토콜 기록 (2026-09-17)
+# 스크립트: exp_a2_multiprop_20260917.py (같은 디렉터리)
+# 데이터: data/processed_ext7 (extend_properties_20260917.py로 39개 청크 전체에
+#   LogP/TPSA/HBD/HBA/RotBonds/AromaticRings/SAscore 추가, p_raw 5->12차원)
+# pool: QMugsDataset(split="train", max_samples=200000), SEED=21
+# 조건 벡터: HOMO,LUMO,LogP,TPSA,RotBonds,AromaticRings,SAscore (7개, GAP/E_total/
+#   Dipole/HBD/HBA 제외 -- review16.md 권고: QED 배제, HBD/HBA 중복 클러스터 중 둘다 빼고
+#   TPSA로 대표, GAP은 review9부터 선형종속으로 제외)
+# 타겟: LUMO 정렬 분위수 [10,30,50,70,90] 분자의 "전체" 물성 벡터(기존과 동일 분자 선정 방식)
+# 창(window): 7차원 박스, 반폭 w*(각 물성의 p90-p10), w in [0.05,0.10,0.20,0.30,0.40]
+#   (2차원일 때보다 넓게 잡음 -- 차원이 늘수록 같은 w에서 창이 기하급수적으로 좁아지므로)
+# baseline/rarefaction: Exp A와 동일 방식(20회 무작위 재추출, m=min(100,n) 50회 재표집)
+loaded n=200000 in 133.6s
+property p90-p10 ranges: {'HOMO': 0.047483909130096424, 'LUMO': 0.06707670055329801, 'LogP': 4.1156299114227295, 'TPSA': 86.97000122070312, 'RotBonds': 8.0, 'AromaticRings': 3.0, 'SAscore': 1.7208765983581542}
+descriptors n_valid=200000/200000 in 108.2s
+[Exp A2] multi-property(['HOMO', 'LUMO', 'LogP', 'TPSA', 'RotBonds', 'AromaticRings', 'SAscore']) real-data control, pool_n=200000
+q=10 w=0.05  n_window=1     (표본 부족, 스킵)
+q=10 w=0.10 n=6      [tanimoto] window=0.357 baseline=0.123±0.018 | rarefied(m=6) window=3.0±0.0 baseline=6.0±0.0
+q=10 w=0.20 n=200    [tanimoto] window=0.154 baseline=0.125±0.002 | rarefied(m=100) window=60.5±2.2 baseline=98.4±1.5
+q=10 w=0.30 n=1700   [tanimoto] window=0.149 baseline=0.126±0.001 | rarefied(m=100) window=91.1±2.8 baseline=98.3±1.4
+q=10 w=0.40 n=13646  [tanimoto] window=0.141 baseline=0.126±0.001 | rarefied(m=100) window=98.1±1.3 baseline=98.5±1.5
+q=30 w=0.05  n_window=1     (표본 부족, 스킵)
+q=30 w=0.10  n_window=1     (표본 부족, 스킵)
+q=30 w=0.20 n=78     [tanimoto] window=0.179 baseline=0.126±0.004 | rarefied(m=78) window=27.0±0.0 baseline=77.2±0.9
+q=30 w=0.30 n=683    [tanimoto] window=0.165 baseline=0.125±0.002 | rarefied(m=100) window=79.1±3.0 baseline=98.5±1.5
+q=30 w=0.40 n=11757  [tanimoto] window=0.145 baseline=0.126±0.001 | rarefied(m=100) window=97.6±1.3 baseline=98.6±1.6
+q=50 w=0.05 n=2      [tanimoto] window=1.000 baseline=0.136±0.052 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.0
+q=50 w=0.10 n=2      [tanimoto] window=1.000 baseline=0.127±0.036 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.1
+q=50 w=0.20 n=160    [tanimoto] window=0.163 baseline=0.126±0.003 | rarefied(m=100) window=53.7±2.4 baseline=98.8±1.3
+q=50 w=0.30 n=1589   [tanimoto] window=0.149 baseline=0.126±0.001 | rarefied(m=100) window=92.2±2.3 baseline=98.6±1.4
+q=50 w=0.40 n=18754  [tanimoto] window=0.141 baseline=0.125±0.001 | rarefied(m=100) window=98.3±1.4 baseline=99.0±1.0
+q=70 w=0.05 n=2      [tanimoto] window=1.000 baseline=0.130±0.046 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.0
+q=70 w=0.10 n=2      [tanimoto] window=1.000 baseline=0.122±0.041 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.0
+q=70 w=0.20 n=4      [tanimoto] window=0.871 baseline=0.129±0.025 | rarefied(m=4) window=1.0±0.0 baseline=4.0±0.0
+q=70 w=0.30 n=9      [tanimoto] window=0.367 baseline=0.128±0.012 | rarefied(m=9) window=3.0±0.0 baseline=9.0±0.1
+q=70 w=0.40 n=149    [tanimoto] window=0.177 baseline=0.125±0.003 | rarefied(m=100) window=39.0±1.5 baseline=98.7±1.4
+q=90 w=0.05  n_window=1     (표본 부족, 스킵)
+q=90 w=0.10 n=4      [tanimoto] window=0.573 baseline=0.127±0.023 | rarefied(m=4) window=2.0±0.0 baseline=4.0±0.0
+q=90 w=0.20 n=62     [tanimoto] window=0.185 baseline=0.126±0.004 | rarefied(m=62) window=24.0±0.0 baseline=61.4±0.7
+q=90 w=0.30 n=427    [tanimoto] window=0.168 baseline=0.125±0.002 | rarefied(m=100) window=58.2±3.5 baseline=98.7±1.2
+q=90 w=0.40 n=3198   [tanimoto] window=0.138 baseline=0.125±0.001 | rarefied(m=100) window=86.2±3.3 baseline=98.8±1.2

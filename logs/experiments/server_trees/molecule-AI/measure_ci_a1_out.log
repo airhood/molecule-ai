@@ -1,0 +1,15 @@
+/home/cbgpu/molecule-AI/measure_ci_a1.py:44: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load(CKPT, map_location=device)
+CKPT=checkpoints_c4_a1/best.pt guidance_w=1.0
+RANGES(p90-p10): {'HOMO': 0.04779374599456787, 'LUMO': 0.06751696020364761, 'LogP': 4.137224197387695, 'TPSA': 86.52000427246094, 'HBA': 4.0, 'RotBonds': 8.0, 'AromaticRings': 3.0}
+
+총 valid 분자 수: 109 (목표 160개 시도)
+
+물성                 n  median|err|     CI_low    CI_high   range%          range%_CI
+HOMO             109       0.0084     0.0063     0.0103    17.5% [13.2%,21.6%]
+LUMO             109       0.0133     0.0105     0.0154    19.7% [15.5%,22.8%]
+LogP             109       0.8718     0.6451     1.0398    21.1% [15.6%,25.1%]
+TPSA             109      11.6100     9.1300    13.4900    13.4% [10.6%,15.6%]
+HBA              109       1.0000     1.0000     1.0000    25.0% [25.0%,25.0%]
+RotBonds         109       3.0000     2.0000     3.0000    37.5% [25.0%,37.5%]
+AromaticRings    109       1.0000     1.0000     1.0000    33.3% [33.3%,33.3%]

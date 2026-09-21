@@ -1,0 +1,129 @@
+Device: cuda
+Log: ./train_c1_control_ext40.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  [G-2] ./checkpoints_c4_c1_control/ckpt_epoch0020.pt에서 가중치만 로드 (optimizer/scheduler/epoch는 새로 시작)
+  [G-5] 새 아키텍처 파라미터(zero-init 유지): ['class_weights', 'edge_class_weights', 'schedule.ac', 'schedule.ac_prev', 'schedule.m_X', 'schedule.m_E', 'net.atomic_weight', 'net.x_embed.weight', 'net.e_embed.weight', 'net.t_embed.mlp.0.weight', 'net.t_embed.mlp.0.bias', 'net.t_embed.mlp.2.weight', 'net.t_embed.mlp.2.bias', 'net.t_proj.weight', 'net.t_proj.bias', 'net.layers.0.qkv.weight', 'net.layers.0.e_bias.weight', 'net.layers.0.e_bias.bias', 'net.layers.0.attn_out.weight', 'net.layers.0.attn_out.bias', 'net.layers.0.norm1.weight', 'net.layers.0.norm1.bias', 'net.layers.0.ff.0.weight', 'net.layers.0.ff.0.bias', 'net.layers.0.ff.2.weight', 'net.layers.0.ff.2.bias', 'net.layers.0.norm2.weight', 'net.layers.0.norm2.bias', 'net.layers.0.edge_ff.0.weight', 'net.layers.0.edge_ff.0.bias', 'net.layers.0.edge_ff.2.weight', 'net.layers.0.edge_ff.2.bias', 'net.layers.0.enorm.weight', 'net.layers.0.enorm.bias', 'net.layers.0.cond_mod.weight', 'net.layers.0.cond_mod.bias', 'net.layers.1.qkv.weight', 'net.layers.1.e_bias.weight', 'net.layers.1.e_bias.bias', 'net.layers.1.attn_out.weight', 'net.layers.1.attn_out.bias', 'net.layers.1.norm1.weight', 'net.layers.1.norm1.bias', 'net.layers.1.ff.0.weight', 'net.layers.1.ff.0.bias', 'net.layers.1.ff.2.weight', 'net.layers.1.ff.2.bias', 'net.layers.1.norm2.weight', 'net.layers.1.norm2.bias', 'net.layers.1.edge_ff.0.weight', 'net.layers.1.edge_ff.0.bias', 'net.layers.1.edge_ff.2.weight', 'net.layers.1.edge_ff.2.bias', 'net.layers.1.enorm.weight', 'net.layers.1.enorm.bias', 'net.layers.1.cond_mod.weight', 'net.layers.1.cond_mod.bias', 'net.layers.2.qkv.weight', 'net.layers.2.e_bias.weight', 'net.layers.2.e_bias.bias', 'net.layers.2.attn_out.weight', 'net.layers.2.attn_out.bias', 'net.layers.2.norm1.weight', 'net.layers.2.norm1.bias', 'net.layers.2.ff.0.weight', 'net.layers.2.ff.0.bias', 'net.layers.2.ff.2.weight', 'net.layers.2.ff.2.bias', 'net.layers.2.norm2.weight', 'net.layers.2.norm2.bias', 'net.layers.2.edge_ff.0.weight', 'net.layers.2.edge_ff.0.bias', 'net.layers.2.edge_ff.2.weight', 'net.layers.2.edge_ff.2.bias', 'net.layers.2.enorm.weight', 'net.layers.2.enorm.bias', 'net.layers.2.cond_mod.weight', 'net.layers.2.cond_mod.bias', 'net.layers.3.qkv.weight', 'net.layers.3.e_bias.weight', 'net.layers.3.e_bias.bias', 'net.layers.3.attn_out.weight', 'net.layers.3.attn_out.bias', 'net.layers.3.norm1.weight', 'net.layers.3.norm1.bias', 'net.layers.3.ff.0.weight', 'net.layers.3.ff.0.bias', 'net.layers.3.ff.2.weight', 'net.layers.3.ff.2.bias', 'net.layers.3.norm2.weight', 'net.layers.3.norm2.bias', 'net.layers.3.edge_ff.0.weight', 'net.layers.3.edge_ff.0.bias', 'net.layers.3.edge_ff.2.weight', 'net.layers.3.edge_ff.2.bias', 'net.layers.3.enorm.weight', 'net.layers.3.enorm.bias', 'net.layers.3.cond_mod.weight', 'net.layers.3.cond_mod.bias', 'net.layers.4.qkv.weight', 'net.layers.4.e_bias.weight', 'net.layers.4.e_bias.bias', 'net.layers.4.attn_out.weight', 'net.layers.4.attn_out.bias', 'net.layers.4.norm1.weight', 'net.layers.4.norm1.bias', 'net.layers.4.ff.0.weight', 'net.layers.4.ff.0.bias', 'net.layers.4.ff.2.weight', 'net.layers.4.ff.2.bias', 'net.layers.4.norm2.weight', 'net.layers.4.norm2.bias', 'net.layers.4.edge_ff.0.weight', 'net.layers.4.edge_ff.0.bias', 'net.layers.4.edge_ff.2.weight', 'net.layers.4.edge_ff.2.bias', 'net.layers.4.enorm.weight', 'net.layers.4.enorm.bias', 'net.layers.4.cond_mod.weight', 'net.layers.4.cond_mod.bias', 'net.layers.5.qkv.weight', 'net.layers.5.e_bias.weight', 'net.layers.5.e_bias.bias', 'net.layers.5.attn_out.weight', 'net.layers.5.attn_out.bias', 'net.layers.5.norm1.weight', 'net.layers.5.norm1.bias', 'net.layers.5.ff.0.weight', 'net.layers.5.ff.0.bias', 'net.layers.5.ff.2.weight', 'net.layers.5.ff.2.bias', 'net.layers.5.norm2.weight', 'net.layers.5.norm2.bias', 'net.layers.5.edge_ff.0.weight', 'net.layers.5.edge_ff.0.bias', 'net.layers.5.edge_ff.2.weight', 'net.layers.5.edge_ff.2.bias', 'net.layers.5.enorm.weight', 'net.layers.5.enorm.bias', 'net.layers.5.cond_mod.weight', 'net.layers.5.cond_mod.bias', 'net.struct_proj.weight', 'net.struct_proj.bias', 'net.conn_proj.weight', 'net.conn_proj.bias', 'net.cond_proj.weight', 'net.cond_proj.bias', 'net.x_head.0.weight', 'net.x_head.0.bias', 'net.x_head.1.weight', 'net.x_head.1.bias', 'net.e_head.0.weight', 'net.e_head.0.bias', 'net.e_head.1.weight', 'net.e_head.1.bias', 'net.prop_head.0.weight', 'net.prop_head.0.bias', 'net.prop_head.1.weight', 'net.prop_head.1.bias', 'net.prop_head.3.weight', 'net.prop_head.3.bias']
+  [경고] 체크포인트에만 있고 현재 모델엔 없는 키: ['epoch', 'model', 'ema', 'optimizer', 'scheduler', 'best_val_loss']
+  Parameters: 5,754,052
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+     1    1.5515   0.5351   0.2004    1.4315   0.5218   0.1809  1335.9s
+     2    1.5283   0.5253   0.1986    1.4332   0.5234   0.1811  1297.3s
+     3    1.5161   0.5208   0.1973    1.4296   0.5227   0.1807  1457.3s
+     4    1.5126   0.5191   0.1971    1.4180   0.5164   0.1799  1425.4s
+     5    1.5050   0.5167   0.1962    1.4164   0.5170   0.1794  1420.8s
+     6    1.5037   0.5167   0.1960    1.4242   0.5193   0.1805  1466.9s
+     7    1.5029   0.5164   0.1960    1.4070   0.5123   0.1786  1418.4s
+     8    1.5020   0.5158   0.1960    1.4137   0.5154   0.1794  1383.9s
+     9    1.4983   0.5147   0.1955    1.4113   0.5150   0.1789  1470.7s
+    10    1.4952   0.5135   0.1952    1.4098   0.5128   0.1791  1481.1s
+    [EMA] valid(strict)=0.684 valid(frag)=0.863 valid(single)=0.613 atomViolRate=0.006 meanViol/mol=0.18 fragRatio=0.929 uniq=1.000
+    [EMA] singleFragRate=0.738(ref 0.968) ringCount=3.63(ref 3.69) ring56Rate=0.317(ref 0.967) degree=2.14(ref 2.19) QED=0.518(ref 0.538)
+    [EMA] t=10  atom=0.992 bond=0.987 nobond=1.000 P(b|bond)=0.983 P(b|nobond)=0.001 CE=0.006(ref 0.308) | t=40  atom=0.939 bond=0.818 nobond=0.993 P(b|bond)=0.777 P(b|nobond)=0.016 CE=0.072(ref 0.308) | t=75  atom=0.794 bond=0.334 nobond=0.984 P(b|bond)=0.312 P(b|nobond)=0.049 CE=0.217(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.092 P(b|nobond)=0.064 CE=0.297(ref 0.308)
+    [RAW] valid(strict)=0.449 valid(frag)=0.863 valid(single)=0.332 atomViolRate=0.006 meanViol/mol=0.17 fragRatio=0.836 uniq=1.000
+    [RAW] singleFragRate=0.438(ref 0.968) ringCount=2.37(ref 3.69) ring56Rate=0.386(ref 0.967) degree=2.06(ref 2.19) QED=0.424(ref 0.538)
+    [RAW] t=10  atom=0.994 bond=0.988 nobond=1.000 P(b|bond)=0.982 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.936 bond=0.787 nobond=0.994 P(b|bond)=0.721 P(b|nobond)=0.013 CE=0.081(ref 0.308) | t=75  atom=0.792 bond=0.197 nobond=0.994 P(b|bond)=0.273 P(b|nobond)=0.036 CE=0.216(ref 0.308) | t=110 atom=0.744 bond=0.000 nobond=1.000 P(b|bond)=0.065 P(b|nobond)=0.044 CE=0.303(ref 0.308)
+Device: cuda
+Log: ./train_c1_control_ext40.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  [G-2] ./checkpoints_c4_c1_control/best.pt에서 가중치만 로드 (optimizer/scheduler/epoch는 새로 시작)
+  Parameters: 5,754,052
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+     1    1.4691   0.5039   0.1921    1.3855   0.5038   0.1762  1260.2s
+     2    1.4835   0.5086   0.1940    1.3967   0.5097   0.1772  1271.9s
+     3    1.4790   0.5072   0.1934    1.3969   0.5099   0.1773  1351.6s
+     4    1.4802   0.5073   0.1936    1.3898   0.5051   0.1768  1329.8s
+     5    1.4756   0.5058   0.1930    1.3900   0.5067   0.1765  1351.5s
+     6    1.4764   0.5067   0.1930    1.3990   0.5086   0.1779  1375.2s
+     7    1.4779   0.5070   0.1933    1.3837   0.5029   0.1761  1324.5s
+     8    1.4781   0.5068   0.1934    1.3907   0.5056   0.1769  1363.3s
+     9    1.4756   0.5062   0.1930    1.3888   0.5057   0.1765  1336.7s
+    10    1.4734   0.5053   0.1928    1.3890   0.5046   0.1768  1360.1s
+    [EMA] valid(strict)=0.789 valid(frag)=0.953 valid(single)=0.770 atomViolRate=0.002 meanViol/mol=0.05 fragRatio=0.939 uniq=1.000
+    [EMA] singleFragRate=0.805(ref 0.968) ringCount=3.54(ref 3.69) ring56Rate=0.668(ref 0.967) degree=2.16(ref 2.19) QED=0.533(ref 0.538)
+    [EMA] t=10  atom=0.995 bond=0.991 nobond=1.000 P(b|bond)=0.989 P(b|nobond)=0.001 CE=0.004(ref 0.308) | t=40  atom=0.946 bond=0.828 nobond=0.994 P(b|bond)=0.798 P(b|nobond)=0.015 CE=0.064(ref 0.308) | t=75  atom=0.795 bond=0.340 nobond=0.984 P(b|bond)=0.318 P(b|nobond)=0.050 CE=0.216(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.093 P(b|nobond)=0.065 CE=0.296(ref 0.308)
+    [RAW] valid(strict)=0.648 valid(frag)=0.969 valid(single)=0.590 atomViolRate=0.001 meanViol/mol=0.04 fragRatio=0.884 uniq=1.000
+    [RAW] singleFragRate=0.621(ref 0.968) ringCount=2.85(ref 3.69) ring56Rate=0.689(ref 0.967) degree=2.11(ref 2.19) QED=0.505(ref 0.538)
+    [RAW] t=10  atom=0.996 bond=0.993 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.000 CE=0.003(ref 0.308) | t=40  atom=0.929 bond=0.817 nobond=0.994 P(b|bond)=0.769 P(b|nobond)=0.012 CE=0.068(ref 0.308) | t=75  atom=0.779 bond=0.236 nobond=0.992 P(b|bond)=0.283 P(b|nobond)=0.040 CE=0.215(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.070 P(b|nobond)=0.049 CE=0.302(ref 0.308)
+    11    1.4729   0.5053   0.1927    1.3845   0.5018   0.1765  1374.0s
+    12    1.4751   0.5055   0.1931    1.3911   0.5045   0.1773  1367.8s
+    13    1.4682   0.5033   0.1922    1.3911   0.5041   0.1773  1397.4s
+    14    1.4733   0.5042   0.1930    1.3790   0.4995   0.1758  1330.9s
+    15    1.4745   0.5049   0.1931    1.3750   0.4974   0.1755  1362.4s
+    16    1.4722   0.5044   0.1928    1.3809   0.5007   0.1760  1409.8s
+    17    1.4718   0.5041   0.1928    1.3909   0.5025   0.1776  1405.5s
+Device: cuda
+Log: ./train_c1_control_ext40.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  Resumed from epoch 10  (best val loss: 1.3837)
+  Parameters: 5,754,052
+
+ Epoch    T-loss      T-x      T-e    V-loss      V-x      V-e  Time
+------------------------------------------------------------------------------------------
+Device: cuda
+Log: ./train_c1_control_ext40.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  Resumed from epoch 10  (best val loss: 1.3837)
+  Parameters: 5,754,052
+
+ Epoch    T-loss      T-x      T-e   T-prop    V-loss      V-x      V-e   V-prop  Time
+------------------------------------------------------------------------------------------
+Device: cuda
+Log: ./train_c1_control_ext40.log
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+Building size distribution ...
+  Size range: 6 ~ 50 atoms  (median 29)
+Computing marginal class distributions (node/edge) ...
+  m_X: [0.0, 0.7424461245536804, 0.09813539683818817, 0.11735163629055023, 0.012819983996450901, 0.00039847753942012787, 0.017244458198547363, 0.009797051548957825, 0.0015939101576805115, 0.00021297937200870365]
+  m_E: [0.9272449612617493, 0.05248565226793289, 0.02004554122686386, 0.00022381941380444914]
+  Resumed from epoch 10  (best val loss: 1.3837)
+  Parameters: 5,754,052
+
+ Epoch    T-loss      T-x      T-e   T-prop    V-loss      V-x      V-e   V-prop  Time
+------------------------------------------------------------------------------------------
+    11    1.4649   0.5019   0.1918   0.0399    1.3801   0.5005   0.1758   0.0036  1303.9s
+    12    1.4768   0.5056   0.1935   0.0398    1.3887   0.5048   0.1767   0.0043  1326.6s
+    13    1.4716   0.5039   0.1928   0.0387    1.3875   0.5041   0.1766   0.0035  1381.9s
+    14    1.4724   0.5037   0.1930   0.0382    1.3815   0.5003   0.1762   0.0029  1373.3s
+    15    1.4675   0.5020   0.1923   0.0381    1.3787   0.4996   0.1758   0.0025  1413.3s
+    16    1.4678   0.5027   0.1923   0.0372    1.3872   0.5019   0.1770   0.0024  1420.4s
+    17    1.4690   0.5028   0.1925   0.0365    1.3709   0.4953   0.1751   0.0022  1385.9s
+    18    1.4696   0.5029   0.1926   0.0355    1.3766   0.4973   0.1758   0.0021  1401.0s
+    19    1.4672   0.5024   0.1922   0.0360    1.3725   0.4962   0.1752   0.0021  1398.9s
+    20    1.4655   0.5017   0.1920   0.0355    1.3740   0.4960   0.1756   0.0019  1403.0s
+    [EMA] valid(strict)=0.777 valid(frag)=0.930 valid(single)=0.770 atomViolRate=0.003 meanViol/mol=0.08 fragRatio=0.942 uniq=1.000
+    [EMA] singleFragRate=0.832(ref 0.968) ringCount=3.70(ref 3.69) ring56Rate=0.697(ref 0.967) degree=2.17(ref 2.19) QED=0.560(ref 0.538)
+    [EMA] t=10  atom=0.996 bond=0.996 nobond=1.000 P(b|bond)=0.994 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.945 bond=0.836 nobond=0.993 P(b|bond)=0.800 P(b|nobond)=0.016 CE=0.064(ref 0.308) | t=75  atom=0.803 bond=0.361 nobond=0.984 P(b|bond)=0.333 P(b|nobond)=0.052 CE=0.215(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.101 P(b|nobond)=0.068 CE=0.295(ref 0.308)
+    [RAW] valid(strict)=0.754 valid(frag)=0.926 valid(single)=0.711 atomViolRate=0.003 meanViol/mol=0.09 fragRatio=0.934 uniq=1.000
+    [RAW] singleFragRate=0.773(ref 0.968) ringCount=3.79(ref 3.69) ring56Rate=0.646(ref 0.967) degree=2.17(ref 2.19) QED=0.538(ref 0.538)
+    [RAW] t=10  atom=0.997 bond=0.992 nobond=1.000 P(b|bond)=0.991 P(b|nobond)=0.001 CE=0.003(ref 0.308) | t=40  atom=0.945 bond=0.860 nobond=0.995 P(b|bond)=0.819 P(b|nobond)=0.013 CE=0.056(ref 0.308) | t=75  atom=0.815 bond=0.325 nobond=0.987 P(b|bond)=0.310 P(b|nobond)=0.048 CE=0.218(ref 0.308) | t=110 atom=0.748 bond=0.000 nobond=1.000 P(b|bond)=0.092 P(b|nobond)=0.061 CE=0.293(ref 0.308)
+
+Done. Best val loss: 1.3709

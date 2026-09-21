@@ -1,0 +1,68 @@
+loaded n=200000 in 138.4s
+descriptors n_valid=200000/200000 in 106.9s
+
+=== condition A_topological(RotBonds+AromaticRings) ===
+q=10 w=0.10 n=5794   [tanimoto] window=0.141 baseline=0.125±0.001 | rarefied(m=100) window=97.0±1.5 baseline=98.8±1.1
+q=10 w=0.20 n=16907  [tanimoto] window=0.140 baseline=0.125±0.001 | rarefied(m=100) window=98.5±1.1 baseline=98.6±1.3
+q=10 w=0.30 n=25016  [tanimoto] window=0.139 baseline=0.126±0.001 | rarefied(m=100) window=98.8±1.0 baseline=98.4±1.3
+q=10 w=0.40 n=94040  [tanimoto] window=0.134 baseline=0.126±0.001 | rarefied(m=100) window=99.5±0.7 baseline=98.6±1.1
+q=30 w=0.10 n=5411   [tanimoto] window=0.143 baseline=0.125±0.001 | rarefied(m=100) window=96.0±1.9 baseline=98.8±0.9
+q=30 w=0.20 n=16485  [tanimoto] window=0.143 baseline=0.126±0.001 | rarefied(m=100) window=97.7±1.7 baseline=98.8±1.3
+q=30 w=0.30 n=26994  [tanimoto] window=0.140 baseline=0.125±0.001 | rarefied(m=100) window=97.6±1.6 baseline=98.8±1.1
+q=30 w=0.40 n=98974  [tanimoto] window=0.135 baseline=0.126±0.001 | rarefied(m=100) window=98.7±1.1 baseline=98.9±1.1
+q=50 w=0.10 n=5789   [tanimoto] window=0.144 baseline=0.125±0.001 | rarefied(m=100) window=97.0±1.8 baseline=98.7±1.3
+q=50 w=0.20 n=15898  [tanimoto] window=0.144 baseline=0.125±0.001 | rarefied(m=100) window=98.1±1.2 baseline=98.8±1.1
+q=50 w=0.30 n=24119  [tanimoto] window=0.142 baseline=0.126±0.001 | rarefied(m=100) window=98.8±1.1 baseline=98.6±1.3
+q=50 w=0.40 n=93819  [tanimoto] window=0.136 baseline=0.126±0.001 | rarefied(m=100) window=99.5±0.7 baseline=98.9±1.2
+q=70 w=0.10 n=1405   [tanimoto] window=0.145 baseline=0.126±0.001 | rarefied(m=100) window=75.6±3.8 baseline=98.6±1.4
+q=70 w=0.20 n=4409   [tanimoto] window=0.141 baseline=0.125±0.001 | rarefied(m=100) window=78.4±3.9 baseline=98.6±1.5
+q=70 w=0.30 n=7377   [tanimoto] window=0.138 baseline=0.125±0.001 | rarefied(m=100) window=79.2±3.5 baseline=98.8±1.4
+q=70 w=0.40 n=50296  [tanimoto] window=0.133 baseline=0.126±0.001 | rarefied(m=100) window=95.8±1.9 baseline=98.7±1.2
+q=90 w=0.10 n=2169   [tanimoto] window=0.140 baseline=0.125±0.001 | rarefied(m=100) window=79.3±3.9 baseline=98.6±1.4
+q=90 w=0.20 n=6733   [tanimoto] window=0.135 baseline=0.126±0.001 | rarefied(m=100) window=83.5±4.0 baseline=98.6±1.5
+q=90 w=0.30 n=10844  [tanimoto] window=0.133 baseline=0.126±0.001 | rarefied(m=100) window=83.8±4.5 baseline=98.5±1.5
+q=90 w=0.40 n=62350  [tanimoto] window=0.126 baseline=0.126±0.001 | rarefied(m=100) window=96.5±2.0 baseline=98.6±1.2
+
+=== condition B_continuous(HOMO+LUMO+LogP+TPSA+HBA) ===
+q=10 w=0.10 n=42     [tanimoto] window=0.179 baseline=0.124±0.006 | rarefied(m=42) window=17.0±0.0 baseline=41.7±0.6
+q=10 w=0.20 n=542    [tanimoto] window=0.150 baseline=0.125±0.001 | rarefied(m=100) window=81.8±3.0 baseline=98.4±1.4
+q=10 w=0.30 n=6018   [tanimoto] window=0.138 baseline=0.125±0.001 | rarefied(m=100) window=96.8±1.5 baseline=98.4±1.5
+q=10 w=0.40 n=15519  [tanimoto] window=0.139 baseline=0.125±0.001 | rarefied(m=100) window=98.7±1.1 baseline=98.7±1.2
+q=30 w=0.10 n=76     [tanimoto] window=0.169 baseline=0.126±0.003 | rarefied(m=76) window=33.0±0.0 baseline=75.2±1.1
+q=30 w=0.20 n=1213   [tanimoto] window=0.146 baseline=0.125±0.001 | rarefied(m=100) window=89.5±2.5 baseline=98.6±1.3
+q=30 w=0.30 n=10864  [tanimoto] window=0.138 baseline=0.126±0.001 | rarefied(m=100) window=98.0±1.4 baseline=98.9±1.4
+q=30 w=0.40 n=24534  [tanimoto] window=0.135 baseline=0.125±0.001 | rarefied(m=100) window=99.0±1.1 baseline=98.6±1.1
+q=50 w=0.10 n=92     [tanimoto] window=0.156 baseline=0.126±0.004 | rarefied(m=92) window=38.0±0.0 baseline=91.1±1.0
+q=50 w=0.20 n=1210   [tanimoto] window=0.138 baseline=0.126±0.001 | rarefied(m=100) window=90.8±2.7 baseline=98.7±1.1
+q=50 w=0.30 n=12516  [tanimoto] window=0.136 baseline=0.125±0.001 | rarefied(m=100) window=97.8±1.6 baseline=98.7±1.0
+q=50 w=0.40 n=27963  [tanimoto] window=0.134 baseline=0.126±0.001 | rarefied(m=100) window=98.9±1.2 baseline=98.6±1.3
+q=70 w=0.10 n=2      [tanimoto] window=1.000 baseline=0.126±0.041 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.0
+q=70 w=0.20 n=5      [tanimoto] window=0.578 baseline=0.125±0.014 | rarefied(m=5) window=2.0±0.0 baseline=5.0±0.0
+q=70 w=0.30 n=58     [tanimoto] window=0.183 baseline=0.125±0.004 | rarefied(m=58) window=18.0±0.0 baseline=57.6±0.7
+q=70 w=0.40 n=173    [tanimoto] window=0.163 baseline=0.125±0.003 | rarefied(m=100) window=44.0±1.8 baseline=98.9±0.9
+q=90 w=0.10 n=17     [tanimoto] window=0.229 baseline=0.124±0.008 | rarefied(m=17) window=4.0±0.0 baseline=17.0±0.2
+q=90 w=0.20 n=156    [tanimoto] window=0.164 baseline=0.125±0.003 | rarefied(m=100) window=38.6±1.7 baseline=98.8±1.2
+q=90 w=0.30 n=1380   [tanimoto] window=0.150 baseline=0.125±0.001 | rarefied(m=100) window=73.4±4.1 baseline=98.6±1.4
+q=90 w=0.40 n=4129   [tanimoto] window=0.133 baseline=0.126±0.001 | rarefied(m=100) window=83.5±3.9 baseline=98.6±1.3
+
+=== condition C_all7_final(HOMO,LUMO,LogP,TPSA,HBA,RotBonds,AromaticRings) ===
+q=10 w=0.10 n=9      [tanimoto] window=0.344 baseline=0.127±0.009 | rarefied(m=9) window=4.0±0.0 baseline=9.0±0.1
+q=10 w=0.20 n=161    [tanimoto] window=0.175 baseline=0.125±0.003 | rarefied(m=100) window=53.2±2.0 baseline=98.9±1.0
+q=10 w=0.30 n=1849   [tanimoto] window=0.156 baseline=0.126±0.002 | rarefied(m=100) window=91.4±3.2 baseline=98.8±1.3
+q=10 w=0.40 n=11848  [tanimoto] window=0.145 baseline=0.125±0.001 | rarefied(m=100) window=98.2±1.3 baseline=98.7±1.1
+q=30 w=0.10  n_window=1     (표본 부족, 스킵)
+q=30 w=0.20 n=77     [tanimoto] window=0.172 baseline=0.125±0.004 | rarefied(m=77) window=26.0±0.0 baseline=76.1±1.1
+q=30 w=0.30 n=1074   [tanimoto] window=0.154 baseline=0.126±0.001 | rarefied(m=100) window=85.5±2.7 baseline=98.5±1.2
+q=30 w=0.40 n=11818  [tanimoto] window=0.141 baseline=0.125±0.001 | rarefied(m=100) window=98.0±1.2 baseline=98.3±1.3
+q=50 w=0.10 n=5      [tanimoto] window=0.503 baseline=0.132±0.020 | rarefied(m=5) window=2.0±0.0 baseline=5.0±0.0
+q=50 w=0.20 n=89     [tanimoto] window=0.172 baseline=0.126±0.003 | rarefied(m=89) window=33.0±0.0 baseline=87.8±1.2
+q=50 w=0.30 n=1388   [tanimoto] window=0.152 baseline=0.126±0.001 | rarefied(m=100) window=90.7±2.4 baseline=98.8±1.3
+q=50 w=0.40 n=15438  [tanimoto] window=0.141 baseline=0.125±0.001 | rarefied(m=100) window=98.1±1.2 baseline=98.4±1.6
+q=70 w=0.10 n=2      [tanimoto] window=1.000 baseline=0.113±0.033 | rarefied(m=2) window=1.0±0.0 baseline=2.0±0.0
+q=70 w=0.20 n=4      [tanimoto] window=0.871 baseline=0.126±0.022 | rarefied(m=4) window=1.0±0.0 baseline=4.0±0.0
+q=70 w=0.30 n=11     [tanimoto] window=0.302 baseline=0.126±0.009 | rarefied(m=11) window=4.0±0.0 baseline=11.0±0.0
+q=70 w=0.40 n=120    [tanimoto] window=0.171 baseline=0.125±0.003 | rarefied(m=100) window=37.8±0.8 baseline=98.3±1.4
+q=90 w=0.10 n=9      [tanimoto] window=0.342 baseline=0.124±0.013 | rarefied(m=9) window=2.0±0.0 baseline=9.0±0.0
+q=90 w=0.20 n=57     [tanimoto] window=0.207 baseline=0.126±0.004 | rarefied(m=57) window=14.0±0.0 baseline=56.4±0.8
+q=90 w=0.30 n=568    [tanimoto] window=0.164 baseline=0.125±0.002 | rarefied(m=100) window=56.6±3.6 baseline=98.7±1.3
+q=90 w=0.40 n=3293   [tanimoto] window=0.140 baseline=0.125±0.001 | rarefied(m=100) window=81.6±3.3 baseline=99.0±1.1

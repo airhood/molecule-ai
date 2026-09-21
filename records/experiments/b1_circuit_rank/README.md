@@ -32,6 +32,14 @@ CI 겹침), 다음 실험인 C-1(고리 "크기"별 세부 feature)로 이어짐
 - `raw_errors_a1.json`, `raw_errors_b1fixed.json`, `raw_errors_control.json`,
   `ring_raw_b1fixed.json`, `ring_raw_control.json`: 원본 오차 데이터.
 
+## 의존성
+
+`measure_ci_raw.py`는 `../c1_prop_regressor.py`(독립 GNN 회귀기, `PropRegressor`)를
+import한다 — 이 파일은 B-1/C-1/D-1 평가 스크립트가 공유하는 의존성이라
+`records/experiments/` 바로 아래(실험별 폴더 밖)에 둔다. 서버의 5개
+워크트리 전부에서 SHA256 동일(`70cd21ef...`)함을 확인함 — 학습 코드와
+달리 이 평가용 회귀기는 트리마다 갈라지지 않고 공유됨.
+
 ## 결과 요약
 
 circuit_rank 추가는 conditioning 정확도(8개 물성 Δ-CI)와 ring56Rate 어느
