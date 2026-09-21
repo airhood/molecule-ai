@@ -78,9 +78,14 @@ def _restore_rng_state(state):
         return
     random.setstate(state["python"])
     np.random.set_state(state["numpy"])
-    torch.set_rng_state(state["torch"])
+    # [스모크 테스트 2026-09-21에 발견/수정] torch.load(..., map_location=device)가
+    # 체크포인트의 모든 텐서(RNG state 포함)를 device로 옮겨버려서, CPU
+    # ByteTensor를 요구하는 torch.set_rng_state가 "RNG state must be a
+    # torch.ByteTensor" 에러로 죽었다. 여기서 명시적으로 cpu로 되돌려서 로드.
+    torch.set_rng_state(state["torch"].cpu())
     if "cuda" in state and torch.cuda.is_available():
-        torch.cuda.set_rng_state_all(state["cuda"])
+        cuda_states = [s.cpu() if isinstance(s, torch.Tensor) else s for s in state["cuda"]]
+        torch.cuda.set_rng_state_all(cuda_states)
 
 
 class EMA:
