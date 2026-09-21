@@ -31,7 +31,7 @@
 | 실험 | 결론 | 코드 | 등급 |
 |---|---|---|---|
 | A-1 (부분조건화, HOMO/LUMO 2개→7개 물성 확장) | **채택됨** — 실패 사례 아니라 현재 아키텍처의 기반. 별도 대조군 코드 불필요(`model3.py` 자체가 그 결과물). | `model3.py` (현재) | — |
-| B-1 (circuit_rank 구조 feature) | null (Δ-CI 8개 지표 전부 CI 겹침) | `records/experiments/b1_circuit_rank/` | control: **T2**, feature arm: **T3(재구성)** |
+| B-1 (circuit_rank 구조 feature) | null (Δ-CI 8개 지표 전부 CI 겹침) | `records/experiments/b1_circuit_rank/` | control: **T2**, feature arm: **T2** (2026-09-21 정정 — 서버 메인 트렁크가 C-1 이후 갱신 안 돼 B-1 시점 그대로 남아있던 진짜 스냅샷 발견, 재구성본 대체) |
 | D-1 (A-1 vs control Δ-CI 재검증, CI-겹침 오류 수정 후) | 가설 기각(무조건부 물성분포가 데이터와 큰 차이 없음) | `records/experiments/b1_circuit_rank/diff_ci_a1_vs_control.py` (신규 학습 없음, B-1 체크포인트 재사용) | T2 |
 | C-1 (고리 크기별 cycle feature) | null | `records/experiments/proposal_a/c1_experiment/` | **T2** (feature/control 모두 학습 시점 스냅샷) |
 | E-1 (C-1 control을 20→40 epoch 연장, TPSA 재현 시도) | TPSA 재현 안 됨 — D-1 원신호는 multiple-comparisons artifact로 잠정 결론 | `records/experiments/proposal_a/c1_experiment/`(C-1 코드 재사용) + `runs/`(매니페스트) | **T1** |
@@ -48,6 +48,10 @@
 
 ## 4. 알려진 한계
 
-- B-1의 feature arm은 재구성이며 학습 당시 코드와 byte-identical하지 않음
-  (기능적으로 동등함은 diff로 확인했으나, 이 사실 자체를 논문/부록에 명시할 것).
 - `model3.py`는 계속 진화 중이므로, 이 문서의 "현재 상태" 서술은 커밋 시점 기준.
+- **서버 메인 트렁크(`~/molecule-AI/model3.py`) 자체가 낡음**: C-1(2026-09-19)
+  이후 한 번도 갱신되지 않아 B-1 시점(circuit_rank만 있음) 그대로 멈춰있다.
+  이번엔 그 덕분에 B-1 feature arm 진짜 스냅샷을 거기서 건졌지만, 반대로
+  다음에 메인 트렁크에서 새로 학습을 돌리면 C-1 코드가 빠진 채로 돌아갈
+  위험이 있다 — 로컬 `model3.py`를 서버 메인 트렁크에 반영할지는 아직
+  사용자 확인 대기 중.

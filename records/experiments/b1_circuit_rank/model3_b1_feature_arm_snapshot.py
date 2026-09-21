@@ -1,20 +1,17 @@
-"""[RECONSTRUCTED, not a training-time snapshot]
-records/experiments/b1_circuit_rank/model3_b1_feature_arm_RECONSTRUCTED.py
+"""[진짜 학습 시점 스냅샷, 재구성 아님]
+records/experiments/b1_circuit_rank/model3_b1_feature_arm_snapshot.py
 
-molecule-AI(메인 트렁크)의 현재 model3.py에서 [C-1](cycle_proj/_ring_cycle_features/
-_scale_cycle_features 및 forward의 cycle_struct 계산+합산)만 손으로 제거해
-B-1 feature arm(circuit_rank 포함, cycle_proj 없음) 상태를 복원한 파일이다.
+출처: 서버 100.100.136.37, ~/molecule-AI/model3.py (메인 트렁크), 2026-09-21에
+scp로 직접 가져옴. SHA256 efc9433603d1dcf9e17cd222dab86b60d02dcaf9690aa50c9c1131710afab17e,
+mtime 2026-09-18T03:31:36Z.
 
-**checkpoints_c4_b1_fixed를 실제로 학습시킨 코드와 byte-identical하지 않다** --
-메인 트렁크는 B-1 학습 이후에도 계속 진화했고 그 시점의 독립 스냅샷은 보존되지
-않았다(review 없이 트렁크에 직접 누적하는 워크플로우였음). 2026-09-21에
-model3.py(당시 SHA256은 devlog.md 참조)에서 [C-1] 태그가 붙은 블록만 제거해
-재구성했으며, [B-1]/[A-1] 이전 코드와 골격이 동일함은 grep으로 확인함.
-
-대조군(B-1 control arm)은 반대로 **진짜 학습 당시 스냅샷이 그대로 보존**되어
-있다 -- molecule-AI-control/model3.py는 C-1 시점까지 수정되지 않아
-records/experiments/proposal_a/c1_experiment/model3_c1_control_snapshot.py와
-SHA256이 완전히 동일하다(efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad).
+메인 트렁크가 C-1(2026-09-19) 이후로 업데이트되지 않아 B-1 시점(circuit_rank
+있음, cycle_proj 없음) 그대로 멈춰있는 상태 -- 처음엔 이걸 "동기화 안 된 문제"로
+봤는데, checkpoints_c4_b1_fixed를 실제로 학습시킨 코드 그 자체였다. 이전에
+만들었던 model3_b1_feature_arm_RECONSTRUCTED.py(현재 model3.py에서 C-1 블록을
+손으로 제거한 재구성본)와 diff한 결과 거의 동일하고, 재구성본 쪽이 A-1 관련
+주석 블록 하나를 실수로 더 지웠던 것도 확인함 -- 그래서 재구성본은 삭제하고
+이 진짜 스냅샷으로 교체함.
 """
 
 import math
@@ -359,6 +356,22 @@ class ScoreNetwork(nn.Module):
         # 으로 확장. review18.md §4/§5 검증 거침.
         self.conn_proj = nn.Linear(3, NODE_DIM)
 
+        # [C-3] 2026-09-05: review8.md 지시로 conditioning 배선을 물성보다
+        # 먼저 a_bin(9차원)으로 스모크 테스트해 통과함(off-distribution 타겟
+        # 4개 전부 CI 비겹침, docs/review_followup_20260905b.md §3).
+        # [C-4] 2026-09-05: review9.md 지시로 물성 conditioning 본 실험 착수.
+        # 같은 메커니즘(cond_proj + 학습 가능한 null_cond로 CFG 드롭 시 대입 +
+        # COND_DROPOUT_P)을 재사용하되 입력을 a_bin(9차원)에서 HOMO/LUMO
+        # 정규화 값(2차원, batch.p 순서 0,1)으로 교체 -- GAP은 LUMO-HOMO로
+        # 선형종속(review9.md §0, 상관계수 1.0)이라 조건에서 제외, E_total은
+        # 조성만으로 R²=1.0(§0/[C-2])이라 제외, Dipole은 GNN_R²=0.303으로
+        # 2D 그래프로는 70%가 설명 안 돼 조건 경로에 잡음만 주입하므로 제외.
+        # [A-1] 2026-09-17: 물성을 여러 개(COND_DIM개)로 확장하면서 부분조건(일부만 값을 주고
+        # 나머지는 모름)을 지원해야 해서, "학습된 null_cond 하나로 전체
+        # 대체"하던 방식을 버리고 (마스크된 값, 마스크) concat 입력으로
+        # 바꿨다. "완전 무조건"은 이제 별도 파라미터가 아니라 값=0,마스크=0
+        # 인 입력 패턴 하나로 자연스럽게 표현되고, cond_proj의 bias 항이
+        # 그 입력에 대한 학습 가능한 기본 출력을 담당한다(review16.md §4).
         self.cond_proj = nn.Linear(2 * COND_DIM, NODE_DIM)
 
         # 원자: padding(0) 제외한 K_X-1개 실제 원소 예측.

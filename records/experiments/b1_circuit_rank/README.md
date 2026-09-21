@@ -14,15 +14,15 @@ CI 겹침), 다음 실험인 C-1(고리 "크기"별 세부 feature)로 이어짐
   재사용됐고(`molecule-AI-c1-control/model3.py`와 해시 완전히 동일),
   `records/experiments/proposal_a/c1_experiment/model3_c1_control_snapshot.py`와
   같은 파일이다 — 중복 보관이 아니라 같은 원본을 가리키는 두 경로.
-- `model3_b1_feature_arm_RECONSTRUCTED.py`: **재구성 파일, 학습 시점
-  스냅샷 아님.** circuit_rank를 실제로 켠 feature arm(`checkpoints_c4_b1_fixed`)은
-  메인 트렁크(`molecule-AI/model3.py`)에서 직접 학습됐는데, 그 트렁크는
-  B-1 이후에도 C-1이 바로 이어 붙어 계속 진화해 독립 스냅샷이 남지 않았다.
-  이 파일은 2026-09-21에 **현재** `model3.py`에서 `[C-1]` 태그가 붙은
-  블록(cycle_proj 초기화, `_ring_cycle_features`/`_scale_cycle_features`,
-  forward의 cycle_struct 계산 및 `h` 합산)만 손으로 제거해 되돌린 것이다.
-  파일 상단 docstring에 재구성 근거를 명시했다. 논문에는 "재구성, 원본
-  학습 코드와 byte-identical 아님"으로 반드시 표기할 것.
+- `model3_b1_feature_arm_snapshot.py`: **진짜 학습 시점 스냅샷** (2026-09-21
+  정정 — 이전엔 T3 재구성 파일이었으나 실제 원본을 찾아 교체함). circuit_rank를
+  켠 feature arm(`checkpoints_c4_b1_fixed`)은 메인 트렁크(`molecule-AI/model3.py`)에서
+  학습됐는데, 그 트렁크가 C-1(2026-09-19) 이후로 한 번도 업데이트되지 않고
+  그대로 멈춰있어서(mtime 2026-09-18T03:31Z) circuit_rank는 있고 cycle_proj는
+  없는 B-1 시점 그대로 보존돼 있었다 — "동기화 안 됨" 문제가 아니라 그 자체가
+  원본. SHA256 `efc9433603d1dcf9e17cd222dab86b60d02dcaf9690aa50c9c1131710afab17e`.
+  (이전에 만들었던 손 재구성본과 diff한 결과, 재구성본 쪽이 A-1 관련 주석
+  블록 하나를 실수로 더 지웠던 것도 이번에 확인함.)
 - `diff_ci_a1_vs_control.py`는 D-1(A-1 vs control 재검증, review19.md 지시로
   CI-겹침 오류 수정 후 재계산 — devlog.md 2026-09-19 "[D-1] A-1 vs control
   Δ-CI 재검증")의 평가 스크립트도 겸한다. D-1은 새로 학습하지 않고 A-1/B-1
