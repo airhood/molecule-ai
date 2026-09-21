@@ -1,0 +1,1 @@
+ 675768 Sun Sep 20 12:15:28 2026       12:17 /home/cbgpu/miniconda3/envs/molai/bin/python -u train3.py --processed-dir ./data/processed_ext7 --max-samples 150000 --resume ./checkpoints_c4_c1_control_ext40/ckpt_epoch0010.pt --save-dir ./checkpoints_c4_c1_control_ext40 --save-every 1 --log-file ./train_c1_control_ext40.log --epochs 20 --batch-size 12 --lr 3e-5 --seed 60

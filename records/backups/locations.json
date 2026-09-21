@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-20T23:59:30.395820+09:00",
+  "repository": {
+    "host": "airhood",
+    "absolute_path": "/media/airhood/로컬 디스크/git/molecule-AI",
+    "device_id": 66311,
+    "mount_source": "/dev/nvme1n1p2",
+    "mount_target": "/media/airhood/로컬 디스크",
+    "filesystem": "ntfs3"
+  },
+  "backups": [
+    {
+      "id": "local_pre_restructure",
+      "host": "airhood",
+      "absolute_path": "/media/airhood/로컬 디스크/git/molecule-AI_backup_pre_restructure_20260920T213807+0900",
+      "exists": true,
+      "same_filesystem_as_repository": true,
+      "device_id": 66311,
+      "size_bytes": 642739524,
+      "file_count_including_checksum_manifest": 208,
+      "verified_payload_file_count": 207,
+      "verification_result": "all_ok",
+      "checksum_manifest_copy": "records/backups/checksums/local_pre_restructure_SHA256SUMS",
+      "verification_log": "records/backups/verification/local_pre_restructure_verify.txt"
+    },
+    {
+      "id": "server_snapshot_local_copy",
+      "host": "airhood",
+      "absolute_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000",
+      "exists": true,
+      "same_filesystem_as_repository": true,
+      "device_id": 66311,
+      "size_bytes": 7264268153,
+      "file_count_including_checksum_manifest": 315,
+      "verified_payload_file_count": 314,
+      "verification_result": "all_ok",
+      "checksum_manifest_copy": "records/backups/checksums/server_snapshot_SHA256SUMS",
+      "verification_log": "records/backups/verification/server_snapshot_verify.txt"
+    }
+  ],
+  "disaster_recovery_note": "Both local copies share the repository physical volume. They protect against project restructuring or accidental deletion, but not failure of /dev/nvme1n1p2. The verified GPU-server backup is the physically separate copy."
+}

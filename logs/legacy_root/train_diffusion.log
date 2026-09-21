@@ -1,0 +1,3 @@
+Device: cpu
+Log: ./train_diffusion.log
+Loading datasets ...

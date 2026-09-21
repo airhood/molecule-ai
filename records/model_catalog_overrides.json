@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "models": {
+    "molecule-AI/checkpoints_r4": {"display_name": "R-4 baseline", "logs": ["train_r4.log", "train_r4_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_r5": {"display_name": "R-5 structural features", "logs": ["train_r5.log", "train_r5_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_v4": {"display_name": "V-4 baseline", "logs": ["train_v4.log", "train_v4_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_r6": {"display_name": "R-6", "logs": ["train_r6.log", "train_r6_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_c3": {"display_name": "C-3 conditioning", "logs": ["train_c3.log", "train_c3_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_c4": {"display_name": "C-4 conditioning baseline", "logs": ["train_c4.log", "train_c4_stdout.log"], "status": "completed"},
+    "molecule-AI/checkpoints_c4_ft": {"display_name": "G-2 fine-tune", "logs": ["train_c4_ft.log", "c4_ft_stdout.log"], "status": "completed", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt"},
+    "molecule-AI/checkpoints_c4_g5": {"display_name": "G-5", "logs": ["train_c4_g5.log", "c4_g5_stdout.log"], "status": "completed", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt"},
+    "molecule-AI/checkpoints_c4_g6": {"display_name": "G-6", "logs": ["train_c4_g6.log", "c4_g6_stdout.log"], "status": "completed", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt"},
+    "molecule-AI/checkpoints_c4_a1": {"display_name": "A-1 partial conditioning", "logs": ["train_c4_a1.log", "train_c4_a1_stdout.log"], "status": "completed_with_overwritten_prior_attempt", "parent": null, "parent_note": "COND_DIM 2->7 shape mismatch로 checkpoints_c4에서 이어받을 수 없어 from-scratch 재학습함 (devlog.md line 2454, 2475 확인, 2026-09-20 독립검증으로 정정 -- 원래 override는 parent=checkpoints_c4로 잘못 기재돼 있었음)"},
+    "molecule-AI/checkpoints_c4_b1": {"display_name": "B-1 first attempt", "logs": ["train_c4_b1.log", "train_c4_b1_stdout.log"], "status": "completed_known_warm_start_bug", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt"},
+    "molecule-AI/checkpoints_c4_b1_fixed": {"display_name": "B-1 fixed", "logs": ["train_c4_b1_fixed.log", "train_c4_b1_fixed_stdout.log"], "status": "completed", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt"},
+    "molecule-AI-control/checkpoints_c4_control": {"display_name": "B-1 matched control", "logs": ["train_control.log", "train_control_stdout.log"], "status": "completed", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt"},
+    "molecule-AI-c1-feature/checkpoints_c4_c1_feature": {"display_name": "C-1 cycle feature", "logs": ["train_c1_feature.log", "train_c1_feature_stdout.log"], "status": "completed_rng_caveat", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt"},
+    "molecule-AI-c1-control/checkpoints_c4_c1_control": {"display_name": "C-1 matched control", "logs": ["train_c1_control.log", "train_c1_control_stdout.log"], "status": "completed_rng_caveat", "parent": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt"},
+    "molecule-AI-c1-control/checkpoints_c4_c1_control_ext40": {"display_name": "E-1 C-1 control extension", "logs": ["train_c1_control_ext40.log", "train_c1_control_ext40_stdout.log", "train_c1_control_ext40_resume_stdout.log", "train_c1_control_ext40_resume2_stdout.log"], "status": "running_at_audit_time", "parent": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control/best.pt"}
+  }
+}

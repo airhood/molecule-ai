@@ -1,0 +1,2294 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-20T23:51:52.797876+09:00",
+  "ordering": "models sorted by earliest checkpoint mtime; checkpoints sorted by epoch then name",
+  "evidence_policy": {
+    "exact_manifest": "Recorded by a run manifest at launch time.",
+    "verified_backup": "Binary hash verified in the 2026-09-20 point-in-time backup.",
+    "legacy_run_without_manifest": "Artifacts exist, but exact session boundaries/config are incomplete.",
+    "inference_warning": "Directory/log name associations come from explicit overrides and must be reviewed."
+  },
+  "models": [
+    {
+      "model_id": "molecule-AI::checkpoints_r4",
+      "display_name": "R-4 baseline",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_r4",
+      "first_checkpoint_at": "2026-08-28T11:13:42.026819+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r4.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r4.log",
+          "present_locally": true,
+          "size": 1870,
+          "mtime": "2026-08-28T11:38:10.170585+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r4_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r4_stdout.log",
+          "present_locally": true,
+          "size": 775987,
+          "mtime": "2026-08-28T11:38:10.175586+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0001.pt",
+          "epoch": 1,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r4/ckpt_epoch0001.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r4/ckpt_epoch0001.pt",
+          "local_backup_matches_current": true,
+          "size": 90361788,
+          "mtime": "2026-08-28T11:13:42.026819+09:00",
+          "sha256": "624c99d2e554cbbfb8741324d7adbe1a4d40b565cd8d9470fa40f0396699fba3",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0002.pt",
+          "epoch": 2,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r4/ckpt_epoch0002.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r4/ckpt_epoch0002.pt",
+          "local_backup_matches_current": true,
+          "size": 90361788,
+          "mtime": "2026-08-28T11:36:14.741594+09:00",
+          "sha256": "cd4510cca1a8b962efe91e90d164bf6f8f3bc005dc88e70bfbf0333eea33debc",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r4/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r4/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22577790,
+          "mtime": "2026-08-28T11:36:14.597589+09:00",
+          "sha256": "8c7300f23473b3f0a748a421541eb71762d58e3f0364a87c416ea095b787a3b3",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 1
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_r5",
+      "display_name": "R-5 structural features",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_r5",
+      "first_checkpoint_at": "2026-08-28T14:51:21.326391+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r5.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r5.log",
+          "present_locally": true,
+          "size": 1870,
+          "mtime": "2026-08-28T15:09:27.088935+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r5_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r5_stdout.log",
+          "present_locally": true,
+          "size": 554510,
+          "mtime": "2026-08-28T15:09:27.093935+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0001.pt",
+          "epoch": 1,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r5/ckpt_epoch0001.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r5/ckpt_epoch0001.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-08-28T14:51:21.326391+09:00",
+          "sha256": "b4c361f03b7aff05db5171c05e4d8f5ca5f5a3c2d394edc6c438f0ffdf55f4ca",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0002.pt",
+          "epoch": 2,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r5/ckpt_epoch0002.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r5/ckpt_epoch0002.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-08-28T15:07:42.142306+09:00",
+          "sha256": "dcb88f786b72868163d1329216a5a4df51e41edfbafff6c84035e41f481f2a24",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r5/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r5/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22581679,
+          "mtime": "2026-08-28T15:07:41.993301+09:00",
+          "sha256": "aeae4dcf88d177dbe23832455f9d35881f800e69f141deecb88b9415731ec754",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 2
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_v4",
+      "display_name": "V-4 baseline",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_v4",
+      "first_checkpoint_at": "2026-09-02T00:31:38.983567+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_v4.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_v4.log",
+          "present_locally": true,
+          "size": 35830,
+          "mtime": "2026-09-02T07:29:30.899015+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_v4_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_v4_stdout.log",
+          "present_locally": true,
+          "size": 7192796,
+          "mtime": "2026-09-02T07:29:30.902015+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0001.pt",
+          "epoch": 1,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0001.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0001.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T00:31:38.983567+09:00",
+          "sha256": "055f0b05a7706db0b3a42236f4823b6f9e8508459675d8228503eb93e3a9a76c",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0002.pt",
+          "epoch": 2,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0002.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0002.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T00:48:12.499137+09:00",
+          "sha256": "3bf6f2727c38cd49a5689f30794ac5eddefe936ac722e6c866f6eb4a91151b86",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0003.pt",
+          "epoch": 3,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0003.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0003.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T01:04:00.531125+09:00",
+          "sha256": "b8f3c3cf2589d3463eefb96a925e90f9f635c35e2865acfcfc8758ceebabd251",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0004.pt",
+          "epoch": 4,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0004.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0004.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T01:20:49.740241+09:00",
+          "sha256": "35a88f7e7a5afa32d6d25b0eee7e343ab39886176015d1bbba56f8f583a52bf9",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0005.pt",
+          "epoch": 5,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0005.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0005.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T01:37:05.817205+09:00",
+          "sha256": "e89eaacdefd363e5038793687f9f567062475bc973a4e39cb6b6b2b247aadd3e",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0006.pt",
+          "epoch": 6,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0006.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0006.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T01:54:07.028739+09:00",
+          "sha256": "6a19df36fc07e42a57a0d02647c9ca2ae813ac722b0b255cf7b75647212491a3",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0007.pt",
+          "epoch": 7,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0007.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0007.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T02:11:26.243900+09:00",
+          "sha256": "6d1597ccf09bb429d76b57a0b29feea1b4e406c7b7cfe494c6e27135cd45bc3d",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0008.pt",
+          "epoch": 8,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0008.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0008.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T02:28:48.348176+09:00",
+          "sha256": "7cd063bc23ece37b91eb843f8bf5c01054b910bad0f1265d9ac4d43a39524932",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0009.pt",
+          "epoch": 9,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0009.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0009.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T02:46:17.371494+09:00",
+          "sha256": "ad1ce93165775952a41ca2b76f83e661099c60fbc898ff43caae7bce05c654d1",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T03:02:29.282876+09:00",
+          "sha256": "c1ef1afb841c7e07d14cb59a662e04ef4cd3df9de04e5de987b2a1ac2878e218",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0011.pt",
+          "epoch": 11,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0011.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0011.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T03:19:49.616183+09:00",
+          "sha256": "fb8ef68fc23a1442494108b5f06640127f38564daeece8e483adef5cda5a284f",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0012.pt",
+          "epoch": 12,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0012.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0012.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T03:36:56.106006+09:00",
+          "sha256": "2fae3c90de6af04467dd43e5f16cafda7571ec9fb23fca9da9aaecfc3d5a296f",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0013.pt",
+          "epoch": 13,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0013.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0013.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T03:54:46.328356+09:00",
+          "sha256": "5e549334feccc9da5b6ca3615ab1467eb128af592271a1db27fe56bec28f7639",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0014.pt",
+          "epoch": 14,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0014.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0014.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T04:13:19.164192+09:00",
+          "sha256": "b4bef2a6fb9bec4637e445bfc1471da1fdf76f69f13469c7ae5274a0a10cc55f",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0015.pt",
+          "epoch": 15,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0015.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0015.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T04:30:49.126835+09:00",
+          "sha256": "5066d76aff5618e1044cdd9c1026efdb40e9f6393f87d50078cdd0d171754fb1",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0016.pt",
+          "epoch": 16,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0016.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0016.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T04:47:45.692312+09:00",
+          "sha256": "0ddb81d37e0de1558abce93f6696fb84761d751f1f27a21147862777db6bed0e",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0017.pt",
+          "epoch": 17,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0017.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0017.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T05:05:05.960616+09:00",
+          "sha256": "2cae8b9d28e2abb3fdd191308d7e9103e7725230252e87b6d17d3bbdf5cd8357",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0018.pt",
+          "epoch": 18,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0018.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0018.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T05:23:07.164349+09:00",
+          "sha256": "5f6a608340fcfb8d7b2463c966a6a7a221395bfd20c176f90429727571c7f9eb",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0019.pt",
+          "epoch": 19,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0019.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0019.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T05:41:15.439278+09:00",
+          "sha256": "d09128b8aeb0b0d43ac032a73df8e97fb1479e68835ed5e760f5ac383df87c7f",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T05:59:28.048864+09:00",
+          "sha256": "18ee426b3562f639c3c42fc3b7d993a83e6cf8eb039560d84f0f839ee36e15ed",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0021.pt",
+          "epoch": 21,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0021.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0021.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T06:17:41.607634+09:00",
+          "sha256": "e2df54c8e62ef15ad669b2c69939235425ee12bb996f58164ad6d30e58e23df0",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0022.pt",
+          "epoch": 22,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0022.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0022.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T06:35:18.178505+09:00",
+          "sha256": "ef420f257877e3606068615f95a064f22c72862c49bb3f30adbe403102f41c40",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0023.pt",
+          "epoch": 23,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0023.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0023.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T06:52:43.289976+09:00",
+          "sha256": "f62ea9bf33e03ac692d213f48f353ce24bf479a369e8313f16a11e03357a44b1",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0024.pt",
+          "epoch": 24,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0024.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0024.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T07:09:47.151706+09:00",
+          "sha256": "11194a21940488e4fe5eb6d01f41cf3e042199c80db2c665f220b1f863e74b87",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0025.pt",
+          "epoch": 25,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/ckpt_epoch0025.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/ckpt_epoch0025.pt",
+          "local_backup_matches_current": true,
+          "size": 90377720,
+          "mtime": "2026-09-02T07:27:11.632155+09:00",
+          "sha256": "dd0a8cb642d5054ad6fdb2da3566d61b601adf4704f06d991fc09bc9ff1641d9",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_v4/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_v4/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22581679,
+          "mtime": "2026-09-02T05:59:27.892859+09:00",
+          "sha256": "88d6a2499938e0ac40e460ec3adfc3e49690b000a40d932acddbe09c190efe1f",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 3
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_r6",
+      "display_name": "R-6",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_r6",
+      "first_checkpoint_at": "2026-09-04T22:14:42.132493+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r6.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r6.log",
+          "present_locally": true,
+          "size": 35830,
+          "mtime": "2026-09-05T05:10:55.230246+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_r6_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_r6_stdout.log",
+          "present_locally": true,
+          "size": 7182737,
+          "mtime": "2026-09-05T05:10:55.235246+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0001.pt",
+          "epoch": 1,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0001.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0001.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T22:14:42.132493+09:00",
+          "sha256": "acf7caf396e2c93a47be3b69292aee0225717a978bacc015a16ab8fa24cb451d",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0002.pt",
+          "epoch": 2,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0002.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0002.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T22:31:46.139421+09:00",
+          "sha256": "530914e460cf772b8b1abcc075735cbc3c2ff3a2f32222a621e16c39e567e0fa",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0003.pt",
+          "epoch": 3,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0003.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0003.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T22:48:44.404153+09:00",
+          "sha256": "bf74dbece53fe6201e7751c41d0bf18f8173a272440f83c464d32781bedc3dd9",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0004.pt",
+          "epoch": 4,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0004.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0004.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T23:05:29.596436+09:00",
+          "sha256": "4bd1fb728d8dd020b40ee7570fea420b14e7e939c595257a806816a0c55d81aa",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0005.pt",
+          "epoch": 5,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0005.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0005.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T23:22:11.282598+09:00",
+          "sha256": "be0e5f1e47e7ef04d349489f32a2730901e92184b1023b14f8ed0c7ba7e20ec7",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0006.pt",
+          "epoch": 6,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0006.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0006.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T23:39:04.045139+09:00",
+          "sha256": "bceb5af71063557a9666bd7fac049cb8a4cf9a9109885ce783525daf91a335f1",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0007.pt",
+          "epoch": 7,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0007.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0007.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-04T23:55:53.018550+09:00",
+          "sha256": "f1905fc02891dab2612c2973cd6a3cad589463b1e93e33954d8d24afd17989d0",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0008.pt",
+          "epoch": 8,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0008.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0008.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T00:13:09.162888+09:00",
+          "sha256": "e3a6b14a6ddc5b0b7aa6748e982afde719a4aa7f1c6d470b12e88cefb7efdccd",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0009.pt",
+          "epoch": 9,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0009.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0009.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T00:29:39.556666+09:00",
+          "sha256": "5deb043fe4de2292ff597a43822ac123e6a7fc57865d996de0f5fcdbf29ecd62",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T00:46:49.627796+09:00",
+          "sha256": "1db4e83d0bc429b2e18eea8849a42ac4d9354d8d31a0a76877dc55978fd06dcf",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0011.pt",
+          "epoch": 11,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0011.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0011.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T01:03:20.054575+09:00",
+          "sha256": "ad87d3015eb3f571b0d7c2fb64824eebdb794681d21894f68297a67bcd4c2081",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0012.pt",
+          "epoch": 12,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0012.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0012.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T01:21:03.967860+09:00",
+          "sha256": "07becec406ec7da29b14d860349369ed53f7a6987f5296b0493b78ccac846b6e",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0013.pt",
+          "epoch": 13,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0013.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0013.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T01:38:48.241152+09:00",
+          "sha256": "7cc4d8c2bf5f9106b0ddbf1e35a5012ff02dcec3f5abc06f40c3c1f43ee5386b",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0014.pt",
+          "epoch": 14,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0014.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0014.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T01:56:28.964907+09:00",
+          "sha256": "b62e6241a867f4567176015a7244a6322579be8492955916ad174005ecdef291",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0015.pt",
+          "epoch": 15,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0015.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0015.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T02:14:07.690921+09:00",
+          "sha256": "bdbae3a96d42613048dc10d528f017d0180f3a19f841d4c3accd204762149ee9",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0016.pt",
+          "epoch": 16,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0016.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0016.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T02:31:15.261635+09:00",
+          "sha256": "5c91681680d9329b02a1a728476609d3d079ac06982f77fe44fbc50a9c65ac60",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0017.pt",
+          "epoch": 17,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0017.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0017.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T02:48:21.045719+09:00",
+          "sha256": "d8085bada39b14c759fb69aa26f4431cd0263c65c01d1ac36547768aea38edf8",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0018.pt",
+          "epoch": 18,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0018.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0018.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T03:06:09.898271+09:00",
+          "sha256": "a3efbaa6ac9ba505c28b4aa50d4d3acb0970b5e9386e7d0e025ab288afe0ffa5",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0019.pt",
+          "epoch": 19,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0019.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0019.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T03:23:19.666486+09:00",
+          "sha256": "07e1cfd99a475ab288c2a3bf6ac732afd052ebefabb2b67988c64439253ced1e",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T03:40:29.961719+09:00",
+          "sha256": "8ff18faffd010ffd916074a93a69298a604f7dec0daff9d229f20805789d8cde",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0021.pt",
+          "epoch": 21,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0021.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0021.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T03:57:52.726378+09:00",
+          "sha256": "48fa2a82614dc1bedfe79c93d24e91994d3c0fbc176d9d9b7df42816621cb53a",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0022.pt",
+          "epoch": 22,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0022.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0022.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T04:15:39.432856+09:00",
+          "sha256": "cabd43dae3a8bb754f9af86f7abf4bca77b974f5b27ad23741f1f18c39faf292",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0023.pt",
+          "epoch": 23,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0023.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0023.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T04:33:24.253269+09:00",
+          "sha256": "6c21a748f95e7a61ff69d45db05a02ebb8a922a5c12017165b33fba6bc3f8c70",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0024.pt",
+          "epoch": 24,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0024.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0024.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T04:51:14.567871+09:00",
+          "sha256": "9d1f52276bf6676d8cf74439dc602ef2bd5b795482645ed3a34e9de2bac7546b",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0025.pt",
+          "epoch": 25,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/ckpt_epoch0025.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/ckpt_epoch0025.pt",
+          "local_backup_matches_current": true,
+          "size": 90393066,
+          "mtime": "2026-09-05T05:08:44.576778+09:00",
+          "sha256": "4510df964daa1fb03532456c030b2eaa83f399c6714f7c908e28b572c3da3d60",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_r6/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_r6/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22585253,
+          "mtime": "2026-09-05T04:51:14.418866+09:00",
+          "sha256": "9809988e7725ddbc2e703fd39bd0a582a1e65f13a4912b1ed82d4f224ddaafbe",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 4
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c3",
+      "display_name": "C-3 conditioning",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c3",
+      "first_checkpoint_at": "2026-09-05T20:41:03.101256+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c3.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c3.log",
+          "present_locally": true,
+          "size": 1088,
+          "mtime": "2026-09-05T20:41:03.111256+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c3_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c3_stdout.log",
+          "present_locally": true,
+          "size": 1385346,
+          "mtime": "2026-09-05T20:41:03.111256+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c3/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c3/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22596310,
+          "mtime": "2026-09-05T20:41:03.101256+09:00",
+          "sha256": "46705af63cf524c682008339b3f5557e3615c5b2a3857e6e0f488f8ae28a3ef2",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 5
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4",
+      "display_name": "C-4 conditioning baseline",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4",
+      "first_checkpoint_at": "2026-09-06T00:12:54.192486+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4.log",
+          "present_locally": true,
+          "size": 2528,
+          "mtime": "2026-09-06T04:05:08.623035+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_stdout.log",
+          "present_locally": true,
+          "size": 7077485,
+          "mtime": "2026-09-06T04:05:08.623035+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 90409909,
+          "mtime": "2026-09-06T00:12:54.192486+09:00",
+          "sha256": "d9fce8c38e0ca3758a66c8f787caa7128e8d73ee5fa4232a1642fbdbafcd7302",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 90409909,
+          "mtime": "2026-09-06T02:48:01.815484+09:00",
+          "sha256": "6d9db6dfd93a7da1dae6c3a84cd99949b6bf5e9915068484ce91e236f5aee20b",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22589142,
+          "mtime": "2026-09-06T02:16:57.049545+09:00",
+          "sha256": "d07c02d15721cdaa9cf155fcfd5118f7edf0c73173b0e2b8a1ad0cf1a92fca38",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best_backup_20260912.pt",
+          "epoch": null,
+          "kind": "named",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4/best_backup_20260912.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4/best_backup_20260912.pt",
+          "local_backup_matches_current": true,
+          "size": 22589142,
+          "mtime": "2026-09-12T18:46:18.761376+09:00",
+          "sha256": "d07c02d15721cdaa9cf155fcfd5118f7edf0c73173b0e2b8a1ad0cf1a92fca38",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 6
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_ft",
+      "display_name": "G-2 fine-tune",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_ft",
+      "first_checkpoint_at": "2026-09-12T20:44:40.811214+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_ft.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_ft.log",
+          "present_locally": true,
+          "size": 4217,
+          "mtime": "2026-09-12T22:29:51.545989+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/c4_ft_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/c4_ft_stdout.log",
+          "present_locally": true,
+          "size": 4731543,
+          "mtime": "2026-09-12T22:29:51.551989+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0005.pt",
+          "epoch": 5,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_ft/ckpt_epoch0005.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_ft/ckpt_epoch0005.pt",
+          "local_backup_matches_current": true,
+          "size": 90409909,
+          "mtime": "2026-09-12T20:44:40.811214+09:00",
+          "sha256": "0b8311730b6ad946b1ea5eedaf553a6b4124a336afc22b9d186855dea03d9f29",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_ft/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_ft/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 90409909,
+          "mtime": "2026-09-12T22:27:24.493944+09:00",
+          "sha256": "1090ff201bfcfb7a44809d9e863a9ff21998c7699b4e4b8534b3f97b02a6bef1",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_ft/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_ft/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22589142,
+          "mtime": "2026-09-12T21:25:22.638318+09:00",
+          "sha256": "b63c7ff8e56afba109b35809e1811290fe0ccf96dc3072fd01a54b0569d50d2b",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 7
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_g5",
+      "display_name": "G-5",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_g5",
+      "first_checkpoint_at": "2026-09-13T04:41:55.543815+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_g5.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_g5.log",
+          "present_locally": true,
+          "size": 4721,
+          "mtime": "2026-09-13T06:23:44.102779+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/c4_g5_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/c4_g5_stdout.log",
+          "present_locally": true,
+          "size": 4955812,
+          "mtime": "2026-09-13T06:23:44.107779+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0005.pt",
+          "epoch": 5,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g5/ckpt_epoch0005.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g5/ckpt_epoch0005.pt",
+          "local_backup_matches_current": true,
+          "size": 45364378,
+          "mtime": "2026-09-13T04:41:55.624818+09:00",
+          "sha256": "a36c8ea2aaf4ffad0c6452dbea36c7541527e67a5342a801001e0008fc680093",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g5/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g5/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 45364378,
+          "mtime": "2026-09-13T06:21:17.601647+09:00",
+          "sha256": "bed4915c64e1d002625394cde2787bdd36afccbc8156c99775770925eb8076d7",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g5/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g5/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22629274,
+          "mtime": "2026-09-13T04:41:55.543815+09:00",
+          "sha256": "fc312520d6a3fcc1178888cf9b6ca919c711b6f5eb7679dd5a5875509412eb98",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 8
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_g6",
+      "display_name": "G-6",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_g6",
+      "first_checkpoint_at": "2026-09-13T20:08:54.462097+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_g6.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_g6.log",
+          "present_locally": true,
+          "size": 4797,
+          "mtime": "2026-09-13T22:10:23.498031+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/c4_g6_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/c4_g6_stdout.log",
+          "present_locally": true,
+          "size": 5063260,
+          "mtime": "2026-09-13T22:10:23.505031+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0005.pt",
+          "epoch": 5,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g6/ckpt_epoch0005.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g6/ckpt_epoch0005.pt",
+          "local_backup_matches_current": true,
+          "size": 91654391,
+          "mtime": "2026-09-13T20:08:54.462097+09:00",
+          "sha256": "531f92c36190acd5ba6a3892c7813589114776a2bc2b5c76e58a9d266811a1b5",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g6/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g6/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 91654391,
+          "mtime": "2026-09-13T22:07:26.134037+09:00",
+          "sha256": "f9f539393d463072be5736d14e27bdd1dc09d1bb51d736821d12908d483f2310",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_g6/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_g6/best.pt",
+          "local_backup_matches_current": true,
+          "size": 22898236,
+          "mtime": "2026-09-13T22:07:25.966031+09:00",
+          "sha256": "6774e7af04172078cc85d6b28a0ccace50b4bf8c6ba7b1ac1e0354bd7eb4ee66",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 9
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_a1",
+      "display_name": "A-1 partial conditioning",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_a1",
+      "first_checkpoint_at": "2026-09-18T04:24:43.309274+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed_with_overwritten_prior_attempt",
+      "parent_lineage": {
+        "checkpoint": null,
+        "evidence": "unknown"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_a1.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_a1.log",
+          "present_locally": true,
+          "size": 11975,
+          "mtime": "2026-09-18T08:28:04.911952+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_a1_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_a1_stdout.log",
+          "present_locally": true,
+          "size": 10186888,
+          "mtime": "2026-09-18T08:28:04.918952+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_a1/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-18T04:24:43.309274+09:00",
+          "sha256": "38bae583f596f252cfc1047ead42e60c7429c5b97ba946119b2f285eca4ecd4c",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_a1/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-18T08:25:14.534022+09:00",
+          "sha256": "de9ad0a82a03b4f18da34b5af20419f22ced67771922383b68b296a0e4de0c30",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_a1/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23062849,
+          "mtime": "2026-09-18T07:12:18.688737+09:00",
+          "sha256": "c6041051a844cb84f2f61653667387d392650038bf86ac8946a440e46dd22f41",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 10
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_b1",
+      "display_name": "B-1 first attempt",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_b1",
+      "first_checkpoint_at": "2026-09-18T16:14:27.154757+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed_known_warm_start_bug",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_b1.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_b1.log",
+          "present_locally": true,
+          "size": 5116,
+          "mtime": "2026-09-18T20:06:00.623876+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_b1_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_b1_stdout.log",
+          "present_locally": true,
+          "size": 10012419,
+          "mtime": "2026-09-18T20:06:00.630877+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92316446,
+          "mtime": "2026-09-18T16:14:27.154757+09:00",
+          "sha256": "05354052890d6364fb48314ffa47a80e1866f0ed0a8ca9b6d446472b911e9ded",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92316446,
+          "mtime": "2026-09-18T20:03:18.759272+09:00",
+          "sha256": "363bbbb60f999658440b9129acf76f768495b3525ddfdce2fbfa3e37acdd2dc4",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23063873,
+          "mtime": "2026-09-18T18:55:01.190399+09:00",
+          "sha256": "ae96eddf9d5fb940fd7cceea6034296b00dcc13e82e1be6d2d782b8b7242a22d",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 11
+    },
+    {
+      "model_id": "molecule-AI::checkpoints_c4_b1_fixed",
+      "display_name": "B-1 fixed",
+      "worktree": "molecule-AI",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI/checkpoints_c4_b1_fixed",
+      "first_checkpoint_at": "2026-09-19T00:09:34.936868+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_b1_fixed.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_b1_fixed.log",
+          "present_locally": true,
+          "size": 5059,
+          "mtime": "2026-09-19T04:05:24.215283+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI/train_c4_b1_fixed_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI/train_c4_b1_fixed_stdout.log",
+          "present_locally": true,
+          "size": 9997198,
+          "mtime": "2026-09-19T04:05:24.222284+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1_fixed/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1_fixed/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92316446,
+          "mtime": "2026-09-19T00:09:34.936868+09:00",
+          "sha256": "c97414302ebf4247c3d833565c3b4562628b77e8087342037aeb0a6e63ab2e7c",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1_fixed/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1_fixed/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92316446,
+          "mtime": "2026-09-19T04:02:51.598912+09:00",
+          "sha256": "c9bad95fd9fe02e921e3b1a0b6f42c9c815f4bb8eac5750438f336ccbec7c5bb",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_c4_b1_fixed/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_c4_b1_fixed/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23063873,
+          "mtime": "2026-09-19T03:39:48.253459+09:00",
+          "sha256": "7b3206f2c111e9ec391fbd9ab73412a36d7428c30a4ee84315a6de4f51b2cdd1",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 12
+    },
+    {
+      "model_id": "molecule-AI-control::checkpoints_c4_control",
+      "display_name": "B-1 matched control",
+      "worktree": "molecule-AI-control",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI-control/checkpoints_c4_control",
+      "first_checkpoint_at": "2026-09-19T00:11:11.220268+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-control/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-control/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-control/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-control/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-control/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-control/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI-control/train_control.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-control/train_control.log",
+          "present_locally": true,
+          "size": 5003,
+          "mtime": "2026-09-19T04:04:36.541605+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-control/train_control_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-control/train_control_stdout.log",
+          "present_locally": true,
+          "size": 10129897,
+          "mtime": "2026-09-19T04:04:36.547606+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-control/checkpoints_c4_control/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-control/checkpoints_c4_control/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-19T00:11:11.220268+09:00",
+          "sha256": "28d8bf3a2a4b3088a92a4344736b0481d6e8d53f50c6da96585fad08bceff7cb",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-control/checkpoints_c4_control/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-control/checkpoints_c4_control/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-19T04:01:54.802913+09:00",
+          "sha256": "8e13610cc74755e0fd86d4197ebd5db7ae6a8dbd0157b19872b3577de78e5cca",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI-control/checkpoints_c4_control/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-control/checkpoints_c4_control/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23062849,
+          "mtime": "2026-09-19T03:38:59.250751+09:00",
+          "sha256": "61fc0ad0b36414fa8b019834dc7e8876d1751ad0d84ef26f00b63b08d30246a9",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 13
+    },
+    {
+      "model_id": "molecule-AI-c1-control::checkpoints_c4_c1_control",
+      "display_name": "C-1 matched control",
+      "worktree": "molecule-AI-c1-control",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control",
+      "first_checkpoint_at": "2026-09-19T20:08:51.174772+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed_rng_caveat",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control.log",
+          "present_locally": true,
+          "size": 5768,
+          "mtime": "2026-09-20T00:07:13.732190+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control_stdout.log",
+          "present_locally": true,
+          "size": 10141061,
+          "mtime": "2026-09-20T00:07:13.732190+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/checkpoints_c4_c1_control/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-19T20:08:51.174772+09:00",
+          "sha256": "d1aa3ad8ae9addb3c19caed9495349d1289e52cd71e4553f88297d4e750e142d",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/checkpoints_c4_c1_control/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-20T00:04:38.529716+09:00",
+          "sha256": "d0ebd8be4dc11d25269b3d35c67752ba90df1796f572303b557ef8c421668102",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/checkpoints_c4_c1_control/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23062849,
+          "mtime": "2026-09-20T00:04:38.376711+09:00",
+          "sha256": "c14e1515f34eb01b453ed24a763b5e7cdc1eae648f8f6720a8c7bb61fbade1dd",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 14
+    },
+    {
+      "model_id": "molecule-AI-c1-feature::checkpoints_c4_c1_feature",
+      "display_name": "C-1 cycle feature",
+      "worktree": "molecule-AI-c1-feature",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI-c1-feature/checkpoints_c4_c1_feature",
+      "first_checkpoint_at": "2026-09-19T20:12:08.828661+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "completed_rng_caveat",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI/checkpoints_c4_a1/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": null,
+          "evidence": "legacy_run_without_manifest",
+          "note": "Session boundaries and exact launch command are not recoverable from a run manifest."
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-feature/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-feature/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-feature/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/train_c1_feature.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-feature/train_c1_feature.log",
+          "present_locally": true,
+          "size": 5980,
+          "mtime": "2026-09-20T00:14:03.589644+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/train_c1_feature_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-feature/train_c1_feature_stdout.log",
+          "present_locally": true,
+          "size": 10179487,
+          "mtime": "2026-09-20T00:14:03.589644+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/checkpoints_c4_c1_feature/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-feature/checkpoints_c4_c1_feature/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92348240,
+          "mtime": "2026-09-19T20:12:08.828661+09:00",
+          "sha256": "5ca302a2219bdb41381015d64e38a2e9206135af3946f209998a0d77d9f8fe07",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0020.pt",
+          "epoch": 20,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/checkpoints_c4_c1_feature/ckpt_epoch0020.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-feature/checkpoints_c4_c1_feature/ckpt_epoch0020.pt",
+          "local_backup_matches_current": true,
+          "size": 92348240,
+          "mtime": "2026-09-20T00:10:47.198718+09:00",
+          "sha256": "e07b07c89beab872a38f5b5bf1d5118357efc98d70768674067c21f4e61ce074",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/checkpoints_c4_c1_feature/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-feature/checkpoints_c4_c1_feature/best.pt",
+          "local_backup_matches_current": true,
+          "size": 23071543,
+          "mtime": "2026-09-19T23:23:41.532395+09:00",
+          "sha256": "fbf5039b1b268c268034814582b76bdfc18ba08fa14c5e6a1eb43a8208eb0370",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 15
+    },
+    {
+      "model_id": "molecule-AI-c1-control::checkpoints_c4_c1_control_ext40",
+      "display_name": "E-1 C-1 control extension",
+      "worktree": "molecule-AI-c1-control",
+      "checkpoint_directory": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40",
+      "first_checkpoint_at": "2026-09-20T17:51:06.580824+09:00",
+      "chronology_basis": "earliest_checkpoint_mtime",
+      "status": "running_at_audit_time",
+      "parent_lineage": {
+        "checkpoint": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control/best.pt",
+        "evidence": "devlog_and_filename_mapping"
+      },
+      "training_sessions": [
+        {
+          "run_id": "20260920_121527_e1_ext40",
+          "started_at": "2026-09-20T12:15:28+00:00",
+          "command": "python -u train3.py --processed-dir ./data/processed_ext7 --max-samples 150000 --resume ./checkpoints_c4_c1_control_ext40/ckpt_epoch0010.pt --save-dir ./checkpoints_c4_c1_control_ext40 --save-every 1 --log-file ./train_c1_control_ext40.log --epochs 20 --batch-size 12 --lr 3e-5 --seed 60",
+          "parent_checkpoint": "./checkpoints_c4_c1_control_ext40/ckpt_epoch0010.pt",
+          "parent_checkpoint_sha256": "c4f6553b6e8b204a2d9bc162970c3e07e364b670db4e84b041185ab7b2fb3881",
+          "source_hashes": {
+            "train3_sha256": "7d3f61d8e9b6db339d390cd55ce0c182170c9da30c5622284e8721af8bac9e8c",
+            "model3_sha256": "efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad"
+          },
+          "local_manifest_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/runs/20260920_121527_e1_ext40/manifest.json",
+          "evidence": "exact_manifest"
+        }
+      ],
+      "source_snapshot_paths": {
+        "model3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/model3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/model3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "train3.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train3.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train3.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        },
+        "dataset2.py": {
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/dataset2.py",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/records/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/dataset2.py",
+          "evidence": "current_or_sync_time_snapshot_not_proven_run_time"
+        }
+      },
+      "logs": [
+        {
+          "role": "named_log",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control_ext40.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control_ext40.log",
+          "present_locally": true,
+          "size": 13807,
+          "mtime": "2026-09-20T23:33:22.895858+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control_ext40_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control_ext40_stdout.log",
+          "present_locally": true,
+          "size": 8926669,
+          "mtime": "2026-09-20T20:48:22.032552+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control_ext40_resume_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control_ext40_resume_stdout.log",
+          "present_locally": true,
+          "size": 342205,
+          "mtime": "2026-09-20T21:03:46.974890+09:00",
+          "evidence": "exact_path_from_override"
+        },
+        {
+          "role": "stdout",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/train_c1_control_ext40_resume2_stdout.log",
+          "local_path": "/media/airhood/로컬 디스크/git/molecule-AI/logs/remote/cbgpu_at_100.100.136.37/molecule-AI-c1-control/train_c1_control_ext40_resume2_stdout.log",
+          "present_locally": true,
+          "size": 232783,
+          "mtime": "2026-09-20T21:13:50.991008+09:00",
+          "evidence": "exact_path_from_override"
+        }
+      ],
+      "checkpoints": [
+        {
+          "filename": "ckpt_epoch0010.pt",
+          "epoch": 10,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0010.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0010.pt",
+          "local_backup_matches_current": true,
+          "size": 92312350,
+          "mtime": "2026-09-20T17:51:06.580824+09:00",
+          "sha256": "c4f6553b6e8b204a2d9bc162970c3e07e364b670db4e84b041185ab7b2fb3881",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "ckpt_epoch0011.pt",
+          "epoch": 11,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0011.pt",
+          "local_backup_path": null,
+          "local_backup_matches_current": false,
+          "size": 92314078,
+          "mtime": "2026-09-20T21:38:07.441928+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        },
+        {
+          "filename": "ckpt_epoch0012.pt",
+          "epoch": 12,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0012.pt",
+          "local_backup_path": null,
+          "local_backup_matches_current": false,
+          "size": 92314078,
+          "mtime": "2026-09-20T22:00:14.029309+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        },
+        {
+          "filename": "ckpt_epoch0013.pt",
+          "epoch": 13,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0013.pt",
+          "local_backup_path": null,
+          "local_backup_matches_current": false,
+          "size": 92314078,
+          "mtime": "2026-09-20T22:23:15.912612+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        },
+        {
+          "filename": "ckpt_epoch0014.pt",
+          "epoch": 14,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0014.pt",
+          "local_backup_path": null,
+          "local_backup_matches_current": false,
+          "size": 92314078,
+          "mtime": "2026-09-20T22:46:09.195782+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        },
+        {
+          "filename": "ckpt_epoch0015.pt",
+          "epoch": 15,
+          "kind": "periodic",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/ckpt_epoch0015.pt",
+          "local_backup_path": null,
+          "local_backup_matches_current": false,
+          "size": 92314078,
+          "mtime": "2026-09-20T23:09:42.515219+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        },
+        {
+          "filename": "best.pt",
+          "epoch": null,
+          "kind": "best",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/best.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/checkpoints_c4_c1_control_ext40/best.pt",
+          "local_backup_matches_current": false,
+          "size": 23062849,
+          "mtime": "2026-09-20T23:09:42.360214+09:00",
+          "sha256": null,
+          "hash_evidence": "not_yet_hashed"
+        }
+      ],
+      "notes": [],
+      "chronological_order": 16
+    }
+  ],
+  "auxiliary_pt_artifacts": [
+    {
+      "worktree": "molecule-AI",
+      "artifacts": [
+        {
+          "filename": "c1_regressor.pt",
+          "remote_path": "/home/cbgpu/molecule-AI/c1_regressor.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/c1_regressor.pt",
+          "local_backup_matches_current": true,
+          "size": 551342,
+          "mtime": "2026-09-06T09:53:23.408498+09:00",
+          "sha256": "091c523516c573cebf5a3fbdc7393ad3d4492d6b6b51917a6474408e82c446fe",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "c1_regressor_v2.pt",
+          "remote_path": "/home/cbgpu/molecule-AI/c1_regressor_v2.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/c1_regressor_v2.pt",
+          "local_backup_matches_current": true,
+          "size": 551456,
+          "mtime": "2026-09-08T16:36:20.346565+09:00",
+          "sha256": "9febad562555a217bb9724aa0518eb416bdea2f1660e0d97c48f88fddf1bb064",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "checkpoints_cvae_e70.pt",
+          "remote_path": "/home/cbgpu/molecule-AI/checkpoints_cvae_e70.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/checkpoints_cvae_e70.pt",
+          "local_backup_matches_current": true,
+          "size": 45352761,
+          "mtime": "2026-09-09T00:56:13.063550+09:00",
+          "sha256": "7f15a0114b9df70c97408dd78185eaa831881acd6cd6cf279a3b2fe2cd93c155",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        },
+        {
+          "filename": "cvae_cond_samples.pt",
+          "remote_path": "/home/cbgpu/molecule-AI/cvae_cond_samples.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI/cvae_cond_samples.pt",
+          "local_backup_matches_current": true,
+          "size": 112026,
+          "mtime": "2026-09-09T00:55:53.092867+09:00",
+          "sha256": "d6fae270f9033d84d0bd8e6defe8135edbbdc2aa7393b26d720f817d1e62212e",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ]
+    },
+    {
+      "worktree": "molecule-AI-c1-control",
+      "artifacts": [
+        {
+          "filename": "c1_regressor.pt",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-control/c1_regressor.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-control/c1_regressor.pt",
+          "local_backup_matches_current": true,
+          "size": 551342,
+          "mtime": "2026-09-19T15:22:03.081060+09:00",
+          "sha256": "091c523516c573cebf5a3fbdc7393ad3d4492d6b6b51917a6474408e82c446fe",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ]
+    },
+    {
+      "worktree": "molecule-AI-c1-feature",
+      "artifacts": [
+        {
+          "filename": "c1_regressor.pt",
+          "remote_path": "/home/cbgpu/molecule-AI-c1-feature/c1_regressor.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-c1-feature/c1_regressor.pt",
+          "local_backup_matches_current": true,
+          "size": 551342,
+          "mtime": "2026-09-19T15:22:02.968810+09:00",
+          "sha256": "091c523516c573cebf5a3fbdc7393ad3d4492d6b6b51917a6474408e82c446fe",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ]
+    },
+    {
+      "worktree": "molecule-AI-control",
+      "artifacts": [
+        {
+          "filename": "c1_regressor.pt",
+          "remote_path": "/home/cbgpu/molecule-AI-control/c1_regressor.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-control/c1_regressor.pt",
+          "local_backup_matches_current": true,
+          "size": 551342,
+          "mtime": "2026-09-19T09:56:43.575875+09:00",
+          "sha256": "091c523516c573cebf5a3fbdc7393ad3d4492d6b6b51917a6474408e82c446fe",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ]
+    },
+    {
+      "worktree": "molecule-AI-pec",
+      "artifacts": [
+        {
+          "filename": "c1_regressor.pt",
+          "remote_path": "/home/cbgpu/molecule-AI-pec/c1_regressor.pt",
+          "local_backup_path": "/media/airhood/로컬 디스크/git/molecule-AI_server_snapshot_20260920T123633+0000/trees/molecule-AI-pec/c1_regressor.pt",
+          "local_backup_matches_current": true,
+          "size": 551342,
+          "mtime": "2026-09-20T21:01:15.066603+09:00",
+          "sha256": "091c523516c573cebf5a3fbdc7393ad3d4492d6b6b51917a6474408e82c446fe",
+          "classification": "auxiliary_or_legacy_pt_requires_manual_classification",
+          "hash_evidence": "verified_20260920_backup"
+        }
+      ]
+    }
+  ]
+}
