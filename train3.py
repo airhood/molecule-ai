@@ -1,10 +1,12 @@
 import argparse
 import copy
-import io
+import os
+import random
 import sys
 import time
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from rdkit import Chem, RDLogger
@@ -16,6 +18,7 @@ from tqdm import tqdm
 
 from dataset2 import QMugsDataset
 from model3 import ATOMIC_NUM_TO_CLS, K_E, K_X, MAX_ATOMS, MoleculeGraphDiffusion
+from run_logger import RunLogger
 
 
 RDLogger.DisableLog("rdApp.*")
@@ -41,23 +44,43 @@ for _anum, _cls in ATOMIC_NUM_TO_CLS.items():
     _MAX_VALENCE[_cls] = max(_PT.GetValenceList(_anum))
 
 
-class _Tee(io.TextIOBase):
+def _atomic_torch_save(obj, path):
+    """astra_review_20260920d.md §6 -- torch.save가 최종 경로에 직접 쓰면
+    프로세스/디스크 장애 시 부분 파일이 정상 파일명으로 남을 수 있다.
+    같은 디렉터리에 임시 파일로 쓰고 fsync 후 os.replace로 원자적 치환한다
+    (원본은 os.replace가 성공하기 전까지 그대로 유지됨)."""
+    path = Path(path)
+    tmp_path = path.with_name(path.name + f".tmp{os.getpid()}")
+    with open(tmp_path, "wb") as f:
+        torch.save(obj, f)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_path, path)
 
-    def __init__(self, stream, file_path):
-        self._stream = stream
-        self._f = open(file_path, "a", encoding="utf-8")
 
-    def write(self, text):
-        self._stream.write(text)
-        self._f.write(text)
-        return len(text)
+def _rng_state_dict():
+    """astra_review_20260920d.md §6 -- checkpoint에 RNG state가 없어 resume
+    시 노이즈/dropout/reshuffle 스트림이 원래 실행과 달라진다. python/numpy/
+    torch(CPU)/torch.cuda(전체 device) state를 모아 반환."""
+    state = {
+        "python": random.getstate(),
+        "numpy": np.random.get_state(),
+        "torch": torch.get_rng_state(),
+    }
+    if torch.cuda.is_available():
+        state["cuda"] = torch.cuda.get_rng_state_all()
+    return state
 
-    def flush(self):
-        self._stream.flush()
-        self._f.flush()
 
-    def close(self):
-        self._f.close()
+def _restore_rng_state(state):
+    if state is None:
+        print("  [경고] 이 체크포인트엔 RNG state가 없음(구버전) -- 새 시드로 계속 진행")
+        return
+    random.setstate(state["python"])
+    np.random.set_state(state["numpy"])
+    torch.set_rng_state(state["torch"])
+    if "cuda" in state and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(state["cuda"])
 
 
 class EMA:
@@ -268,16 +291,28 @@ def build_size_distribution(dataset, n_sample = 2000):
     return sizes
 
 
-def run_epoch(model, loader, device, train, epoch, optimizer=None, ema=None):
+class StopRequested(Exception):
+    """[안전 종료, 2026-09-20] astra_review_20260920c.md §6 지시 --
+    kill -9는 체크포인트 저장 기회를 안 주므로, save_dir/STOP_REQUESTED
+    파일 존재를 배치마다 확인해 있으면 예외를 던져 학습 루프를 깨끗하게
+    빠져나오게 한다(호출부에서 emergency checkpoint 저장 후 종료)."""
+    pass
+
+
+def run_epoch(model, loader, device, train, epoch, optimizer=None, ema=None, stop_file=None, check_every=100):
     model.train(train)
     totals = {
         "loss": 0.0,
         "loss_x": 0.0,
-        "loss_e": 0.0
+        "loss_e": 0.0,
+        "loss_prop": 0.0
     }
 
     with torch.set_grad_enabled(train):
-        for batch in tqdm(loader, desc=f"Epoch {epoch}", leave=False):
+        for i, batch in enumerate(tqdm(loader, desc=f"Epoch {epoch}", leave=False)):
+            if stop_file is not None and i % check_every == 0 and stop_file.exists():
+                raise StopRequested(f"epoch {epoch}, batch {i}에서 {stop_file} 감지")
+
             batch = batch.to(device)
             result = model(batch)
 
@@ -424,7 +459,7 @@ def diagnostic_fixed_t(model, val_loader, device, t_values=(10, 40, 75, 110), n_
             X_t = torch.where(node_mask, X_t, torch.zeros_like(X_t))
             E_t = torch.where(e_mask, E_t, torch.zeros_like(E_t))
 
-            x_logits, e_logits = model.net(X_t, E_t, node_mask, t)
+            x_logits, e_logits, _ = model.net(X_t, E_t, node_mask, t)
             x_pred = x_logits.argmax(-1) + 1
             e_pred = e_logits.argmax(-1)
             e_probs = e_logits.softmax(-1)
@@ -498,6 +533,15 @@ def _print_eval_block(tag, metrics, diag):
 
 
 def main():
+    # Start before parsing arguments so malformed invocations are recorded. The
+    # outer launch_run.sh also captures failures before Python reaches this line.
+    run_logger = RunLogger(
+        __file__,
+        source_paths=(Path(__file__).with_name("model3.py"),
+                      Path(__file__).with_name("dataset2.py"),
+                      Path(__file__).with_name("run_logger.py")),
+    ).start()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--processed-dir",  default="./data/processed")
     parser.add_argument("--save-dir",       default="./checkpoints_diffusion_marginal")
@@ -510,7 +554,28 @@ def main():
     # (2026-07-26, 07-28, 08-05). 0.999(시간상수 1,000 step)로 낮춰 기본값을
     # 더 안전한 쪽으로 바꾸되, 실행 규모에 맞게 직접 계산해서 넘길 것.
     parser.add_argument("--ema-decay",      type=float, default=0.999)
-    parser.add_argument("--save-every",     type=int,   default=10)
+    # [사고 방지, 2026-09-20] 기본값 10은 근거 없는 관성적 설정이었고 실제로
+    # 여러 에폭 손실 사고의 원인이었음(디스크 482GB 여유, 체크포인트 하나
+    # ~92MB, 저장 자체는 에폭 시간(~1300초) 대비 무시할 수준 -- 매 에폭
+    # 저장해도 속도 저하 거의 없음 확인됨). 기본값을 1로 바꿔 깜빡하고
+    # 플래그를 안 넘겨도 안전하게.
+    parser.add_argument("--save-every",     type=int,   default=1)
+    parser.add_argument("--save-every-seconds", type=int, default=1800,
+                        help="astra_review_20260920d.md P1 -- epoch가 오래 걸릴 때 "
+                             "--save-every(epoch 기준)만으론 복구 간격이 너무 길 수 "
+                             "있어 시간 기준도 같이 둠. 마지막 저장 후 이 시간(초)이 "
+                             "지나면 epoch 조건과 무관하게 저장. 0 = 시간 기준 비활성.")
+    parser.add_argument("--allow-low-coverage", action="store_true",
+                        help="astra_review_20260920d.md P1(fail-closed loader) -- "
+                             "--init-weights/--resume 로드 후 모델 파라미터 중 "
+                             "missing(zero-init으로 남는) 비율이 --min-coverage 미만이면 "
+                             "기본적으로 에러를 내고 멈춘다(사고 방지, cf. E-1의 wrapper "
+                             "형식 오적재 사고). 의도적으로 대부분을 새로 초기화하는 "
+                             "경우(예: 아키텍처를 크게 바꾼 뒤 backbone 일부만 재사용)엔 "
+                             "이 플래그로 명시적으로 허용해야 진행됨.")
+    parser.add_argument("--min-coverage",   type=float, default=0.5,
+                        help="--allow-low-coverage 없이 로드를 계속하기 위한 최소 "
+                             "커버리지(로드된 파라미터 수 / 전체 파라미터 수). 기본 0.5.")
     parser.add_argument("--eval-every",     type=int,   default=10,
                         help="Validity evaluation interval (epochs). 0 = disable.")
     parser.add_argument("--n-eval",         type=int,   default=256,
@@ -532,6 +597,8 @@ def main():
     parser.add_argument("--seed",           type=int,   default=42)
     args = parser.parse_args()
 
+    run_logger.attach_legacy_log(args.log_file)
+    run_logger.record_arguments(vars(args))
     torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -539,16 +606,15 @@ def main():
     save_dir = Path(args.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    tee = _Tee(sys.stdout, args.log_file)
-    sys.stdout = tee
-
     print(f"Device: {device}")
-    print(f"Log: {args.log_file}")
+    print(f"Raw log: {run_logger.raw_log}")
+    print(f"Legacy log: {args.log_file}")
 
     print("Loading datasets ...")
     train_set = QMugsDataset(
         args.processed_dir, split="train",
-        max_samples=args.max_samples
+        max_samples=args.max_samples,
+        reshuffle_seed=args.seed,
     )
     val_set = QMugsDataset(
         args.processed_dir, split="val",
@@ -599,22 +665,108 @@ def main():
     ema = EMA(model, decay=args.ema_decay)
     ema.model.to(device)
 
+    # [C-1] 2026-09-19: 모델 구성(nn.Linear/nn.Embedding 랜덤 초기화)이
+    # 소비하는 RNG draw 횟수는 파라미터 개수(=아키텍처)에 따라 달라진다 --
+    # 예: cycle_proj 유무. 이후 학습 루프(train_set.reshuffle_indices(),
+    # q_sample 노이즈, cond dropout 등)는 이 시점 이후의 RNG 스트림을 그대로
+    # 이어 쓰므로, 아키텍처가 다른 두 실행은 --seed가 같아도 학습 루프의
+    # 확률적 요소가 어긋난다(matched-seed 대조 실험의 전제가 깨짐). 모델
+    # 구성 직후 재시드해 이후 스트림을 아키텍처와 무관하게 동일하게 만든다.
+    torch.manual_seed(args.seed)
+
     best_val_loss = float('inf')
     start_epoch = 1
 
     if args.init_weights:
         assert not args.resume, "--init-weights와 --resume은 동시 사용 금지"
-        sd = torch.load(args.init_weights, map_location=device)
+        # weights_only=False 명시: rng_state(numpy 포함)를 담은 체크포인트를
+        # torch>=2.6 환경(기본값이 True로 바뀜)에서도 그대로 로드하기 위함.
+        # 서버 현재 torch(2.5.1)는 기본값이 False라 지금은 동작에 차이 없음.
+        sd = torch.load(args.init_weights, map_location=device, weights_only=False)
+        # [사고 방지, 2026-09-20] --init-weights는 순수 state_dict(best.pt
+        # 형식)만 받아야 하는데, ckpt_epoch*.pt(model/ema/optimizer/scheduler/
+        # epoch로 감싼 --resume 전용 wrapper 형식)를 실수로 넣으면 strict=False
+        # 때문에 에러 없이 조용히 통과해 전체 파라미터가 missing으로 남고
+        # 완전히 랜덤 초기화 상태로 학습이 진행되는 사고가 실제로 발생했다
+        # (9epoch, ~3.5시간 낭비). wrapper 형식의 특징적 최상위 키를 미리
+        # 걸러서 명확한 에러로 막는다.
+        _WRAPPER_KEYS = {"epoch", "optimizer", "scheduler", "best_val_loss"}
+        if isinstance(sd, dict) and _WRAPPER_KEYS & set(sd.keys()):
+            raise ValueError(
+                f"--init-weights={args.init_weights}는 --resume 전용 wrapper "
+                f"형식(키: {sorted(_WRAPPER_KEYS & set(sd.keys()))})으로 보입니다. "
+                f"--init-weights는 순수 state_dict(best.pt 형식)만 받습니다. "
+                f"이어서 학습하려면 --resume을 쓰거나, best.pt를 지정하세요."
+            )
         # [G-5] strict=False: cond_mod(AdaLN 재주입)처럼 새 아키텍처에서
         # 추가된 파라미터는 옛 체크포인트에 없음 -- zero-init 상태로 남겨둠
         # (GTLayer.__init__에서 이미 0으로 초기화됨, 항등변환이라 안전).
+        # [A-1] 2026-09-17: strict=False는 "키가 없는 것"만 봐주고 "같은 키인데
+        # shape이 다른 것"(예: COND_DIM 2->8로 cond_proj/cond_mod/prop_head
+        # shape 변경)은 그대로 RuntimeError를 낸다. shape mismatch인 키는
+        # 로드 전에 걸러내고 나머지 backbone(qkv/attn/ff/embed 등, shape
+        # 그대로인 대다수)은 이어받아 처음부터(random init) 학습하는 것보다
+        # 훨씬 빠르게 수렴하게 한다.
+        # [B-1] 2026-09-18(Astra 리뷰): 위 shape-mismatch 필터가 "모양이
+        # 다르면 텐서 전체를 버림" 방식이라, conn_proj처럼 입력 차원만
+        # 늘어난 경우(2->3, circuit_rank 추가)에도 이미 학습된 기존 열
+        # (n_components/comp_size_ratio)까지 통째로 날아가는 문제가 있었다
+        # (B-1 첫 시도에서 validity가 하락한 원인일 가능성). 같은 축 수에서
+        # 정확히 한 차원만 "늘어난"(줄지 않은) 경우엔, 기존 값을 해당
+        # 부분에 그대로 복사해 보존하고 새로 생긴 부분만 현재 모델의
+        # 초기화(랜덤/zero, 클래스 정의 그대로)를 유지한다.
+        model_sd = model.state_dict()
+        shape_mismatch = []
+        partial_copied = []
+        for k in list(sd.keys()):
+            if k not in model_sd or sd[k].shape == model_sd[k].shape:
+                continue
+            old_t, new_t = sd[k], model_sd[k]
+            if old_t.dim() == new_t.dim() and old_t.dim() >= 1:
+                diff_dims = [d for d in range(old_t.dim())
+                             if old_t.shape[d] != new_t.shape[d]]
+                if (len(diff_dims) == 1 and old_t.shape[diff_dims[0]] < new_t.shape[diff_dims[0]]):
+                    d = diff_dims[0]
+                    merged = new_t.clone()
+                    idx = [slice(None)] * old_t.dim()
+                    idx[d] = slice(0, old_t.shape[d])
+                    merged[tuple(idx)] = old_t
+                    sd[k] = merged
+                    partial_copied.append(k)
+                    continue
+            shape_mismatch.append(k)
+            del sd[k]
         missing, unexpected = model.load_state_dict(sd, strict=False)
         ema.model.load_state_dict(sd, strict=False)
         print(f"  [G-2] {args.init_weights}에서 가중치만 로드 (optimizer/scheduler/epoch는 새로 시작)")
+        if partial_copied:
+            print(f"  [B-1] 차원 일부만 확장돼 기존 값 보존(새 부분만 초기화 유지): {partial_copied}")
+        if shape_mismatch:
+            print(f"  [A-1] shape 불일치로 제외(현재 모델 초기화 유지): {shape_mismatch}")
         if missing:
             print(f"  [G-5] 새 아키텍처 파라미터(zero-init 유지): {missing}")
         if unexpected:
             print(f"  [경고] 체크포인트에만 있고 현재 모델엔 없는 키: {unexpected}")
+
+        # [fail-closed, astra_review_20260920d.md P1] E-1 사고(wrapper 형식을
+        # --init-weights에 잘못 넣어 전체 파라미터가 missing으로 남고 완전
+        # random-init 상태로 9 epoch 진행된 사고)의 재발 방지. _WRAPPER_KEYS
+        # 가드가 "형식이 명백히 틀린" 경우는 막지만, 그 외에도 커버리지가
+        # 비정상적으로 낮은 로드(예: 의도치 않은 키 이름 불일치)는 여전히
+        # 조용히 통과할 수 있다. missing 파라미터 수 비율이 --min-coverage
+        # 미만이면 --allow-low-coverage 없이는 에러로 멈춘다.
+        total_params = len(model_sd)
+        missing_params = len(missing)
+        coverage = 1.0 - (missing_params / total_params if total_params else 0.0)
+        print(f"  [preflight] 파라미터 커버리지: {coverage:.1%} "
+              f"({total_params - missing_params}/{total_params} 텐서 로드됨)")
+        if coverage < args.min_coverage and not args.allow_low_coverage:
+            raise ValueError(
+                f"--init-weights={args.init_weights} 로드 커버리지 {coverage:.1%}가 "
+                f"--min-coverage {args.min_coverage:.1%} 미만입니다 (거의 random-init "
+                f"상태로 학습이 시작될 위험 -- E-1 이전 사고와 같은 패턴). 의도한 것이면 "
+                f"--allow-low-coverage로 명시적으로 허용하세요."
+            )
 
     # [G-5] --train-only: 이름에 지정된 부분문자열이 포함된 파라미터만 학습.
     # zero-init으로 새로 추가된 conditioning 경로(cond_mod)만 움직이고
@@ -637,50 +789,92 @@ def main():
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
     if args.resume:
-        ckpt = torch.load(args.resume, map_location=device)
+        ckpt = torch.load(args.resume, map_location=device, weights_only=False)
         model.load_state_dict(ckpt["model"])
         ema.load_state_dict(ckpt["ema"])
         optimizer.load_state_dict(ckpt["optimizer"])
         scheduler.load_state_dict(ckpt["scheduler"])
         start_epoch = ckpt["epoch"] + 1
         best_val_loss = ckpt.get("best_val_loss", float('inf'))
+        # [astra_review_20260920d.md §6/P1] RNG state 복원 -- 없으면(구버전
+        # 체크포인트) 경고만 출력하고 현재 --seed 기반 스트림으로 계속 진행.
+        _restore_rng_state(ckpt.get("rng_state"))
         print(f"  Resumed from epoch {ckpt['epoch']}  (best val loss: {best_val_loss:.4f})")
 
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Parameters: {n_params:,}")
 
-    print(f"\n{'Epoch':>6}  {'T-loss':>8} {'T-x':>8} {'T-e':>8}  "
-          f"{'V-loss':>8} {'V-x':>8} {'V-e':>8}  Time")
+    print(f"\n{'Epoch':>6}  {'T-loss':>8} {'T-x':>8} {'T-e':>8} {'T-prop':>8}  "
+          f"{'V-loss':>8} {'V-x':>8} {'V-e':>8} {'V-prop':>8}  Time")
     print("-" * 90)
+
+    # [안전 종료] astra_review_20260920c.md §6 -- kill -9 대신 이 파일이
+    # 생기면 다음 배치 확인 시점에 감지해 체크포인트 저장 후 깨끗하게 종료.
+    stop_file = save_dir / "STOP_REQUESTED"
+    if stop_file.exists():
+        stop_file.unlink()  # 이전 실행의 잔여 파일 제거(재시작 시 즉시 종료 방지)
+
+    last_save_time = time.time()
 
     for epoch in range(start_epoch, args.epochs + 1):
         t0 = time.time()
         train_set.reshuffle_indices()
 
-        train = run_epoch(model, train_loader, device, train=True, epoch=epoch, optimizer=optimizer, ema=ema)
-        val = run_epoch(ema.model, val_loader, device, train=False, epoch=epoch)
+        try:
+            train = run_epoch(model, train_loader, device, train=True, epoch=epoch,
+                               optimizer=optimizer, ema=ema, stop_file=stop_file)
+            val = run_epoch(ema.model, val_loader, device, train=False, epoch=epoch,
+                             stop_file=stop_file)
+        except StopRequested as e:
+            print(f"\n[안전 종료] {e} -- emergency checkpoint 저장 중 ...")
+            _atomic_torch_save({
+                "epoch": epoch - 1,  # 이 epoch은 완주 못 했으므로 마지막 완주 epoch로 표시
+                "model": model.state_dict(),
+                "ema": ema.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict(),
+                "best_val_loss": best_val_loss,
+                "partial_epoch": epoch,  # 참고용: 실제로는 이 epoch 중간까지 진행된 가중치
+                "rng_state": _rng_state_dict(),
+            }, save_dir / "ckpt_emergency_stop.pt")
+            stop_file.unlink(missing_ok=True)
+            print(f"  저장 완료: {save_dir / 'ckpt_emergency_stop.pt'} "
+                  f"(epoch={epoch-1}로 표시, 실제 가중치는 epoch {epoch} 중간 지점)")
+            run_logger.finish(
+                "stopped", reason=str(e),
+                checkpoint=str(save_dir / "ckpt_emergency_stop.pt"),
+            )
+            sys.exit(0)
 
         scheduler.step()
 
         if val["loss"] < best_val_loss:
             best_val_loss = val["loss"]
-            torch.save(ema.model.state_dict(), save_dir / "best.pt")
+            _atomic_torch_save(ema.model.state_dict(), save_dir / "best.pt")
 
-        if args.save_every > 0 and epoch % args.save_every == 0:
-            torch.save({
+        # [astra_review_20260920d.md P1] epoch 기준 OR 시간 기준(둘 중 하나만
+        # 만족해도 저장) -- epoch가 오래 걸리는 학습에서 epoch 기준 하나로는
+        # 장애 시 복구 간격이 너무 길 수 있음.
+        due_by_epoch = args.save_every > 0 and epoch % args.save_every == 0
+        due_by_time = (args.save_every_seconds > 0
+                       and time.time() - last_save_time >= args.save_every_seconds)
+        if due_by_epoch or due_by_time:
+            _atomic_torch_save({
                 "epoch": epoch,
                 "model": model.state_dict(),
                 "ema": ema.state_dict(),
                 "optimizer": optimizer.state_dict(),
                 "scheduler": scheduler.state_dict(),
-                "best_val_loss": best_val_loss
+                "best_val_loss": best_val_loss,
+                "rng_state": _rng_state_dict(),
             }, save_dir / f"ckpt_epoch{epoch:04d}.pt")
+            last_save_time = time.time()
 
         elapsed = time.time() - t0
         print(
             f"{epoch:>6}  "
-            f"{train['loss']:>8.4f} {train['loss_x']:>8.4f} {train['loss_e']:>8.4f}  "
-            f"{val['loss']:>8.4f} {val['loss_x']:>8.4f} {val['loss_e']:>8.4f}  "
+            f"{train['loss']:>8.4f} {train['loss_x']:>8.4f} {train['loss_e']:>8.4f} {train['loss_prop']:>8.4f}  "
+            f"{val['loss']:>8.4f} {val['loss_x']:>8.4f} {val['loss_e']:>8.4f} {val['loss_prop']:>8.4f}  "
             f"{elapsed:>6.1f}s"
         )
 
@@ -696,8 +890,7 @@ def main():
             _print_eval_block("RAW", raw_metrics, raw_diag)
 
     print(f"\nDone. Best val loss: {best_val_loss:.4f}")
-    sys.stdout = tee._stream
-    tee.close()
+    run_logger.finish("completed", best_val_loss=best_val_loss)
 
 
 if __name__ == "__main__":
