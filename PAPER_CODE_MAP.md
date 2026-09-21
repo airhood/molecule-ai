@@ -13,12 +13,18 @@
 
 ## 1. 모델 계보 (선형 — 최종 코드만 보존하면 되는 단계)
 
-| 단계 | 파일 | 등급 | 비고 |
+**2026-09-21: 실제로 디렉터리 분리함** (이전엔 주석만 추가하고 파일 위치는
+그대로 둬서 "정리"가 아니었음 — 지적받고 수정).
+
+| 단계 | 위치 | 등급 | 비고 |
 |---|---|---|---|
-| 1. CVAE | `model.py` | T2 | git 커밋됨, 미수정. 상단에 stage 주석 추가함. |
-| 2. 초기 diffusion | `model2.py` | T2 | git 커밋됨, 미수정. |
-| 데이터셋 재모델링 | `preprocess.py`, `data_preprocess.ipynb` | T2 | 방향족→단/이중/삼중 kekulize 수정(commit `5732605`), 미수정. |
-| 3. Absorbing Discrete Graph Diffusion (R-4~C-4~A-1~B-1~C-1 누적) | `model3.py` | 현재 활성 개발 중 | 이 파일의 **최신 상태**가 선형 발전의 최종본. 중간 지점 참고용 스냅샷: `model3_clean.py`(G-5+G-6, A-1 이전). |
+| 1. CVAE | `models_legacy/stage1_cvae/` (`model.py`, `train.py`, `dataset.py`, `test_inference.py`, `model_.py`, `train_.py`) | T2 | git 커밋됨, 미수정. `model_.py`/`train_.py`는 별도 변형(class명 `MolCVAE`), 용도 불명확하지만 자기완결적이라 같이 이동. |
+| 2. 초기 diffusion | `models_legacy/stage2_diffusion_v1/` (`model2.py`, `train2.py`, `test_inference_diffusion.py`, `model2_.py`, `train2_.py`) | T2 | git 커밋됨, 미수정. `dataset2.py`는 저장소 루트에 공유 파일로 남아있어(model3.py도 사용) 이 폴더의 `train2*.py`/`test_inference_diffusion.py`에 `sys.path` 보정 3줄 추가함. |
+| 데이터셋 재모델링 | `dataset_remodeling/` (`preprocess.py`, `data_preprocess.ipynb`) | T2 | 방향족→단/이중/삼중 kekulize 수정(commit `5732605`), 미수정, 이동만 함. |
+| 3. Absorbing Discrete Graph Diffusion (R-4~C-4~A-1~B-1~C-1 누적) | 저장소 루트 `model3.py` | 현재 활성 개발 중 | **이동 안 함** — `train3.py` 및 `records/experiments/`의 다수 스크립트가 루트 기준 경로로 import해서 옮기면 서버 학습 파이프라인이 깨짐. 이 파일의 최신 상태가 선형 발전의 최종본. 중간 지점 참고용 스냅샷: `model3_clean.py`(G-5+G-6, A-1 이전). |
+
+`dataset2.py`, `train3.py`, `test_inference_absorbing.py`도 같은 이유로
+루트에 남겨둠 — model3.py와 공유되거나 그 자체가 활성 파이프라인.
 
 ## 2. 조건부 생성 개선 실험 (A-1 이후 분기)
 
@@ -34,8 +40,8 @@
 
 ## 3. 읽는 순서 제안 (논문 Methods/Experiments 절 대응)
 
-1. `model.py` → `model2.py` → `model3.py`: 아키텍처 발전사.
-2. `preprocess.py`: 데이터 전처리(kekulization) 별도 절.
+1. `models_legacy/stage1_cvae/model.py` → `models_legacy/stage2_diffusion_v1/model2.py` → `model3.py`: 아키텍처 발전사.
+2. `dataset_remodeling/preprocess.py`: 데이터 전처리(kekulization) 별도 절.
 3. `records/experiments/b1_circuit_rank/README.md`, `.../proposal_a/c1_experiment/README.md`:
    각 실험의 가설/코드/결과 — 이 둘이 "무엇을 시도했고 왜 실패로 결론 내렸는가" 절의 근거.
 4. E-1: `docs/devlog.md`(gitignored, 로컬 참고용) "2026-09-21(새벽): [E-1] 완료" 절 + `runs/` 매니페스트.

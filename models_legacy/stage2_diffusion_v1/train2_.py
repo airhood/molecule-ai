@@ -1,3 +1,12 @@
+"""
+train2_.py — Training loop for MoleculeGraphDiffusion (model2_.py)
+
+Differences from train.py (CVAE):
+  - No beta scheduling or warmup: diffusion loss is stable from step 1
+  - EMA of model weights for better sample quality at inference
+  - Periodic validity evaluation by sampling and checking with RDKit
+"""
+
 import argparse
 import copy
 import io
@@ -12,12 +21,15 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch_geometric.loader import DataLoader
 from tqdm import tqdm
 
+# [2026-09-21] models_legacy/stage2_diffusion_v1/로 이동됨 -- dataset2.py는
+# model3.py(현재 활성 개발)와 공유하는 파일이라 저장소 루트에 그대로 둠.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from dataset2 import QMugsDataset
-from model2 import ATOMIC_NUM_TO_CLS, K_E, K_X, MAX_ATOMS, MoleculeGraphDiffusion
-
+from model2_ import ATOMIC_NUM_TO_CLS, K_E, K_X, MAX_ATOMS, MoleculeGraphDiffusion
 
 RDLogger.DisableLog("rdApp.*")
 
+# bond class → RDKit bond type (matches model2_.py K_E encoding)
 _BOND_TYPE = {
     1: Chem.rdchem.BondType.SINGLE,
     2: Chem.rdchem.BondType.DOUBLE,
@@ -27,8 +39,9 @@ _BOND_TYPE = {
 _CLS_TO_ANUM = {v: k for k, v in ATOMIC_NUM_TO_CLS.items()}
 
 
-class _Tee(io.TextIOBase):
+# ── Utilities ──────────────────────────────────────────────────────────────
 
+class _Tee(io.TextIOBase):
     def __init__(self, stream, file_path):
         self._stream = stream
         self._f = open(file_path, "a", encoding="utf-8")
@@ -47,12 +60,13 @@ class _Tee(io.TextIOBase):
 
 
 class EMA:
+    """Exponential Moving Average of model weights — standard practice for diffusion."""
 
-    def __init__(self, model, decay = 0.9999):
+    def __init__(self, model: torch.nn.Module, decay: float = 0.9999):
         self.model = copy.deepcopy(model).eval()
         self.decay = decay
 
-    def update(self, model):
+    def update(self, model: torch.nn.Module):
         with torch.no_grad():
             for ema_p, p in zip(self.model.parameters(), model.parameters()):
                 ema_p.mul_(self.decay).add_(p.data, alpha=1.0 - self.decay)
@@ -64,12 +78,18 @@ class EMA:
         self.model.load_state_dict(sd)
 
 
-def tensors_to_mol(X, E):
+def tensors_to_mol(X: torch.Tensor, E: torch.Tensor):
+    """
+    Convert sampled (X, E) tensors to an RDKit molecule.
+    X: (N,) long — atom class indices (0 = virtual/padding, skip)
+    E: (N, N) long — bond class indices (0 = no bond)
+    Returns RDKit Mol on success, None on failure.
+    """
     mol = Chem.RWMol()
     real = (X > 0).nonzero(as_tuple=True)[0].tolist()
     if len(real) < 2:
         return None
-    
+
     idx_map = {}
     for ai in real:
         anum = _CLS_TO_ANUM.get(int(X[ai]))
@@ -94,27 +114,24 @@ def tensors_to_mol(X, E):
         return None
 
 
-def build_size_distribution(dataset, n_sample = 2000):
+def build_size_distribution(dataset: QMugsDataset, n_sample: int = 2000) -> list:
+    """Sample molecule sizes (atom counts) from the dataset."""
     sizes = []
     ci = 0
     while len(sizes) < n_sample and ci < len(dataset._chunk_names):
         for data in dataset._load_chunk(ci):
-            n = int((data.z != 1).sum())
-            if 0 < n <= MAX_ATOMS:
-                sizes.append(n)
+            sizes.append(int(data.z.shape[0]))
             if len(sizes) >= n_sample:
                 break
         ci += 1
     return sizes
 
 
-def run_epoch(model, loader, device, train, epoch, optimizer=None, ema=None):
+# ── Core training / evaluation ─────────────────────────────────────────────
+
+def run_epoch(model, loader, optimizer, device, train: bool, epoch: int) -> dict:
     model.train(train)
-    totals = {
-        "loss": 0.0,
-        "loss_x": 0.0,
-        "loss_e": 0.0
-    }
+    totals = {"loss": 0.0, "loss_x": 0.0, "loss_e": 0.0}
 
     with torch.set_grad_enabled(train):
         for batch in tqdm(loader, desc=f"Epoch {epoch}", leave=False):
@@ -124,10 +141,8 @@ def run_epoch(model, loader, device, train, epoch, optimizer=None, ema=None):
             if train:
                 optimizer.zero_grad()
                 result["loss"].backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm = 1.0)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
-                if ema is not None:
-                    ema.update(model)
 
             for k in totals:
                 totals[k] += result[k].item()
@@ -137,7 +152,16 @@ def run_epoch(model, loader, device, train, epoch, optimizer=None, ema=None):
 
 
 @torch.no_grad()
-def evaluate_validity(model, size_dist, n_eval, device):
+def evaluate_validity(
+    model,
+    size_dist: list,
+    n_eval: int,
+    device: torch.device,
+) -> tuple:
+    """
+    Sample n_eval molecules and report validity and uniqueness.
+    Groups samples by size to batch together for efficiency.
+    """
     import random
     from collections import Counter
 
@@ -165,6 +189,8 @@ def evaluate_validity(model, size_dist, n_eval, device):
     return validity, uniqueness
 
 
+# ── Main ───────────────────────────────────────────────────────────────────
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processed-dir",  default="./data/processed")
@@ -180,7 +206,7 @@ def main():
                         help="Number of molecules to sample per validity evaluation.")
     parser.add_argument("--num-workers",    type=int,   default=0)
     parser.add_argument("--max-samples",    type=int,   default=None)
-    parser.add_argument("--log-file",       default="./train_diffusion.log")
+    parser.add_argument("--log-file",       default="./logs/legacy_root/train_diffusion.log")
     parser.add_argument("--resume",         default=None,
                         help="체크포인트 경로 (.pt). model/ema/optimizer/scheduler/epoch 복원.")
     args = parser.parse_args()
@@ -194,16 +220,14 @@ def main():
     sys.stdout = tee
 
     print(f"Device: {device}")
-    print(f"Log: {args.log_file}")
+    print(f"Log:    {args.log_file}")
 
+    # ── Datasets ───────────────────────────────────────────────────────────
     print("Loading datasets ...")
-    train_set = QMugsDataset(
-        args.processed_dir, split="train",
-        max_samples=args.max_samples
-    )
-    val_set = QMugsDataset(
+    train_set = QMugsDataset(args.processed_dir, split="train", max_samples=args.max_samples)
+    val_set   = QMugsDataset(
         args.processed_dir, split="val",
-        max_samples=args.max_samples // 5 if args.max_samples else None
+        max_samples=args.max_samples // 5 if args.max_samples else None,
     )
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False,
                               num_workers=args.num_workers)
@@ -211,20 +235,22 @@ def main():
                               num_workers=args.num_workers)
     print(f"  Train: {len(train_set):,}  Val: {len(val_set):,}")
 
+    # Molecule size distribution for validity evaluation
     print("Building size distribution ...")
     size_dist = build_size_distribution(train_set)
     print(f"  Size range: {min(size_dist)} ~ {max(size_dist)} atoms  "
           f"(median {sorted(size_dist)[len(size_dist)//2]})")
-    
+
+    # ── Model ──────────────────────────────────────────────────────────────
     model = MoleculeGraphDiffusion().to(device)
-    ema = EMA(model, decay=args.ema_decay)
+    ema   = EMA(model, decay=args.ema_decay)
     ema.model.to(device)
 
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
-    best_val_loss = float('inf')
-    start_epoch = 1
+    best_val_loss = float("inf")
+    start_epoch   = 1
 
     if args.resume:
         ckpt = torch.load(args.resume, map_location=device)
@@ -232,8 +258,8 @@ def main():
         ema.load_state_dict(ckpt["ema"])
         optimizer.load_state_dict(ckpt["optimizer"])
         scheduler.load_state_dict(ckpt["scheduler"])
-        start_epoch = ckpt["epoch"] + 1
-        best_val_loss = ckpt.get("best_val_loss", float('inf'))
+        start_epoch   = ckpt["epoch"] + 1
+        best_val_loss = ckpt.get("best_val_loss", float("inf"))
         print(f"  Resumed from epoch {ckpt['epoch']}  (best val loss: {best_val_loss:.4f})")
 
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -243,15 +269,18 @@ def main():
           f"{'V-loss':>8} {'V-x':>8} {'V-e':>8}  {'Valid':>7} {'Uniq':>7}  Time")
     print("-" * 105)
 
+    # ── Training loop ──────────────────────────────────────────────────────
     for epoch in range(start_epoch, args.epochs + 1):
         t0 = time.time()
         train_set.reshuffle_indices()
-        
-        train = run_epoch(model, train_loader, device, train=True, epoch=epoch, optimizer=optimizer, ema=ema)
-        val = run_epoch(ema.model, val_loader, device, train=False, epoch=epoch)
 
+        tr = run_epoch(model, train_loader, optimizer, device, train=True,  epoch=epoch)
+        va = run_epoch(model, val_loader,   optimizer, device, train=False, epoch=epoch)
+
+        ema.update(model)
         scheduler.step()
 
+        # Validity evaluation (uses EMA model for better quality)
         validity = uniqueness = float("nan")
         if args.eval_every > 0 and epoch % args.eval_every == 0:
             validity, uniqueness = evaluate_validity(ema.model, size_dist, args.n_eval, device)
@@ -259,23 +288,25 @@ def main():
         elapsed = time.time() - t0
         print(
             f"{epoch:>6}  "
-            f"{train['loss']:>8.4f} {train['loss_x']:>8.4f} {train['loss_e']:>8.4f}  "
-            f"{val['loss']:>8.4f} {val['loss_x']:>8.4f} {val['loss_e']:>8.4f}  "
+            f"{tr['loss']:>8.4f} {tr['loss_x']:>8.4f} {tr['loss_e']:>8.4f}  "
+            f"{va['loss']:>8.4f} {va['loss_x']:>8.4f} {va['loss_e']:>8.4f}  "
             f"{validity:>7.3f} {uniqueness:>7.3f}  {elapsed:>5.1f}s"
         )
 
-        if val["loss"] < best_val_loss:
-            best_val_loss = val["loss"]
+        # Save best (by val loss)
+        if va["loss"] < best_val_loss:
+            best_val_loss = va["loss"]
             torch.save(ema.model.state_dict(), save_dir / "best.pt")
 
+        # Periodic checkpoint (full state for resume)
         if args.save_every > 0 and epoch % args.save_every == 0:
             torch.save({
-                "epoch": epoch,
-                "model": model.state_dict(),
-                "ema": ema.state_dict(),
-                "optimizer": optimizer.state_dict(),
-                "scheduler": scheduler.state_dict(),
-                "best_val_loss": best_val_loss
+                "epoch":         epoch,
+                "model":         model.state_dict(),
+                "ema":           ema.state_dict(),
+                "optimizer":     optimizer.state_dict(),
+                "scheduler":     scheduler.state_dict(),
+                "best_val_loss": best_val_loss,
             }, save_dir / f"ckpt_epoch{epoch:04d}.pt")
 
     print(f"\nDone. Best val loss: {best_val_loss:.4f}")

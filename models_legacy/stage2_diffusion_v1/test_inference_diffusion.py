@@ -1,10 +1,14 @@
 import argparse
 import random
+import sys
 from collections import Counter
 from pathlib import Path
 import torch
 from rdkit import Chem, RDLogger
 
+# [2026-09-21] models_legacy/stage2_diffusion_v1/로 이동됨 -- dataset2.py는
+# model3.py(현재 활성 개발)와 공유하는 파일이라 저장소 루트에 그대로 둠.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from dataset2 import QMugsDataset
 from model2 import ATOMIC_NUM_TO_CLS, K_E, K_X, MAX_ATOMS, MoleculeGraphDiffusion
 

@@ -150,7 +150,7 @@ Colab 환경에서는 `train.ipynb` 사용을 권장합니다.
 ## Dataset 사용법
 
 ```python
-from dataset import QMugsDataset
+from dataset import QMugsDataset  # models_legacy/stage1_cvae/dataset.py (2026-09-21 이동)
 from torch_geometric.loader import DataLoader
 
 train_set = QMugsDataset("./data/processed", split="train")
@@ -208,7 +208,7 @@ QMugsDataset(processed_path, split="train", split_ratio=(0.8, 0.1, 0.1), seed=42
 
 ```python
 import torch
-from model import MoleculeCVAE
+from model import MoleculeCVAE  # models_legacy/stage1_cvae/model.py (2026-09-21 이동)
 
 model = MoleculeCVAE()
 model.load_state_dict(torch.load("checkpoints/best.pt"))
@@ -222,3 +222,27 @@ for r in results:
     print(r["bond_types"])   # [E]    결합 종류
     print(r["n_atoms"])      # int    원자 수
 ```
+
+## Experiment records and safe launches
+
+Start new training through the outer launcher so failures before Python startup are also recorded:
+
+```bash
+./launch_run.sh python -u train3.py [arguments...]
+```
+
+`RunLogger` writes a unique timestamped raw log and runtime manifest while preserving the existing `--log-file`. GPU logs, docs, source snapshots, manifests, and results are synchronized without checkpoints:
+
+```bash
+scripts/ops/start_record_sync.sh 120
+scripts/ops/stop_record_sync.sh
+```
+
+Checkpoint binaries are copied only by an explicit manual decision. Update the remote inventory and chronological model catalog with:
+
+```bash
+scripts/ops/checkpoint_registry.py --skip-hash
+scripts/ops/build_model_catalog.py
+```
+
+See `records/README.md` and `docs/project_structure_20260920.md` for the artifact layout and evidence policy.
