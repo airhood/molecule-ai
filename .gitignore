@@ -226,3 +226,17 @@ checkpoints/
 checkpoints_diffusion/
 *.zip
 .claude-sync/
+
+# Never commit -- private research notes
+research-log.md
+연구일지.md
+
+# Runtime experiment artifacts
+runs/
+records/remote/
+records/remote_history/
+records/checkpoints/files/
+logs/remote/
+logs/sync/
+logs/remote_history/
+docs/remote_history/

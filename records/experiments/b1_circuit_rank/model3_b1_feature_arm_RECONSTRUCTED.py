@@ -1,12 +1,22 @@
-# [Stage 3/3] Absorbing Discrete Graph Diffusion -- 현재 유일하게 활성
-# 개발/학습 중인 모델. R-4에서 시작해 선형적으로 기능을 추가해 온 트렁크이며,
-# 이 파일의 최신 상태가 그 선형 발전의 최종본이다(중간 단계는 model3_clean.py
-# 스냅샷 및 records/experiments/의 개별 실험 스냅샷 참고). 계보: docs/model_lineup.md.
-#
-# A-1(부분조건화) 채택 이후 B-1(circuit_rank)과 C-1(cycle_proj)도 각각
-# null 결과였지만 코드는 트렁크에 유지됨(review 지시) -- 이 파일 자체가
-# "B-1/C-1 모두 반영된 현재 상태"이며, 그 실험들의 개별 대조군/실험군
-# 코드는 records/experiments/{b1,c1}/에 별도 스냅샷으로 있다.
+"""[RECONSTRUCTED, not a training-time snapshot]
+records/experiments/b1_circuit_rank/model3_b1_feature_arm_RECONSTRUCTED.py
+
+molecule-AI(메인 트렁크)의 현재 model3.py에서 [C-1](cycle_proj/_ring_cycle_features/
+_scale_cycle_features 및 forward의 cycle_struct 계산+합산)만 손으로 제거해
+B-1 feature arm(circuit_rank 포함, cycle_proj 없음) 상태를 복원한 파일이다.
+
+**checkpoints_c4_b1_fixed를 실제로 학습시킨 코드와 byte-identical하지 않다** --
+메인 트렁크는 B-1 학습 이후에도 계속 진화했고 그 시점의 독립 스냅샷은 보존되지
+않았다(review 없이 트렁크에 직접 누적하는 워크플로우였음). 2026-09-21에
+model3.py(당시 SHA256은 devlog.md 참조)에서 [C-1] 태그가 붙은 블록만 제거해
+재구성했으며, [B-1]/[A-1] 이전 코드와 골격이 동일함은 grep으로 확인함.
+
+대조군(B-1 control arm)은 반대로 **진짜 학습 당시 스냅샷이 그대로 보존**되어
+있다 -- molecule-AI-control/model3.py는 C-1 시점까지 수정되지 않아
+records/experiments/proposal_a/c1_experiment/model3_c1_control_snapshot.py와
+SHA256이 완전히 동일하다(efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad).
+"""
+
 import math
 import torch
 import torch.nn as nn
@@ -148,107 +158,6 @@ def _connectivity_features(E_t, node_mask):
     circuit_rank = e_count - v_count + n_components  # (B,)
 
     return n_components, comp_size_ratio, circuit_rank
-
-
-# [C-1] 2026-09-19: circuit_rank(B-1)는 고리 "개수"만 알려주고 "크기"는
-# 모른다는 한계가 실측(Δ-CI 8개 지표 전부 null)으로 확인돼, 노드별/그래프별
-# 3~6원 simple cycle 개수를 별도 feature로 추가한다. DiGress(Vignac et al.,
-# github.com/cvignac/DiGress) `KNodeCycles`를 포팅 -- 인접행렬 거듭제곱
-# (A^2~A^6)의 trace/diagonal 조합인 닫힌 형태 공식이라 단순 도보(walk) 수를
-# 세는 함정이 없다. k3/k4/k6는 main 브랜치, k5는 main의 삼각형+가지(tailed
-# -triangle) 패턴 버그를 수정한 fixed_bug 브랜치(commit 2a7c9b7b) 공식 --
-# 반례/검증 경위는 docs/review_followup_20260919b.md, 출처는
-# docs/reference/PROVENANCE.md. 유닛테스트(N<=6 전수검사 33,864개 + N=7~10
-# 무작위 200개, brute-force networkx.simple_cycles 대조): 전부 통과
-# (records/experiments/proposal_a/test_cycle_features.py).
-_CYCLE_SCALE_LOG_BASE = math.log(11.0)
-
-
-def _ring_cycle_features(E_t, node_mask, validate=False, clamp_tol=1e-3):
-    """반환: node_cycles (B,N,3) [3원,4원,5원] 참여 카운트(원본 스케일),
-    graph_cycles (B,4) [3원,4원,5원,6원] 그래프 전체 개수(원본 스케일).
-    validate=True면 음수/비정수 assert 검사 수행(테스트용, host-device
-    sync 다수 발생 -- production(학습/생성) 경로는 항상 False로 호출해
-    비용 벤치마크에서 확인된 오버헤드(학습 +1.75%, 생성 +5.79%)를 유지."""
-    B, N, _ = E_t.shape
-    both_real = node_mask.unsqueeze(1) & node_mask.unsqueeze(2)
-    eye = torch.eye(N, dtype=torch.bool, device=E_t.device).unsqueeze(0)
-    adj = ((E_t > 0) & both_real & ~eye).float()
-
-    d = adj.sum(-1)
-    k1 = adj
-    k2 = k1 @ adj
-    k3 = k2 @ adj
-    k4 = k3 @ adj
-    k5 = k4 @ adj
-    k6 = k5 @ adj
-
-    diag2 = torch.diagonal(k2, dim1=-2, dim2=-1)
-    diag3 = torch.diagonal(k3, dim1=-2, dim2=-1)
-    diag4 = torch.diagonal(k4, dim1=-2, dim2=-1)
-    diag5 = torch.diagonal(k5, dim1=-2, dim2=-1)
-
-    c3_node = diag3 / 2
-    c3_graph = diag3.sum(-1) / 6
-
-    c4 = diag4 - d * (d - 1) - (adj @ d.unsqueeze(-1)).squeeze(-1)
-    c4_node = c4 / 2
-    c4_graph = c4.sum(-1) / 8
-
-    # fixed_bug 브랜치 k5 공식 (main의 tailed-triangle 오류 수정판)
-    triangles = diag3 / 2
-    joint_cycles = k2 * adj
-    prod = 2 * (joint_cycles @ d.unsqueeze(-1)).squeeze(-1)
-    prod2 = 2 * (adj @ triangles.unsqueeze(-1)).squeeze(-1)
-    c5 = diag5 - prod - 4 * d * triangles - prod2 + 10 * triangles
-    c5_node = c5 / 2
-    c5_graph = c5.sum(-1) / 10
-
-    term_1 = torch.diagonal(k6, dim1=-2, dim2=-1).sum(-1)
-    term_2 = (diag3 ** 2).sum(-1)
-    term_3 = torch.sum(adj * k2.pow(2), dim=[-2, -1])
-    term_4 = (diag2 * diag4).sum(-1)
-    term_5 = torch.diagonal(k4, dim1=-2, dim2=-1).sum(-1)
-    term_6 = torch.diagonal(k3, dim1=-2, dim2=-1).sum(-1)
-    term_7 = diag2.pow(3).sum(-1)
-    term_8 = torch.sum(k3, dim=[-2, -1])
-    term_9 = diag2.pow(2).sum(-1)
-    term_10 = diag2.sum(-1)
-    c6_graph = (term_1 - 3 * term_2 + 9 * term_3 - 6 * term_4 + 6 * term_5
-                - 4 * term_6 + 4 * term_7 + 3 * term_8 - 12 * term_9 + 4 * term_10) / 12
-
-    if validate:
-        named = [("c3_node", c3_node), ("c4_node", c4_node), ("c5_node", c5_node),
-                 ("c3_graph", c3_graph), ("c4_graph", c4_graph), ("c5_graph", c5_graph),
-                 ("c6_graph", c6_graph)]
-        for name, t in named:
-            min_val = t.min().item() if t.numel() > 0 else 0.0
-            assert min_val >= -clamp_tol, f"{name} min={min_val} (버그 의심)"
-            resid = (t - t.round()).abs()
-            max_resid = resid.max().item() if resid.numel() > 0 else 0.0
-            assert max_resid <= clamp_tol, f"{name} max|x-round(x)|={max_resid} (버그 의심)"
-
-    c3_node, c4_node, c5_node = (t.round() for t in (c3_node, c4_node, c5_node))
-    c3_graph, c4_graph, c5_graph, c6_graph = (t.round() for t in (c3_graph, c4_graph, c5_graph, c6_graph))
-
-    node_mask_f = node_mask.float()
-    c3_node = c3_node.clamp(min=0) * node_mask_f
-    c4_node = c4_node.clamp(min=0) * node_mask_f
-    c5_node = c5_node.clamp(min=0) * node_mask_f
-    c3_graph, c4_graph, c5_graph, c6_graph = (t.clamp(min=0) for t in (c3_graph, c4_graph, c5_graph, c6_graph))
-
-    node_cycles = torch.stack([c3_node, c4_node, c5_node], dim=-1)
-    graph_cycles = torch.stack([c3_graph, c4_graph, c5_graph, c6_graph], dim=-1)
-    return node_cycles, graph_cycles
-
-
-def _scale_cycle_features(x):
-    """사전 등록된 스케일(astra_review_20260919c.md, review19.md §6 둘 다
-    동의): log1p(raw_count) / log(11), 클리핑 없음. count=0->0, count=10->1
-    (DiGress 기본 /10 기준점 유지), 10 초과도 순서 보존(꼬리가 최대 711까지
-    가도 뭉개지지 않음 -- clean/noisy 분포 실측: records/experiments/proposal_a/
-    cycle_saturation_results_v2.json)."""
-    return torch.log1p(x) / _CYCLE_SCALE_LOG_BASE
 
 
 class MarginalNoiseSchedule(nn.Module):
@@ -450,36 +359,6 @@ class ScoreNetwork(nn.Module):
         # 으로 확장. review18.md §4/§5 검증 거침.
         self.conn_proj = nn.Linear(3, NODE_DIM)
 
-        # [C-1] 2026-09-19: 고리 크기별(3~6원) simple cycle feature 투영.
-        # Astra 설계 권고(astra_review_20260919b.md §5) 그대로 conn_proj를
-        # 확장하지 않고 **완전히 별도의 zero-init projection**으로 분리 --
-        # (1) circuit_rank on/off와 디커플되어 두 feature의 효과를 독립적으로
-        # 진단 가능, (2) 새 키라 취약한 partial-copy shape-mismatch 로더에
-        # 의존할 필요 없이 strict=False만으로 warm-start 가능, (3) zero-init이라
-        # 로드 직후 logits이 이 feature 도입 전과 정확히 같음(항등성 보존).
-        # 입력 7채널(node c3/c4/c5 + graph c3/c4/c5/c6)에 _scale_cycle_features
-        # (log1p/log(11), 클리핑 없음 -- astra_review_20260919c.md/review19.md
-        # §6 둘 다 동의한 사전 등록 스케일)를 적용한 값.
-        self.cycle_proj = nn.Linear(7, NODE_DIM)
-        nn.init.zeros_(self.cycle_proj.weight)
-        nn.init.zeros_(self.cycle_proj.bias)
-
-        # [C-3] 2026-09-05: review8.md 지시로 conditioning 배선을 물성보다
-        # 먼저 a_bin(9차원)으로 스모크 테스트해 통과함(off-distribution 타겟
-        # 4개 전부 CI 비겹침, docs/review_followup_20260905b.md §3).
-        # [C-4] 2026-09-05: review9.md 지시로 물성 conditioning 본 실험 착수.
-        # 같은 메커니즘(cond_proj + 학습 가능한 null_cond로 CFG 드롭 시 대입 +
-        # COND_DROPOUT_P)을 재사용하되 입력을 a_bin(9차원)에서 HOMO/LUMO
-        # 정규화 값(2차원, batch.p 순서 0,1)으로 교체 -- GAP은 LUMO-HOMO로
-        # 선형종속(review9.md §0, 상관계수 1.0)이라 조건에서 제외, E_total은
-        # 조성만으로 R²=1.0(§0/[C-2])이라 제외, Dipole은 GNN_R²=0.303으로
-        # 2D 그래프로는 70%가 설명 안 돼 조건 경로에 잡음만 주입하므로 제외.
-        # [A-1] 2026-09-17: 물성을 여러 개(COND_DIM개)로 확장하면서 부분조건(일부만 값을 주고
-        # 나머지는 모름)을 지원해야 해서, "학습된 null_cond 하나로 전체
-        # 대체"하던 방식을 버리고 (마스크된 값, 마스크) concat 입력으로
-        # 바꿨다. "완전 무조건"은 이제 별도 파라미터가 아니라 값=0,마스크=0
-        # 인 입력 패턴 하나로 자연스럽게 표현되고, cond_proj의 bias 항이
-        # 그 입력에 대한 학습 가능한 기본 출력을 담당한다(review16.md §4).
         self.cond_proj = nn.Linear(2 * COND_DIM, NODE_DIM)
 
         # 원자: padding(0) 제외한 K_X-1개 실제 원소 예측.
@@ -516,19 +395,6 @@ class ScoreNetwork(nn.Module):
         conn_feat = torch.stack([n_comp_bcast, comp_size_ratio, circuit_rank_bcast], dim=-1)
         conn_struct = self.conn_proj(conn_feat)
 
-        # [C-1] 2026-09-19: 고리 크기별(3~6원) simple cycle 개수 -- 학습
-        # 파라미터 없이 현재 E_t에서 즉석 계산(R-6/B-1과 같은 원칙),
-        # validate=False로 production 경로 비용 유지(+1.75%/+5.79%, 비용
-        # 벤치마크: records/experiments/proposal_a/benchmark_cycle_cost.py).
-        # graph_cycles는 그래프 스칼라라 모든 노드에 broadcast, node_cycles는
-        # 노드별 값 그대로 -- conn_feat와 같은 방식(cond_proj와 달리 노드마다
-        # 실제로 다른 정보이므로 unsqueeze+expand 대신 graph만 broadcast).
-        node_cycles, graph_cycles = _ring_cycle_features(E_t, node_mask, validate=False)
-        node_cycles_scaled = _scale_cycle_features(node_cycles)  # (B,N,3)
-        graph_cycles_scaled = _scale_cycle_features(graph_cycles).unsqueeze(1).expand(-1, X_t.shape[1], -1)  # (B,N,4)
-        cycle_feat = torch.cat([node_cycles_scaled, graph_cycles_scaled], dim=-1)  # (B,N,7)
-        cycle_struct = self.cycle_proj(cycle_feat)
-
         # [A-1] 2026-09-17: cond가 안 주어지면 "완전 무조건"(값=0,마스크=0).
         # cond는 주어졌는데 cond_mask가 없으면 기존 호출부와의 하위호환으로
         # "전부 안다"(마스크=1)로 취급. 마스크된 위치의 값은 반드시 0으로
@@ -543,7 +409,7 @@ class ScoreNetwork(nn.Module):
         cond_full = torch.cat([cond * cond_mask, cond_mask], dim=-1)
         cond_struct = self.cond_proj(cond_full).unsqueeze(1).expand(-1, X_t.shape[1], -1)
 
-        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat + conn_struct + cycle_struct + cond_struct
+        h   = self.x_embed(X_t) + self.t_proj(self.t_embed(t)).unsqueeze(1) + struct_feat + conn_struct + cond_struct
         e   = self.e_embed(E_t)
         pad = ~node_mask
 

@@ -1,3 +1,6 @@
+# [Stage 2/3] 초기 diffusion 모델(absorbing-state 이전). model3.py의
+# Absorbing Discrete Graph Diffusion으로 대체되어 더 이상 학습/개발되지
+# 않는 참조용 코드. 계보: docs/model_lineup.md.
 import math
 import torch
 import torch.nn as nn

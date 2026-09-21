@@ -1,3 +1,5 @@
+# [Stage 1/3] CVAE 베이스라인. 이후 diffusion 계열(model2.py, model3.py)로
+# 대체되어 더 이상 학습/개발되지 않는 참조용 코드. 계보: docs/model_lineup.md.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
