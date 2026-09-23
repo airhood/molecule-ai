@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "source": "preserved local launcher logs; active run entry is a point-in-time copy",
+  "runs": [
+    {
+      "run_id": "20260921T043309.985477233+0000_python_pid1734659",
+      "archived_log": "logs/experiments/s1_20260922/20260921T043309.985477233+0000_python_pid1734659/launcher_20260921T043309.985477233+0000.log",
+      "sha256_at_archive": "9bfa669dce9f490f79c2fac7e78ca1a5f5512058458d7d62f8d189d7cf4926cb",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --epochs 30 --batch-size 64 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260921T044421.232398602+0000_python_pid1745725",
+      "archived_log": "logs/experiments/s1_20260922/20260921T044421.232398602+0000_python_pid1745725/launcher_20260921T044421.232398602+0000.log",
+      "sha256_at_archive": "ca11c24fb5eff9ad1a6e0f313a5eff4a62c472c1a411d02aa7b6bbb761b3925d",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 150000 --epochs 30 --batch-size 64 --num-workers 8 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260921T044651.583196264+0000_python_pid1748963",
+      "archived_log": "logs/experiments/s1_20260922/20260921T044651.583196264+0000_python_pid1748963/launcher_20260921T044651.583196264+0000.log",
+      "sha256_at_archive": "84d2e9b963fb830af87cb50942c903640d139712d97a588bd7241ec9f9d74645",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 150000 --epochs 30 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260921T045502.784073080+0000_python_pid1757657",
+      "archived_log": "logs/experiments/s1_20260922/20260921T045502.784073080+0000_python_pid1757657/launcher_20260921T045502.784073080+0000.log",
+      "sha256_at_archive": "713ce4c26004487760fd367fa0db3498bab4fb2abb8694b58d95a1b35b0bdab6",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 150000 --epochs 30 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": 5,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260921T053123.193975069+0000_python_pid1794834",
+      "archived_log": "logs/experiments/s1_20260922/20260921T053123.193975069+0000_python_pid1794834/launcher_20260921T053123.193975069+0000.log",
+      "sha256_at_archive": "75210a389a718d3e1b20246e2000284185677ddf439368b50a8eed45f1090a66",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 150000 --epochs 30 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": 7,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260921T062333.234995237+0000_python_pid1828698",
+      "archived_log": "logs/experiments/s1_20260922/20260921T062333.234995237+0000_python_pid1828698/launcher_20260921T062333.234995237+0000.log",
+      "sha256_at_archive": "621b4970b219f7f9fb530eb12ed35307e6f81f294fff7086e5ea077c3e34361a",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 500000 --epochs 20 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": 20,
+      "launcher_exit_code": 0,
+      "status_evidence": "completed",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260922T102325.053080519+0000_python_pid2917908",
+      "archived_log": "logs/experiments/s1_20260922/20260922T102325.053080519+0000_python_pid2917908/launcher_20260922T102325.053080519+0000.log",
+      "sha256_at_archive": "02d6f5820543d617e61f98d76615efa989d354355ad1f191c6470209c075ffd2",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 500000 --epochs 50 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260922T103633.018406838+0000_python_pid2939299",
+      "archived_log": "logs/experiments/s1_20260922/20260922T103633.018406838+0000_python_pid2939299/launcher_20260922T103633.018406838+0000.log",
+      "sha256_at_archive": "1b765d32a1b253d0d8d18be002f24182af84f2d6d94d1893c9622e9e14671965",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 500000 --epochs 50 --warmup-epochs 5 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "no_exit_marker",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    },
+    {
+      "run_id": "20260922T105639.832230890+0000_python_pid2966979",
+      "archived_log": "logs/experiments/s1_20260922/20260922T105639.832230890+0000_python_pid2966979/launcher_20260922T105639.832230890+0000.log",
+      "sha256_at_archive": "1c7751d48258fb4bb6bb9b17db654e43f9bf4caca9c1cff8f989e2d3b8ab7f02",
+      "launch_command": "python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 500000 --epochs 50 --warmup-epochs 5 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1",
+      "last_completed_epoch_in_archived_log": null,
+      "launcher_exit_code": null,
+      "status_evidence": "active_at_review_partial_log",
+      "source_hash_at_launch": null,
+      "checkpoint_lineage": "same_mutable_checkpoints_s1_directory"
+    }
+  ]
+}

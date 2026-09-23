@@ -1,0 +1,32 @@
+{
+  "source_processed_dir": "/home/cbgpu/molecule-AI/data/processed_ext7",
+  "stats_sha256": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+  "meta_sha256": "ab80be5a26bbc188c6552d20246236ac02aeb18d53999b383a0ed261ede6c911",
+  "seed": 42,
+  "split_ratio": [
+    0.8,
+    0.1,
+    0.1
+  ],
+  "cond_prop_indices": [
+    0,
+    1,
+    5,
+    6,
+    8,
+    9,
+    10
+  ],
+  "cond_prop_names": [
+    "HOMO",
+    "LUMO",
+    "LogP",
+    "TPSA",
+    "HBA",
+    "RotBonds",
+    "AromaticRings"
+  ],
+  "train_count": 1549602,
+  "val_count": 193700,
+  "test_count": 193701
+}

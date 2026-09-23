@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-22T19:58:52.496571+09:00",
+  "warning": "Sources were recovered from post-launch read-only observation or sync history, not captured by the launcher at process start. The association is strong for 10:36 but not launch-time proof.",
+  "runs": {
+    "run_103633": {
+      "size_predictor.py": "75b26848192f64525698bdcbf2c849471a344f525eb9fb8a325e257fce859a5f",
+      "train_s1.py": "151c93d4dea854ce82571824fbcd748cff075a7bad03b2cc026513bfa1ed848a"
+    },
+    "run_105639": {
+      "dataset2.py": "2312ad6110ec618dad7fd294b347c1c11e6b38ef48a57235b50993257a04537a",
+      "size_predictor.py": "75b26848192f64525698bdcbf2c849471a344f525eb9fb8a325e257fce859a5f",
+      "train_s1.py": "6de6c5aa24be067a9d7d900cc56e3c8be5a33fc1be4e8b4ffa99459ea61ab5d1"
+    }
+  },
+  "remote_data_hashes_observed_after_launch": {
+    "/home/cbgpu/molecule-AI/data/processed_ext7/meta.json": "ab80be5a26bbc188c6552d20246236ac02aeb18d53999b383a0ed261ede6c911",
+    "/home/cbgpu/molecule-AI/data/processed_ext7/stats.json": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+    "/home/cbgpu/molecule-AI/data/processed_ext7/sizes.npy": "4e5554a140f0bda4b3e9b28c107af380ff058ad3079c74d18d7027facd8d51a1"
+  },
+  "hash_observation_note": "Read-only sha256sum on GPU server after both 10:36 and 10:56 launches; not an immutable launch-time manifest."
+}

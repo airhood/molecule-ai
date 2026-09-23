@@ -1,0 +1,16 @@
+run_id=20260921T044651.583196264+0000_python_pid1748963
+started_at=2026-09-21T04:46:51+00:00
+pid=1748963
+hostname=cbgpu
+cwd=/home/cbgpu/molecule-AI/s1_size_predictor
+command=python -u train_s1.py --processed-dir ../data/processed_ext7 --max-samples 150000 --epochs 30 --batch-size 64 --num-workers 0 --save-dir ./checkpoints_s1 
+launcher_log=/home/cbgpu/molecule-AI/s1_size_predictor/runs/20260921T044651.583196264+0000_python_pid1748963/launcher_20260921T044651.583196264+0000.log
+launcher_sha256=020983e0cab883d88325e111fc647e09a56314503d1aeb8f6ec6745bca0a9064
+Device: cuda
+Loading datasets ...
+  Train: 150,000  Val: 30,000
+  size range [2,50] 밖 비율: 0.58%
+  Parameters: 175,281
+
+ Epoch    T-loss    T-acc    V-loss    V-acc
+--------------------------------------------------
