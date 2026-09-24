@@ -94,9 +94,18 @@ def main():
 
     model = MODEL_CLASSES[args.model]().to(device)
     state = torch.load(args.checkpoint, map_location=device, weights_only=False)
-    model.load_state_dict(state)
+    # [2026-09-24] best.pt가 순수 state_dict에서 {"model":..., "epoch":...,
+    # "val_nll":..., "val_acc":...} 딕셔너리로 바뀜(NLL 기준 선택으로 전환,
+    # astra_review_20260924.md §4-1) -- 둘 다 지원.
+    if isinstance(state, dict) and "model" in state:
+        print(f"checkpoint 로드: {args.checkpoint} "
+              f"(epoch={state.get('epoch')}, val_nll={state.get('val_nll'):.4f}, "
+              f"val_acc={state.get('val_acc'):.2%})")
+        model.load_state_dict(state["model"])
+    else:
+        print(f"checkpoint 로드: {args.checkpoint} (구버전 형식, 선택 epoch 정보 없음)")
+        model.load_state_dict(state)
     model.eval()
-    print(f"checkpoint 로드: {args.checkpoint}")
 
     panels = build_panels()
     results = {}

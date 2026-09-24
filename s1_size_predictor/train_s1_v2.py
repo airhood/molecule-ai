@@ -184,7 +184,13 @@ def main():
           f"{args.epochs - warmup_epochs} epochs")
 
     gen = torch.Generator().manual_seed(args.seed)
-    best_val_acc = 0.0
+    # [astra_review_20260924.md §4-1 반영] 이전엔 val accuracy로 best.pt를
+    # 고르고, 보고할 땐 최종 epoch의 NLL을 갖다 붙여서 서로 다른 epoch의
+    # 지표를 한 checkpoint인 것처럼 섞어 보고하는 실수가 있었다. 이제
+    # 선택 기준을 val NLL(분포 전체를 보는 지표, exact match보다 우선)로
+    # 고정하고, 그 "선택된 epoch"의 acc/NLL을 같이 저장해 섞이지 않게 한다.
+    best_val_nll = float("inf")
+    best_epoch, best_val_acc_at_best = None, None
     print(f"\n{'Epoch':>6}  {'T-loss':>8} {'T-acc':>8}  {'V-loss':>8} {'V-acc':>8}")
     print("-" * 50)
     for epoch in range(1, args.epochs + 1):
@@ -195,19 +201,25 @@ def main():
                                        train=False)
         scheduler.step()
         print(f"{epoch:>6}  {t_loss:>8.4f} {t_acc:>8.2%}  {v_loss:>8.4f} {v_acc:>8.2%}")
-        if v_acc > best_val_acc:
-            best_val_acc = v_acc
-            _atomic_torch_save(model.state_dict(), save_dir / "best.pt")
+        if v_loss < best_val_nll:
+            best_val_nll = v_loss
+            best_epoch = epoch
+            best_val_acc_at_best = v_acc
+            _atomic_torch_save({"model": model.state_dict(), "epoch": epoch,
+                                 "val_nll": v_loss, "val_acc": v_acc},
+                                save_dir / "best.pt")
         if args.save_every > 0 and epoch % args.save_every == 0:
             _atomic_torch_save({
                 "epoch": epoch, "model": model.state_dict(),
                 "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(),
-                "best_val_acc": best_val_acc,
+                "val_nll": v_loss, "val_acc": v_acc,
             }, save_dir / f"ckpt_epoch{epoch:04d}.pt")
 
-    print(f"\nDone. Best val acc: {best_val_acc:.2%}  "
+    print(f"\nDone. Best checkpoint: epoch {best_epoch}, val NLL {best_val_nll:.4f}, "
+          f"val acc {best_val_acc_at_best:.2%}  "
           f"(prior baseline: {prior_val_acc:.2%}, prior NLL: {prior_val_nll:.4f})")
-    run_logger.finish("completed", best_val_acc=best_val_acc,
+    run_logger.finish("completed", best_epoch=best_epoch, best_val_nll=best_val_nll,
+                       best_val_acc=best_val_acc_at_best,
                        prior_val_acc=prior_val_acc, prior_val_nll=prior_val_nll,
                        save_dir=str(save_dir))
 
