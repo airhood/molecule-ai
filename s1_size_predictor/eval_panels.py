@@ -54,7 +54,10 @@ def evaluate_panel(model, p7, target, observed_indices, device, coverage_level=0
     pred = logits.argmax(-1)
     exact_hit = (pred == target).float().mean().item()
     pm1_hit = ((pred - target).abs() <= 1).float().mean().item()
-    mae = (pred - target).abs().float().mean().item()
+    # [astra_review_20260924.md §2 정정] 이건 argmax 예측의 오차이지, S-1이
+    # 실제로 sampling할 크기의 기대 오차나 posterior median의 MAE가 아니다 --
+    # 이름을 명확히 하고, 주요 분포 지표는 NLL로 유지한다.
+    argmax_mae = (pred - target).abs().float().mean().item()
 
     # coverage: 확률 내림차순으로 누적해 coverage_level을 처음 넘기는 지점까지를
     # 예측 신뢰구간(집합)으로 삼고, 실제 target이 그 집합 안에 있는 비율을 잰다.
@@ -66,10 +69,19 @@ def evaluate_panel(model, p7, target, observed_indices, device, coverage_level=0
     target_rank = (sorted_idx == target.unsqueeze(-1)).float().argmax(dim=-1) + 1
     covered = (target_rank <= in_set_rank).float().mean().item()
     avg_set_size = in_set_rank.float().mean().item()
+    # [astra_review_20260924.md §3 coverage 정정] 이산분포라 집합의 실제
+    # 확률질량은 보통 coverage_level(0.8)보다 크다. coverage만 명목 80%와
+    # 비교하면 잘못 해석하기 쉬우므로, 그 집합에 모델이 실제로 부여한
+    # 확률질량도 같이 보고한다(coverage ≈ mass여야 calibration이 맞다는 뜻).
+    set_mass = cum.gather(-1, (in_set_rank - 1).unsqueeze(-1)).squeeze(-1)
+    avg_set_mass = set_mass.mean().item()
 
     return {
-        "n": B, "nll": nll, "exact_hit": exact_hit, "pm1_hit": pm1_hit, "mae": mae,
-        f"coverage_at_{coverage_level}": covered, "avg_credible_set_size": avg_set_size,
+        "n": B, "nll": nll, "exact_hit": exact_hit, "pm1_hit": pm1_hit,
+        "argmax_mae": argmax_mae,
+        f"coverage_at_{coverage_level}": covered,
+        "avg_credible_set_mass": avg_set_mass,
+        "avg_credible_set_size": avg_set_size,
     }
 
 
@@ -109,14 +121,15 @@ def main():
 
     panels = build_panels()
     results = {}
-    print(f"\n{'panel':<28} {'n':>8} {'NLL':>8} {'exact':>8} {'+-1':>8} {'MAE':>7} {'cov80':>7} {'setsz':>7}")
-    print("-" * 90)
+    print(f"\n{'panel':<28} {'n':>8} {'NLL':>8} {'exact':>8} {'+-1':>8} {'argmaxMAE':>9} "
+          f"{'cov80':>7} {'mass80':>7} {'setsz':>7}")
+    print("-" * 100)
     for name, observed in panels.items():
         r = evaluate_panel(model, p7, target, observed, device)
         results[name] = r
         print(f"{name:<28} {r['n']:>8,} {r['nll']:>8.4f} {r['exact_hit']:>8.2%} "
-              f"{r['pm1_hit']:>8.2%} {r['mae']:>7.2f} {r['coverage_at_0.8']:>7.2%} "
-              f"{r['avg_credible_set_size']:>7.1f}")
+              f"{r['pm1_hit']:>8.2%} {r['argmax_mae']:>9.2f} {r['coverage_at_0.8']:>7.2%} "
+              f"{r['avg_credible_set_mass']:>7.2%} {r['avg_credible_set_size']:>7.1f}")
 
     if args.out:
         with open(args.out, "w") as f:
