@@ -24,7 +24,10 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, LinearLR, SequentialLR
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
 from run_logger import RunLogger
-from size_predictor import SizePredictor, MIN_ATOMS, MAX_ATOMS, N_SIZE_CLASSES, COND_DIM
+from size_predictor import (SizePredictor, SimpleConcatMLP, MIN_ATOMS, MAX_ATOMS,
+                             N_SIZE_CLASSES, COND_DIM)
+
+MODEL_CLASSES = {"size_predictor": SizePredictor, "concat_mlp": SimpleConcatMLP}
 
 COND_DROPOUT_P_FULL = 0.15
 COND_DROPOUT_P_PARTIAL = 0.2
@@ -124,6 +127,10 @@ def main():
     run_logger = RunLogger(__file__, source_paths=(_HERE / "size_predictor.py",)).start()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model", choices=list(MODEL_CLASSES.keys()), default="size_predictor",
+                        help="astra_review_20260922.md §1 -- concat_mlp는 강한 단순 "
+                             "기준선(SimpleConcatMLP), 동일 train/val/seed/budget으로 "
+                             "size_predictor와 비교하기 위함.")
     parser.add_argument("--features-dir", default="./features")
     parser.add_argument("--save-dir", default="./checkpoints_s1")
     parser.add_argument("--epochs", type=int, default=50)
@@ -157,7 +164,8 @@ def main():
     print(f"  [baseline] 경험적 prior: 최빈 class={mode_class + MIN_ATOMS}(원자수), "
           f"val acc={prior_val_acc:.2%}, val NLL={prior_val_nll:.4f}")
 
-    model = SizePredictor().to(device)
+    model = MODEL_CLASSES[args.model]().to(device)
+    print(f"  Model: {args.model} ({MODEL_CLASSES[args.model].__name__})")
     n_params = sum(p.numel() for p in model.parameters())
     print(f"  Parameters: {n_params:,}")
 

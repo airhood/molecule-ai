@@ -66,3 +66,33 @@ class SizePredictor(nn.Module):
         probs = F.softmax(logits, dim=-1)
         idx = torch.multinomial(probs, 1).squeeze(-1)
         return idx + MIN_ATOMS  # class index -> 실제 원자 수
+
+
+class SimpleConcatMLP(nn.Module):
+    """astra_review_20260922.md §1 -- SizePredictor(속성별 encoder+mean
+    pooling, 175K params)가 이 문제에 정말 필요한지 판단할 강한 단순
+    기준선. concat([properties * mask, mask]) -> 2-layer MLP. model3.py의
+    cond_proj/cond_mod가 쓰는 입력 형식(값*마스크, 마스크 concat)과
+    동일한 관례."""
+
+    def __init__(self, cond_dim=COND_DIM, hidden=HIDDEN):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2 * cond_dim, hidden), nn.GELU(),
+            nn.Linear(hidden, hidden), nn.GELU(),
+            nn.Linear(hidden, N_SIZE_CLASSES),
+        )
+
+    def forward(self, cond, cond_mask):
+        x = torch.cat([cond * cond_mask, cond_mask], dim=-1)
+        return self.net(x)
+
+    def sample(self, cond, cond_mask, temperature=1.0, top_k=None):
+        logits = self.forward(cond, cond_mask) / temperature
+        if top_k is not None:
+            v, _ = torch.topk(logits, top_k)
+            thresh = v[:, -1:].expand_as(logits)
+            logits = torch.where(logits < thresh, torch.full_like(logits, float("-inf")), logits)
+        probs = F.softmax(logits, dim=-1)
+        idx = torch.multinomial(probs, 1).squeeze(-1)
+        return idx + MIN_ATOMS
