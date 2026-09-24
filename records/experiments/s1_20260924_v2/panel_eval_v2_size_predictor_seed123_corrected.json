@@ -1,0 +1,117 @@
+{
+  "checkpoint": "checkpoints_v2_size_predictor_seed123/20260924T124356.624385+0000_train_s1_v2_pid1278468/best.pt",
+  "model": "size_predictor",
+  "split": "val",
+  "panels": {
+    "1_full_observed": {
+      "n": 192546,
+      "nll": 2.5655722618103027,
+      "exact_hit": 0.12540899217128754,
+      "pm1_hit": 0.3569640517234802,
+      "argmax_mae": 2.725888729095459,
+      "coverage_at_0.8": 0.8281086087226868,
+      "avg_credible_set_mass": 0.8270719647407532,
+      "avg_credible_set_size": 8.864587783813477
+    },
+    "2_homo_lumo_only": {
+      "n": 192546,
+      "nll": 3.3508074283599854,
+      "exact_hit": 0.05862494930624962,
+      "pm1_hit": 0.17446739971637726,
+      "argmax_mae": 5.60192346572876,
+      "coverage_at_0.8": 0.8148494362831116,
+      "avg_credible_set_mass": 0.8123557567596436,
+      "avg_credible_set_size": 18.552968978881836
+    },
+    "3_structural5_only": {
+      "n": 192546,
+      "nll": 2.6077029705047607,
+      "exact_hit": 0.11718757450580597,
+      "pm1_hit": 0.33577948808670044,
+      "argmax_mae": 2.8527674674987793,
+      "coverage_at_0.8": 0.825143039226532,
+      "avg_credible_set_mass": 0.8262958526611328,
+      "avg_credible_set_size": 9.16293716430664
+    },
+    "4_leave_out_HOMO": {
+      "n": 192546,
+      "nll": 2.5818915367126465,
+      "exact_hit": 0.120173878967762,
+      "pm1_hit": 0.3463951349258423,
+      "argmax_mae": 2.7788164615631104,
+      "coverage_at_0.8": 0.8263843059539795,
+      "avg_credible_set_mass": 0.8268105387687683,
+      "avg_credible_set_size": 8.979719161987305
+    },
+    "4_leave_out_LUMO": {
+      "n": 192546,
+      "nll": 2.5931432247161865,
+      "exact_hit": 0.12075555324554443,
+      "pm1_hit": 0.34421902894973755,
+      "argmax_mae": 2.8009722232818604,
+      "coverage_at_0.8": 0.8263115882873535,
+      "avg_credible_set_mass": 0.8267439603805542,
+      "avg_credible_set_size": 9.047567367553711
+    },
+    "4_leave_out_LogP": {
+      "n": 192546,
+      "nll": 2.8109867572784424,
+      "exact_hit": 0.09773248434066772,
+      "pm1_hit": 0.28725603222846985,
+      "argmax_mae": 3.5123085975646973,
+      "coverage_at_0.8": 0.8250859379768372,
+      "avg_credible_set_mass": 0.8211226463317871,
+      "avg_credible_set_size": 11.12481689453125
+    },
+    "4_leave_out_TPSA": {
+      "n": 192546,
+      "nll": 2.670158624649048,
+      "exact_hit": 0.11611250787973404,
+      "pm1_hit": 0.32892918586730957,
+      "argmax_mae": 2.9739956855773926,
+      "coverage_at_0.8": 0.8261090517044067,
+      "avg_credible_set_mass": 0.8247364163398743,
+      "avg_credible_set_size": 9.73304557800293
+    },
+    "4_leave_out_HBA": {
+      "n": 192546,
+      "nll": 2.6241214275360107,
+      "exact_hit": 0.11464792490005493,
+      "pm1_hit": 0.33014968037605286,
+      "argmax_mae": 2.9237585067749023,
+      "coverage_at_0.8": 0.8251586556434631,
+      "avg_credible_set_mass": 0.825825035572052,
+      "avg_credible_set_size": 9.268855094909668
+    },
+    "4_leave_out_RotBonds": {
+      "n": 192546,
+      "nll": 2.6642959117889404,
+      "exact_hit": 0.11548928171396255,
+      "pm1_hit": 0.32943296432495117,
+      "argmax_mae": 2.921597957611084,
+      "coverage_at_0.8": 0.8240731954574585,
+      "avg_credible_set_mass": 0.8249596357345581,
+      "avg_credible_set_size": 9.682215690612793
+    },
+    "4_leave_out_AromaticRings": {
+      "n": 192546,
+      "nll": 2.619133472442627,
+      "exact_hit": 0.11910919845104218,
+      "pm1_hit": 0.3430556654930115,
+      "argmax_mae": 2.7767493724823,
+      "coverage_at_0.8": 0.8230500817298889,
+      "avg_credible_set_mass": 0.8257374167442322,
+      "avg_credible_set_size": 9.188899993896484
+    },
+    "5_all_unobserved": {
+      "n": 192546,
+      "nll": 3.3900787830352783,
+      "exact_hit": 0.056926656514406204,
+      "pm1_hit": 0.1695023477077484,
+      "argmax_mae": 5.760337829589844,
+      "coverage_at_0.8": 0.8098999261856079,
+      "avg_credible_set_mass": 0.8113175630569458,
+      "avg_credible_set_size": 19.0
+    }
+  }
+}

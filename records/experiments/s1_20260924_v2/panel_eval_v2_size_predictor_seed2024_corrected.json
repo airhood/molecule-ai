@@ -1,0 +1,117 @@
+{
+  "checkpoint": "checkpoints_v2_size_predictor_seed2024/20260924T125348.298219+0000_train_s1_v2_pid1287740/best.pt",
+  "model": "size_predictor",
+  "split": "val",
+  "panels": {
+    "1_full_observed": {
+      "n": 192546,
+      "nll": 2.563424587249756,
+      "exact_hit": 0.12559077143669128,
+      "pm1_hit": 0.3593686521053314,
+      "argmax_mae": 2.7167532444000244,
+      "coverage_at_0.8": 0.8276203870773315,
+      "avg_credible_set_mass": 0.8272631764411926,
+      "avg_credible_set_size": 8.846124649047852
+    },
+    "2_homo_lumo_only": {
+      "n": 192546,
+      "nll": 3.3505704402923584,
+      "exact_hit": 0.057243462651968,
+      "pm1_hit": 0.16916996240615845,
+      "argmax_mae": 5.684386730194092,
+      "coverage_at_0.8": 0.811889111995697,
+      "avg_credible_set_mass": 0.8120615482330322,
+      "avg_credible_set_size": 18.39402961730957
+    },
+    "3_structural5_only": {
+      "n": 192546,
+      "nll": 2.606560468673706,
+      "exact_hit": 0.11811203509569168,
+      "pm1_hit": 0.3375557065010071,
+      "argmax_mae": 2.8433775901794434,
+      "coverage_at_0.8": 0.827033519744873,
+      "avg_credible_set_mass": 0.8264781832695007,
+      "avg_credible_set_size": 9.162210464477539
+    },
+    "4_leave_out_HOMO": {
+      "n": 192546,
+      "nll": 2.5809237957000732,
+      "exact_hit": 0.12182023376226425,
+      "pm1_hit": 0.34801551699638367,
+      "argmax_mae": 2.7682526111602783,
+      "coverage_at_0.8": 0.8261505961418152,
+      "avg_credible_set_mass": 0.8269960284233093,
+      "avg_credible_set_size": 8.970495223999023
+    },
+    "4_leave_out_LUMO": {
+      "n": 192546,
+      "nll": 2.5916218757629395,
+      "exact_hit": 0.1213683933019638,
+      "pm1_hit": 0.3466548025608063,
+      "argmax_mae": 2.7977521419525146,
+      "coverage_at_0.8": 0.8263843059539795,
+      "avg_credible_set_mass": 0.8269537687301636,
+      "avg_credible_set_size": 9.038557052612305
+    },
+    "4_leave_out_LogP": {
+      "n": 192546,
+      "nll": 2.8115227222442627,
+      "exact_hit": 0.10037081688642502,
+      "pm1_hit": 0.2885076701641083,
+      "argmax_mae": 3.504824638366699,
+      "coverage_at_0.8": 0.826389491558075,
+      "avg_credible_set_mass": 0.8210543394088745,
+      "avg_credible_set_size": 11.16425609588623
+    },
+    "4_leave_out_TPSA": {
+      "n": 192546,
+      "nll": 2.670015335083008,
+      "exact_hit": 0.11510495841503143,
+      "pm1_hit": 0.3292200267314911,
+      "argmax_mae": 2.979557991027832,
+      "coverage_at_0.8": 0.8271996974945068,
+      "avg_credible_set_mass": 0.8244921565055847,
+      "avg_credible_set_size": 9.773518562316895
+    },
+    "4_leave_out_HBA": {
+      "n": 192546,
+      "nll": 2.622452974319458,
+      "exact_hit": 0.11477257311344147,
+      "pm1_hit": 0.3305703401565552,
+      "argmax_mae": 2.919182777404785,
+      "coverage_at_0.8": 0.8266751766204834,
+      "avg_credible_set_mass": 0.82590252161026,
+      "avg_credible_set_size": 9.27685832977295
+    },
+    "4_leave_out_RotBonds": {
+      "n": 192546,
+      "nll": 2.661181688308716,
+      "exact_hit": 0.11759267747402191,
+      "pm1_hit": 0.3317285180091858,
+      "argmax_mae": 2.912130117416382,
+      "coverage_at_0.8": 0.8267582654953003,
+      "avg_credible_set_mass": 0.8249867558479309,
+      "avg_credible_set_size": 9.700491905212402
+    },
+    "4_leave_out_AromaticRings": {
+      "n": 192546,
+      "nll": 2.6190266609191895,
+      "exact_hit": 0.11939484626054764,
+      "pm1_hit": 0.34000706672668457,
+      "argmax_mae": 2.7874948978424072,
+      "coverage_at_0.8": 0.8226397633552551,
+      "avg_credible_set_mass": 0.8261135220527649,
+      "avg_credible_set_size": 9.193070411682129
+    },
+    "5_all_unobserved": {
+      "n": 192546,
+      "nll": 3.3901243209838867,
+      "exact_hit": 0.05602816864848137,
+      "pm1_hit": 0.16831821203231812,
+      "argmax_mae": 5.7355852127075195,
+      "coverage_at_0.8": 0.8098999261856079,
+      "avg_credible_set_mass": 0.8119966983795166,
+      "avg_credible_set_size": 19.0
+    }
+  }
+}

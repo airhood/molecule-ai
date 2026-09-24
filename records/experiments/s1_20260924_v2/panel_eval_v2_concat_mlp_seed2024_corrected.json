@@ -1,0 +1,117 @@
+{
+  "checkpoint": "checkpoints_v2_concat_mlp_seed2024/20260924T130224.423076+0000_train_s1_v2_pid1296016/best.pt",
+  "model": "concat_mlp",
+  "split": "val",
+  "panels": {
+    "1_full_observed": {
+      "n": 192546,
+      "nll": 2.5958592891693115,
+      "exact_hit": 0.12069323658943176,
+      "pm1_hit": 0.34626010060310364,
+      "argmax_mae": 2.7126400470733643,
+      "coverage_at_0.8": 0.8310896754264832,
+      "avg_credible_set_mass": 0.8251270055770874,
+      "avg_credible_set_size": 9.096002578735352
+    },
+    "2_homo_lumo_only": {
+      "n": 192546,
+      "nll": 3.3514161109924316,
+      "exact_hit": 0.05819907784461975,
+      "pm1_hit": 0.1736312359571457,
+      "argmax_mae": 5.630550384521484,
+      "coverage_at_0.8": 0.8051998019218445,
+      "avg_credible_set_mass": 0.8122584223747253,
+      "avg_credible_set_size": 18.240949630737305
+    },
+    "3_structural5_only": {
+      "n": 192546,
+      "nll": 2.631579875946045,
+      "exact_hit": 0.11152659356594086,
+      "pm1_hit": 0.3283838629722595,
+      "argmax_mae": 2.829531669616699,
+      "coverage_at_0.8": 0.8237512111663818,
+      "avg_credible_set_mass": 0.824601948261261,
+      "avg_credible_set_size": 9.247519493103027
+    },
+    "4_leave_out_HOMO": {
+      "n": 192546,
+      "nll": 2.6081435680389404,
+      "exact_hit": 0.11807567626237869,
+      "pm1_hit": 0.3402771055698395,
+      "argmax_mae": 2.750511407852173,
+      "coverage_at_0.8": 0.8277086615562439,
+      "avg_credible_set_mass": 0.8249582052230835,
+      "avg_credible_set_size": 9.133723258972168
+    },
+    "4_leave_out_LUMO": {
+      "n": 192546,
+      "nll": 2.6202797889709473,
+      "exact_hit": 0.11594631522893906,
+      "pm1_hit": 0.3359716534614563,
+      "argmax_mae": 2.7863004207611084,
+      "coverage_at_0.8": 0.8271166086196899,
+      "avg_credible_set_mass": 0.8248465657234192,
+      "avg_credible_set_size": 9.20920181274414
+    },
+    "4_leave_out_LogP": {
+      "n": 192546,
+      "nll": 2.8383612632751465,
+      "exact_hit": 0.09643928706645966,
+      "pm1_hit": 0.2801823914051056,
+      "argmax_mae": 3.4817497730255127,
+      "coverage_at_0.8": 0.8204896450042725,
+      "avg_credible_set_mass": 0.8205487132072449,
+      "avg_credible_set_size": 11.25700855255127
+    },
+    "4_leave_out_TPSA": {
+      "n": 192546,
+      "nll": 2.693768262863159,
+      "exact_hit": 0.11203037202358246,
+      "pm1_hit": 0.3226657509803772,
+      "argmax_mae": 2.987088680267334,
+      "coverage_at_0.8": 0.8266388177871704,
+      "avg_credible_set_mass": 0.8229594826698303,
+      "avg_credible_set_size": 9.909340858459473
+    },
+    "4_leave_out_HBA": {
+      "n": 192546,
+      "nll": 2.647947311401367,
+      "exact_hit": 0.11154736578464508,
+      "pm1_hit": 0.3211440443992615,
+      "argmax_mae": 2.8976659774780273,
+      "coverage_at_0.8": 0.8329645395278931,
+      "avg_credible_set_mass": 0.8236523270606995,
+      "avg_credible_set_size": 9.566529273986816
+    },
+    "4_leave_out_RotBonds": {
+      "n": 192546,
+      "nll": 2.6870157718658447,
+      "exact_hit": 0.11241988837718964,
+      "pm1_hit": 0.3231954872608185,
+      "argmax_mae": 2.9413905143737793,
+      "coverage_at_0.8": 0.8306378722190857,
+      "avg_credible_set_mass": 0.8229460716247559,
+      "avg_credible_set_size": 9.954706192016602
+    },
+    "4_leave_out_AromaticRings": {
+      "n": 192546,
+      "nll": 2.6419429779052734,
+      "exact_hit": 0.11681883782148361,
+      "pm1_hit": 0.335478276014328,
+      "argmax_mae": 2.8020732402801514,
+      "coverage_at_0.8": 0.8279943466186523,
+      "avg_credible_set_mass": 0.8242440223693848,
+      "avg_credible_set_size": 9.45191764831543
+    },
+    "5_all_unobserved": {
+      "n": 192546,
+      "nll": 3.390150308609009,
+      "exact_hit": 0.056926656514406204,
+      "pm1_hit": 0.1695023477077484,
+      "argmax_mae": 5.760337829589844,
+      "coverage_at_0.8": 0.8098999261856079,
+      "avg_credible_set_mass": 0.8139867782592773,
+      "avg_credible_set_size": 19.0
+    }
+  }
+}

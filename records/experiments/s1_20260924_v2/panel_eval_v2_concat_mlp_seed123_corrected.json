@@ -1,0 +1,117 @@
+{
+  "checkpoint": "checkpoints_v2_concat_mlp_seed123/20260924T125231.399607+0000_train_s1_v2_pid1286756/best.pt",
+  "model": "concat_mlp",
+  "split": "val",
+  "panels": {
+    "1_full_observed": {
+      "n": 192546,
+      "nll": 2.5945980548858643,
+      "exact_hit": 0.12056339532136917,
+      "pm1_hit": 0.34730401635169983,
+      "argmax_mae": 2.705639123916626,
+      "coverage_at_0.8": 0.8312506675720215,
+      "avg_credible_set_mass": 0.8251988887786865,
+      "avg_credible_set_size": 9.087921142578125
+    },
+    "2_homo_lumo_only": {
+      "n": 192546,
+      "nll": 3.3496410846710205,
+      "exact_hit": 0.05894695222377777,
+      "pm1_hit": 0.1739116907119751,
+      "argmax_mae": 5.585412979125977,
+      "coverage_at_0.8": 0.8062436580657959,
+      "avg_credible_set_mass": 0.8117693066596985,
+      "avg_credible_set_size": 18.230649948120117
+    },
+    "3_structural5_only": {
+      "n": 192546,
+      "nll": 2.6310393810272217,
+      "exact_hit": 0.11434150487184525,
+      "pm1_hit": 0.3313857316970825,
+      "argmax_mae": 2.824587345123291,
+      "coverage_at_0.8": 0.8229150176048279,
+      "avg_credible_set_mass": 0.8246310949325562,
+      "avg_credible_set_size": 9.23316478729248
+    },
+    "4_leave_out_HOMO": {
+      "n": 192546,
+      "nll": 2.607532024383545,
+      "exact_hit": 0.11756670475006104,
+      "pm1_hit": 0.34158068895339966,
+      "argmax_mae": 2.742539405822754,
+      "coverage_at_0.8": 0.829625129699707,
+      "avg_credible_set_mass": 0.8248165249824524,
+      "avg_credible_set_size": 9.150935173034668
+    },
+    "4_leave_out_LUMO": {
+      "n": 192546,
+      "nll": 2.619663715362549,
+      "exact_hit": 0.1160813495516777,
+      "pm1_hit": 0.33645984530448914,
+      "argmax_mae": 2.78425931930542,
+      "coverage_at_0.8": 0.8248989582061768,
+      "avg_credible_set_mass": 0.8249552845954895,
+      "avg_credible_set_size": 9.168567657470703
+    },
+    "4_leave_out_LogP": {
+      "n": 192546,
+      "nll": 2.837097644805908,
+      "exact_hit": 0.09572777152061462,
+      "pm1_hit": 0.2815534770488739,
+      "argmax_mae": 3.462663412094116,
+      "coverage_at_0.8": 0.8225722312927246,
+      "avg_credible_set_mass": 0.820184588432312,
+      "avg_credible_set_size": 11.250028610229492
+    },
+    "4_leave_out_TPSA": {
+      "n": 192546,
+      "nll": 2.6935007572174072,
+      "exact_hit": 0.1124822124838829,
+      "pm1_hit": 0.32096225023269653,
+      "argmax_mae": 2.9904282093048096,
+      "coverage_at_0.8": 0.8311780095100403,
+      "avg_credible_set_mass": 0.8228427767753601,
+      "avg_credible_set_size": 9.99197006225586
+    },
+    "4_leave_out_HBA": {
+      "n": 192546,
+      "nll": 2.6476638317108154,
+      "exact_hit": 0.1096932664513588,
+      "pm1_hit": 0.32046887278556824,
+      "argmax_mae": 2.899961471557617,
+      "coverage_at_0.8": 0.8334579467773438,
+      "avg_credible_set_mass": 0.8238042593002319,
+      "avg_credible_set_size": 9.551234245300293
+    },
+    "4_leave_out_RotBonds": {
+      "n": 192546,
+      "nll": 2.685919761657715,
+      "exact_hit": 0.11374424397945404,
+      "pm1_hit": 0.3247743248939514,
+      "argmax_mae": 2.9358956813812256,
+      "coverage_at_0.8": 0.8311468362808228,
+      "avg_credible_set_mass": 0.8228864669799805,
+      "avg_credible_set_size": 9.970489501953125
+    },
+    "4_leave_out_AromaticRings": {
+      "n": 192546,
+      "nll": 2.6407418251037598,
+      "exact_hit": 0.11716160923242569,
+      "pm1_hit": 0.33652737736701965,
+      "argmax_mae": 2.803922176361084,
+      "coverage_at_0.8": 0.8266751766204834,
+      "avg_credible_set_mass": 0.8242943286895752,
+      "avg_credible_set_size": 9.409309387207031
+    },
+    "5_all_unobserved": {
+      "n": 192546,
+      "nll": 3.3901960849761963,
+      "exact_hit": 0.056926656514406204,
+      "pm1_hit": 0.1695023477077484,
+      "argmax_mae": 5.760337829589844,
+      "coverage_at_0.8": 0.8098999261856079,
+      "avg_credible_set_mass": 0.81358802318573,
+      "avg_credible_set_size": 19.0
+    }
+  }
+}
