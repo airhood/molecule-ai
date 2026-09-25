@@ -1,0 +1,41 @@
+{
+  "source_processed_dir": "/home/cbgpu/molecule-AI/data/processed_ext7",
+  "stats_sha256_of_original_full_dataset_stats_json": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+  "meta_sha256": "ab80be5a26bbc188c6552d20246236ac02aeb18d53999b383a0ed261ede6c911",
+  "normalization_sha256": "c14e01d66adc64af6237e918a32fcd206d7003d43e18cf1a9f0545ff4eabce7a",
+  "normalization_file": "normalization.json",
+  "seed": 42,
+  "split_ratio": [
+    0.8,
+    0.1,
+    0.1
+  ],
+  "split_unit": "chembl_id (molecule-level group split, not row-level)",
+  "normalization": "train-only mean/std (computed after split, not full-dataset summary) -- see normalization.json",
+  "cond_prop_indices": [
+    0,
+    1,
+    5,
+    6,
+    8,
+    9,
+    10
+  ],
+  "cond_prop_names": [
+    "HOMO",
+    "LUMO",
+    "LogP",
+    "TPSA",
+    "HBA",
+    "RotBonds",
+    "AromaticRings"
+  ],
+  "total_rows": 1937003,
+  "total_unique_molecules": 647077,
+  "train_count": 1549601,
+  "val_count": 193695,
+  "test_count": 193707,
+  "train_unique_molecules": 517661,
+  "val_unique_molecules": 64707,
+  "test_unique_molecules": 64709
+}
