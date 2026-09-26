@@ -1,0 +1,105 @@
+{
+  "config_version": "pilot_v1",
+  "created": "2026-09-26",
+  "status": "PRE-REGISTERED -- 어떤 생성도 실행하기 전에 고정. astra_review_20260926.md 기본안 그대로 채택. 실행 후 값을 바꾸려면 새 config_version으로 분리하고 이 파일은 수정하지 않는다.",
+  "question": "고정 A-1에서 초기 원자 수 선택 정책(train prior vs S-1)만 바꾸면 생성 물성 오차/validity가 어떻게 달라지는가. 새 분자 일반화의 확정 검증이 아니라 탐색적 개입 실험이다(target은 S-1 val이며 A-1이 이미 본 분자일 수 있음).",
+  "gpu": "GPU0 only (CUDA_VISIBLE_DEVICES=0)",
+
+  "frozen_a1": {
+    "model_source_repo_path": "records/experiments/pec/model3_pec_base_snapshot.py",
+    "model_source_sha256": "efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad",
+    "checkpoint_server_path": "/home/cbgpu/molecule-AI-pec/checkpoints_c4_a1/best.pt",
+    "checkpoint_sha256": "c6041051a844cb84f2f61653667387d392650038bf86ac8946a440e46dd22f41",
+    "normalization": "original full-dataset stats.json (data/processed_ext7/stats.json), cond7 indices",
+    "stats_json_sha256": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+    "load": "strict=True, missing/unexpected must both be empty (param_count 5754052)",
+    "T_STEPS": 150,
+    "guidance_w": 1.0,
+    "note": "checkpoint 경로는 launch gate에서 서버 실물 SHA와 대조. 다르면 즉시 중단."
+  },
+
+  "s1_models": {
+    "normalization_sha256": "c14e01d66adc64af6237e918a32fcd206d7003d43e18cf1a9f0545ff4eabce7a",
+    "normalization_file": "features_v2_fixed/normalization.json",
+    "checkpoints": {
+      "seed42":   {"path": "checkpoints_v2_size_predictor_seed42/*/best.pt",   "sha256": "889b36e23e0bcb9d76b24e3498152415efc5db239e56a2a4635f9a573fc129e7"},
+      "seed123":  {"path": "checkpoints_v2_size_predictor_seed123/*/best.pt",  "sha256": "c8ff15e9135e6ccde88f63d0656c15531572163a76731dcd0b3cdfc1ff7eff56"},
+      "seed2024": {"path": "checkpoints_v2_size_predictor_seed2024/*/best.pt", "sha256": "9a6d50d02d9beaf9dda5ca1e634bbe402ca4cb9198fbf620c70f28d2dc092a3e"}
+    },
+    "load": "state['model'] strict load"
+  },
+
+  "arms": ["prior", "s1_seed42", "s1_seed123", "s1_seed2024"],
+  "prior": {
+    "definition": "S-1이 실제 학습한 train 행(features_v2_fixed/train.pt) 중 원자 수 2~50의 행 가중 빈도. 49-class counts/probs/train.pt SHA를 prior.json에 저장. train3.build_size_distribution은 split을 무시하고 원본 첫 청크 2000행을 읽으므로 사용 금지.",
+    "note": "prior 결과는 세 S-1 arm과 비교할 때 재사용하되 독립 대조군 3배로 세지 않는다."
+  },
+
+  "size_sampling": {
+    "support": [2, 50],
+    "temperature": 1.0,
+    "top_k": null,
+    "one_draw_per": "(target, mask, repeat, arm)",
+    "pairing": "같은 (target, mask, repeat)에 하나의 uniform U를 만들어 네 arm 각각의 size CDF에 적용(주변 분포 유지, 분산 감소용 pairing이며 역확산 경로의 난수 소비 동일성은 보장하지 않음)",
+    "oracle": "target 분자의 실제 원자 수로 크기를 맞추는 동작 금지"
+  },
+
+  "targets": {
+    "pool": "S-1 val (features_v2_fixed/val.pt), test는 이번 pilot에서 보류",
+    "n_targets": 16,
+    "target_selection_seed": 20260926,
+    "selection_rule": "범위(2~50) 내 val 행에서 ChEMBL ID 중복 제거(같은 ID는 가장 작은 global_idx 행 선택) -> ID를 sorted -> numpy default_rng(seed).choice(n_ids, 16, replace=False) -> 선택된 인덱스를 오름차순 정렬. S-1 예측 정확도/생성 결과를 보고 고르지 않는다.",
+    "target_vector": "선택된 원본 행의 실제 공동 7-property raw vector(HOMO/LUMO=Hartree)",
+    "normalization_per_model": "동일 raw vector에 S-1은 normalization.json, A-1은 stats.json 통계를 각각 적용"
+  },
+
+  "repeats_per_target_mask_arm": 4,
+  "masks": {
+    "primary": {"name": "full_observed", "observed": ["HOMO", "LUMO", "LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"]},
+    "auxiliary": [
+      {"name": "structural5_only", "observed": ["LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"]},
+      {"name": "homo_lumo_only", "observed": ["HOMO", "LUMO"]}
+    ],
+    "auxiliary_policy": "보조 패널 실행 여부는 주패널 성능을 보기 전에 결정한다. 자원 예산은 사용자 승인 필요: 주패널만 256회, 보조 포함 768회."
+  },
+
+  "rng": {
+    "master_seed": 26092601,
+    "key_derivation": "int.from_bytes(sha256(f'{master_seed}|{target_id}|{mask}|{repeat}|{purpose}').digest()[:8], 'big') % 2**63; purpose in {'size_uniform','denoise'}; Python hash() 사용 금지",
+    "size_generator": "전용 torch.Generator(CPU), attempt마다 size_uniform key로 seed",
+    "denoise": "attempt마다 denoise key로 torch CPU/CUDA global RNG를 seed한 context에서 A-1 sample 호출, 호출 후 상태 복원 불필요(attempt 단위 재현만 요구)",
+    "reproducibility_gate": "같은 attempt를 두 번 수행/arm 순서를 바꿔도 크기와 출력(X,E)이 동일해야 한다"
+  },
+
+  "evaluation": {
+    "validity": "train3.analyze_molecule의 strict/single 규칙을 그대로 사용(재구현 금지), 분모=전체 완료 생성 시도 수. strict 실패 시 largest-fragment mol이 반환될 수 있으므로 mol is not None만 검사하지 않는다.",
+    "property_mae_population": "single-valid 전체 분자(주평가). strict-valid는 보조로 별도 보고.",
+    "structural5_properties": ["LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"],
+    "structural5_summary": "각 속성 |오차|를 고정된 train SD(normalization.json std_cond7)로 나눈 5개의 평균을 사전 정의 주지표로 사용. raw 단위 오차를 그냥 합하지 않는다.",
+    "homo_lumo": "qm_props GNN 추정 기반 proxy MAE로만 표기(DFT 오차라 부르지 않음). 부분 mask에서는 관측된 속성만 목표 달성 지표에 포함, 미관측은 별도 진단.",
+    "aggregation": "target별로 먼저 계산 -> target 간 동일 가중. 유효 생성물 0인 (arm,target)은 결측으로 기록하고 개수를 보고.",
+    "ci": "같은 (target,mask,repeat)이 네 arm에 연결되도록 저장, target 단위 paired bootstrap. arm별 독립 CI 겹침으로 판정하지 않음.",
+    "also_report": ["요청 n_atoms vs 실제 heavy atom count", "생성 크기 분포", "유효 분자 unique/중복 수", "elapsed time", "실패/오류 수(OOM·예외는 chemical invalid와 구분)"],
+    "target_hit_rate": "정의하려면 허용 오차/속성을 결과 전에 별도 config_version으로 고정. 이 버전에서는 사용하지 않음."
+  },
+
+  "evaluator": {
+    "source": "qm_props.py (gnn_homo_lumo) + c1_prop_regressor.py",
+    "weights": "c1_regressor.pt",
+    "sha256": null,
+    "rdkit_version": null,
+    "unit": "Hartree",
+    "gate": "sha256/rdkit_version이 null이면 launch gate에서 실패해야 한다(서버 실물 확인 후 새 config_version 또는 launch manifest에 기록). qm_props는 import 시 sys.path를 바꾸고 상대경로로 c1_regressor.pt를 로드하므로 절대경로/cwd 고정 필요."
+  },
+
+  "launch_gate_required": [
+    "고유 run dir + RunLogger/launcher 원본 로그",
+    "A-1/S-1/evaluator/normalization/prior/target/config SHA 전부 일치",
+    "A-1 strict load missing=unexpected=0, 실제 import된 model3.__file__ SHA",
+    "raw->S-1 정규화가 features table과 일치, raw->A-1 정규화가 QMugsDataset 값과 일치",
+    "마스킹된 유한 값 변경 시 S-1 확률/A-1 조건 경로 불변",
+    "같은 attempt 재현/arm 순서 변경 재현",
+    "attempt별 원본 X/E, SMILES, validity, 추정 물성, RNG key 저장 + 완료 ledger",
+    "사전 Astra 검토 통과 전에는 생성 실행 금지"
+  ]
+}

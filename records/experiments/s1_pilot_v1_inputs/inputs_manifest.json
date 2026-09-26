@@ -1,0 +1,24 @@
+{
+  "config_sha256": "eff876452a4616e014fa6ed9c1a97b2cff473af890950cb11bebe4cba5dc28db",
+  "config_version": "pilot_v1",
+  "prior_json_sha256": "e8530463b266c0b6074c34fa0a3bb256cadc0d48a959739d04d9b6f37246fc63",
+  "targets_json_sha256": "4933d343bfb2b70d47312d9cf4936d85e4c862c75caf380590b2753ed5768e0b",
+  "features_train_pt_sha256": "21bd92b60183fb1c05a00370ced508d26399ab93ba1ab39593ea23bfd2fc4f8b",
+  "features_val_pt_sha256": "2075842e3e598df637ab1280ce36939310b0d2c66d5e3ce0766ecb2c39aeff33",
+  "normalization_sha256": "c14e01d66adc64af6237e918a32fcd206d7003d43e18cf1a9f0545ff4eabce7a",
+  "a1_stats_json_sha256": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+  "meta_json_sha256": "ab80be5a26bbc188c6552d20246236ac02aeb18d53999b383a0ed261ede6c911",
+  "gates_passed": [
+    "normalization/stats SHA\uac00 config\uc640 \uc77c\uce58",
+    "raw->S-1 \uc815\uaddc\ud654\uac00 val feature table p7\uacfc target \uc804\ubd80 bit-exact \uc77c\uce58",
+    "target chembl_id/heavy atom \uc218\uac00 \uc6d0\ubcf8 \uccad\ud06c\uc640 \uc77c\uce58",
+    "prior \ud655\ub960 \ud569 = 1"
+  ],
+  "gates_NOT_yet_checked": [
+    "A-1 checkpoint/source SHA\uc640 strict load",
+    "S-1 checkpoint SHA/strict load",
+    "evaluator SHA/RDKit \ubc84\uc804",
+    "mask \ubd88\ubcc0\uc131",
+    "RNG \uc7ac\ud604\uc131"
+  ]
+}
