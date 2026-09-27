@@ -1,0 +1,13 @@
+{
+  "mode": "plan",
+  "run_id": "20260927T005418.778314+0000_pilot_run_pid1007145",
+  "runner_sha256": "0d3580bcbcaf754244380add424b3d9bdf799652c40811fa38ca58b28dada3b0",
+  "common_sha256": "b8ef406873f2937f2711fad8f74c78de525b7149eb3a51f98164ca2c1252e2bf",
+  "config_sha256": "eff876452a4616e014fa6ed9c1a97b2cff473af890950cb11bebe4cba5dc28db",
+  "pins_sha256": "354afd91e0a5db3c6b625cd2357a4648d624010a5d217860f6c133f6a6809fff",
+  "inputs_dir": "/home/cbgpu/molecule-AI/s1_size_predictor/pilot_inputs/20260926T140846.226025+0000_prepare_pilot_inputs_pid461033",
+  "targets_sha256": "4933d343bfb2b70d47312d9cf4936d85e4c862c75caf380590b2753ed5768e0b",
+  "prior_sha256": "e8530463b266c0b6074c34fa0a3bb256cadc0d48a959739d04d9b6f37246fc63",
+  "include_auxiliary": false,
+  "cuda_visible_devices": ""
+}
