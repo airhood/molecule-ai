@@ -1,0 +1,232 @@
+{
+  "all_non_generation_gates_passed": false,
+  "items": [
+    {
+      "gate": "file_sha:model3.py",
+      "passed": true,
+      "detail": "efef1ee4474f2d88"
+    },
+    {
+      "gate": "file_sha:dataset2.py",
+      "passed": true,
+      "detail": "2312ad6110ec618d"
+    },
+    {
+      "gate": "file_sha:train3.py",
+      "passed": true,
+      "detail": "7d3f61d8e9b6db33"
+    },
+    {
+      "gate": "file_sha:checkpoints_c4_a1/best.pt",
+      "passed": true,
+      "detail": "c6041051a844cb84"
+    },
+    {
+      "gate": "file_sha:c1_regressor.pt",
+      "passed": true,
+      "detail": "091c523516c573ce"
+    },
+    {
+      "gate": "file_sha:qm_props.py",
+      "passed": true,
+      "detail": "bef62b813f77f89e"
+    },
+    {
+      "gate": "file_sha:c1_prop_regressor.py",
+      "passed": true,
+      "detail": "70cd21ef573ca19c"
+    },
+    {
+      "gate": "evaluator_pin_not_null",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "rdkit_version",
+      "passed": true,
+      "detail": "2026.03.5"
+    },
+    {
+      "gate": "torch_version",
+      "passed": true,
+      "detail": "2.5.1+cu121"
+    },
+    {
+      "gate": "a1_ckpt_matches_config",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "a1_model_matches_config",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "config_sha_matches_inputs_manifest",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "prior_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "targets_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "normalization_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "a1_stats_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "prior_sum_1_and_49_classes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "imported:model3",
+      "passed": true,
+      "detail": "/home/cbgpu/molecule-AI-pec/model3.py efef1ee4474f2d88"
+    },
+    {
+      "gate": "imported:train3",
+      "passed": true,
+      "detail": "/home/cbgpu/molecule-AI-pec/train3.py 7d3f61d8e9b6db33"
+    },
+    {
+      "gate": "imported:qm_props",
+      "passed": true,
+      "detail": "/home/cbgpu/molecule-AI-pec/qm_props.py bef62b813f77f89e"
+    },
+    {
+      "gate": "imported:c1_prop_regressor",
+      "passed": true,
+      "detail": "/home/cbgpu/molecule-AI/c1_prop_regressor.py 70cd21ef573ca19c"
+    },
+    {
+      "gate": "model3_from_frozen_dir",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "train3.analyze_molecule_exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "a1_strict_load",
+      "passed": true,
+      "detail": "missing=[] unexpected=[]"
+    },
+    {
+      "gate": "a1_param_count",
+      "passed": true,
+      "detail": "5754052"
+    },
+    {
+      "gate": "a1_T_STEPS",
+      "passed": true,
+      "detail": "150"
+    },
+    {
+      "gate": "a1_cond_props",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "a1_norm_equals_dataset2",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "targets_a1_normalized_reproduce",
+      "passed": true,
+      "detail": "16 targets"
+    },
+    {
+      "gate": "s1_seed42_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed42_strict_load",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed42_mask_invariance",
+      "passed": true,
+      "detail": "max|dlogit|=0.0"
+    },
+    {
+      "gate": "s1_seed42_allnull_vs_prior_TV_informational",
+      "passed": true,
+      "detail": "0.001597"
+    },
+    {
+      "gate": "s1_seed123_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed123_strict_load",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed123_mask_invariance",
+      "passed": true,
+      "detail": "max|dlogit|=0.0"
+    },
+    {
+      "gate": "s1_seed123_allnull_vs_prior_TV_informational",
+      "passed": true,
+      "detail": "0.002303"
+    },
+    {
+      "gate": "s1_seed2024_sha",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed2024_strict_load",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "gate": "s1_seed2024_mask_invariance",
+      "passed": true,
+      "detail": "max|dlogit|=0.0"
+    },
+    {
+      "gate": "s1_seed2024_allnull_vs_prior_TV_informational",
+      "passed": true,
+      "detail": "0.002567"
+    },
+    {
+      "gate": "a1_forward_mask_invariance",
+      "passed": true,
+      "detail": "max diff per output=[0.0, 0.0, 0.0]"
+    },
+    {
+      "gate": "rng_reproducibility_same_attempt",
+      "passed": null,
+      "detail": "NOT RUN: sampling \ud544\uc694 -- Astra \uc7ac\uac80\ud1a0/\uc0ac\uc6a9\uc790 \uc2b9\uc778 \ud6c4 \ubcc4\ub3c4 \uc2e4\ud589"
+    },
+    {
+      "gate": "forced_size_prior_vs_s1_same_a1_output",
+      "passed": null,
+      "detail": "NOT RUN: sampling \ud544\uc694"
+    }
+  ],
+  "config_sha256": "eff876452a4616e014fa6ed9c1a97b2cff473af890950cb11bebe4cba5dc28db",
+  "pins_sha256": "354afd91e0a5db3c6b625cd2357a4648d624010a5d217860f6c133f6a6809fff"
+}
