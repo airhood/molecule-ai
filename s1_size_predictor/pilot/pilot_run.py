@@ -12,6 +12,7 @@ GPU는 GPU0만(CUDA_VISIBLE_DEVICES=0). 기존 출력 디렉터리 재사용 금
 """
 import argparse
 import glob
+import hashlib
 import json
 import os
 import sys
@@ -54,20 +55,81 @@ def build_plan(cfg, targets, size_dists, include_auxiliary):
     return attempts
 
 
+def read_ledger_safely(ledger_path):
+    """[astra_review_20260927.md P2] 마지막 줄이 중간에 끊겨 있어도(전원 차단 등) 그 앞까지는
+    읽는다. 중간 줄이 손상되면 조용히 넘기지 않고 즉시 실패한다(자료 자체를 신뢰할 수 없으므로)."""
+    if not Path(ledger_path).exists():
+        return [], None
+    lines = open(ledger_path, encoding="utf-8").read().split("\n")
+    if lines and lines[-1] == "":
+        lines = lines[:-1]
+    events, corrupt_tail = [], None
+    for i, line in enumerate(lines):
+        try:
+            events.append(json.loads(line))
+        except json.JSONDecodeError:
+            if i == len(lines) - 1:
+                corrupt_tail = line
+            else:
+                raise
+    return events, corrupt_tail
+
+
+def atomic_savez(path, **arrays):
+    """[P2] .npz 저장을 fsync+atomic rename으로 하고 저장된 파일의 SHA를 반환한다
+    (이전에는 ledger 텍스트만 fsync되고 배열 파일 자체는 durability 보장이 없었다)."""
+    path = Path(path)
+    tmp = path.with_name(path.name + f".tmp{os.getpid()}")
+    with open(tmp, "wb") as f:
+        np.savez_compressed(f, **arrays)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+    return sha256_file(path)
+
+
+def evaluator_looks_broken(result):
+    """[astra_review_20260927.md P1-5] evaluate_fn이 내부 예외를 삼켜 props=None/필드별
+    None으로 반환하면 generate_fn 예외와 달리 run_attempts의 except 블록을 절대 타지 않는다.
+    strict_valid한(=정상 생성된) 분자인데 속성이 통째로 비어 있으면 evaluator 자체가
+    깨졌다는 신호로 보고, 화학적 invalid(정상적으로 props=None)와 구분되는 별도 실패로
+    센다."""
+    if not result.get("strict_valid"):
+        return False   # 화학적으로 invalid해서 props=None인 정상 케이스
+    props = result.get("props")
+    if props is None:
+        return True
+    return len(props) > 0 and all(v is None for v in props.values())
+
+
 # ------------------------------------------------------------------ 핵심 루프(주입식)
-def run_attempts(attempts, generate_fn, evaluate_fn, out_dir, max_consecutive_errors=3):
+def run_attempts(attempts, generate_fn, evaluate_fn, out_dir, max_consecutive_errors=3,
+                 max_consecutive_evaluator_failures=3):
     """generate_fn(attempt)->(X_np, E_np), evaluate_fn(attempt, X_np, E_np)->dict.
-    ledger에 started/completed/error를 즉시 flush+fsync. 이미 completed인 attempt는 건너뜀.
-    반환: 요약 dict."""
+    ledger에 started/completed/error/evaluator_failure를 즉시 flush+fsync. 이미 completed인
+    attempt는 건너뜀. generate 예외와 evaluator의 조용한 실패(P1-5)를 별도 카운터로 추적하며
+    둘 다 연속 실패 시 중단한다. 반환: 요약 dict."""
     out_dir = Path(out_dir)
     (out_dir / "arrays").mkdir(parents=True, exist_ok=True)
     ledger_path = out_dir / "ledger.jsonl"
-    done = set()
-    if ledger_path.exists():
-        for line in open(ledger_path, encoding="utf-8"):
-            ev = json.loads(line)
-            if ev["event"] == "completed":
-                done.add(ev["attempt_id"])
+    events, corrupt_tail = read_ledger_safely(ledger_path)
+    if corrupt_tail is not None:
+        raise RuntimeError(f"ledger 마지막 줄 손상, 수동 확인 필요: {ledger_path} :: {corrupt_tail[:200]}")
+    done_records = {ev["attempt_id"]: ev for ev in events if ev["event"] == "completed"}
+    # [astra_review_20260927.md P1-1] attempt_id만 보고 건너뛰던 이전 버전은, 같은
+    # attempt_id인데 size/denoise_key 등 내용이 달라진 채 재실행돼도 조용히 받아들였다
+    # (Astra 반례: resume_changed_attempt). 건너뛰기 전에 기록된 필드와 지금 attempt의
+    # 필드가 일치하는지 반드시 확인한다.
+    check_fields = ("target_id", "mask", "repeat", "arm", "size", "denoise_key")
+    for a in attempts:
+        prev = done_records.get(a["attempt_id"])
+        if prev is None:
+            continue
+        for field in check_fields:
+            if field in a and prev.get(field) != a.get(field):
+                raise RuntimeError(
+                    f"attempt {a['attempt_id']!r} 재실행 감지: 기록된 {field}={prev.get(field)!r} vs "
+                    f"지금 {a.get(field)!r} -- 설정이 바뀐 채 같은 out_dir로 재실행하려는 것으로 보임")
 
     def log(ev):
         with open(ledger_path, "a", encoding="utf-8") as f:
@@ -75,44 +137,89 @@ def run_attempts(attempts, generate_fn, evaluate_fn, out_dir, max_consecutive_er
             f.flush()
             os.fsync(f.fileno())
 
-    counts = {"planned": len(attempts), "skipped_already_completed": 0, "completed": 0, "errors": 0}
+    counts = {"planned": len(attempts), "skipped_already_completed": 0, "completed": 0,
+              "errors": 0, "evaluator_failures": 0}
     consecutive_err = 0
-    aborted = False
+    consecutive_eval_fail = 0
+    aborted, abort_reason = False, None
     for a in attempts:
-        if a["attempt_id"] in done:
+        if a["attempt_id"] in done_records:
             counts["skipped_already_completed"] += 1
             continue
         log({"event": "started", "attempt_id": a["attempt_id"], "time": time.time()})
         t0 = time.time()
         try:
             X, E = generate_fn(a)
-            arr_name = f"{abs(hash_str(a['attempt_id']))}.npz"
-            np.savez_compressed(out_dir / "arrays" / arr_name, X=X.astype(np.int8), E=E.astype(np.int8))
-            result = evaluate_fn(a, X, E)
-            log({"event": "completed", **a, "arrays": arr_name, "elapsed_s": time.time() - t0, **result})
-            counts["completed"] += 1
-            consecutive_err = 0
-        except Exception as e:   # OOM/소프트웨어 오류: chemical invalid와 구분해서 기록
+        except Exception as e:   # 생성 자체의 OOM/소프트웨어 오류
             log({"event": "error", "attempt_id": a["attempt_id"], "error_type": type(e).__name__,
                  "error": str(e)[:500], "trace": traceback.format_exc()[-1500:], "elapsed_s": time.time() - t0})
             counts["errors"] += 1
             consecutive_err += 1
+            consecutive_eval_fail = 0
             if consecutive_err >= max_consecutive_errors:
-                aborted = True
+                aborted, abort_reason = True, "consecutive_generate_errors"
                 break
-    finished = set()
-    for line in open(ledger_path, encoding="utf-8"):
-        ev = json.loads(line)
-        if ev["event"] == "completed":
-            finished.add(ev["attempt_id"])
+            continue
+        arr_name = f"{abs(hash_str(a['attempt_id']))}.npz"
+        arr_sha = atomic_savez(out_dir / "arrays" / arr_name, X=X.astype(np.int8), E=E.astype(np.int8))
+        result = evaluate_fn(a, X, E)
+        broken = evaluator_looks_broken(result)
+        log({"event": "completed", **a, "arrays": arr_name, "arrays_sha256": arr_sha,
+             "elapsed_s": time.time() - t0, "evaluator_looks_broken": broken, **result})
+        counts["completed"] += 1
+        consecutive_err = 0
+        if broken:
+            counts["evaluator_failures"] += 1
+            consecutive_eval_fail += 1
+            log({"event": "evaluator_failure", "attempt_id": a["attempt_id"], "time": time.time(),
+                 "detail": "strict_valid molecule이지만 props가 전부 None -- evaluator 파이프라인 점검 필요"})
+            if consecutive_eval_fail >= max_consecutive_evaluator_failures:
+                aborted, abort_reason = True, "consecutive_evaluator_failures"
+                break
+        else:
+            consecutive_eval_fail = 0
+    events, corrupt_tail = read_ledger_safely(ledger_path)
+    finished = {ev["attempt_id"] for ev in events if ev["event"] == "completed"}
     counts["unfinished_ids"] = [a["attempt_id"] for a in attempts if a["attempt_id"] not in finished]
-    counts["aborted_repeated_errors"] = aborted
+    counts["aborted"] = aborted
+    counts["abort_reason"] = abort_reason
+    counts["ledger_corrupt_tail"] = corrupt_tail
     return counts
 
 
 def hash_str(s):
     import hashlib
     return int.from_bytes(hashlib.sha256(s.encode("utf-8")).digest()[:8], "big")
+
+
+def verify_resume_consistency(out_dir, attempts):
+    """[astra_review_20260927.md P1-1] resume 시 기존 completed record 전부를 지금 다시
+    계산한 plan(attempts)과 대조한다. attempt_id가 사라졌거나, 같은 attempt_id인데 target/
+    mask/repeat/arm/size/denoise_key 중 하나라도 다르면(=설정이 바뀐 채 resume) 즉시 거부한다.
+    참조하는 원본 배열 파일도 존재/SHA를 확인한다(Astra 반례: resume_changed_attempt)."""
+    out_dir = Path(out_dir)
+    events, corrupt = read_ledger_safely(out_dir / "ledger.jsonl")
+    if corrupt is not None:
+        raise RuntimeError(f"resume 거부: ledger 마지막 줄이 손상돼 있어 수동 확인이 먼저 필요함: {corrupt[:200]}")
+    plan_by_id = {a["attempt_id"]: a for a in attempts}
+    fields = ("target_id", "mask", "repeat", "arm", "size", "denoise_key")
+    for ev in events:
+        if ev["event"] != "completed":
+            continue
+        aid = ev["attempt_id"]
+        if aid not in plan_by_id:
+            raise RuntimeError(f"resume 거부: 기존 완료 attempt {aid}가 현재 plan에 없음(설정이 바뀐 것으로 보임)")
+        cur = plan_by_id[aid]
+        for field in fields:
+            if ev.get(field) != cur.get(field):
+                raise RuntimeError(
+                    f"resume 거부: attempt {aid}의 {field}가 기록값({ev.get(field)!r})과 "
+                    f"현재 plan값({cur.get(field)!r})에서 다름 -- 설정이 바뀐 채 resume 시도된 것으로 보임")
+        arr_path = out_dir / "arrays" / ev["arrays"]
+        if not arr_path.exists():
+            raise RuntimeError(f"resume 거부: attempt {aid}이 참조하는 배열 파일이 없음: {arr_path}")
+        if "arrays_sha256" in ev and sha256_file(arr_path) != ev["arrays_sha256"]:
+            raise RuntimeError(f"resume 거부: attempt {aid}의 배열 파일 SHA가 기록과 다름(손상 가능): {arr_path}")
 
 
 # ------------------------------------------------------------------------- 로딩
@@ -174,6 +281,15 @@ class A1Runner:
         self.model3, self.train3, self.qm_props, self.c1 = import_pinned(frozen)
         for mod in (self.model3, self.train3, self.qm_props, self.c1):
             assert sha256_file(mod.__file__) == pins["imported_module_sha256"][mod.__name__], mod.__name__
+        # [astra_review_20260927.md P1-2] 코드 SHA뿐 아니라 실제 로드되는 가중치/라이브러리
+        # 버전도 실행 시점에 재검증한다(gate report의 기록만 신뢰하지 않는다).
+        c1_reg_path = frozen / "c1_regressor.pt"
+        assert sha256_file(c1_reg_path) == pins["files_sha256"]["c1_regressor.pt"], "c1_regressor.pt SHA 불일치"
+        import rdkit
+        assert rdkit.__version__ == pins["evaluator"]["rdkit_version"], \
+            f"RDKit 버전 불일치: {rdkit.__version__} != {pins['evaluator']['rdkit_version']}"
+        assert torch.__version__ == pins["evaluator"]["torch_version"], \
+            f"torch 버전 불일치: {torch.__version__} != {pins['evaluator']['torch_version']}"
         sd = torch.load(frozen / "checkpoints_c4_a1/best.pt", map_location="cpu", weights_only=False)
         assert sha256_file(frozen / "checkpoints_c4_a1/best.pt") == pins["files_sha256"]["checkpoints_c4_a1/best.pt"]
         self.a1 = self.model3.MoleculeGraphDiffusion(sd["schedule.m_X"].clone(), sd["schedule.m_E"].clone())
@@ -261,52 +377,107 @@ def mode_plan(args, ctx):
 
 
 def mode_gates(args, ctx):
+    """[astra_review_20260927.md P1-3 수정] 직접 generate_raw()만 호출하던 이전 버전은
+    실제 production 경로인 A1Runner.generate(attempt)를 한 번도 거치지 않고도
+    all_passed=true를 낼 수 있었다(Astra 반례: generate()가 항상 raise해도 generate_raw()만
+    쓰는 게이트는 통과). 이제 실제 attempt dict를 만들어 generate(a)를 호출하고, X/E를
+    게이트 자체 출력에 저장하며, evaluate 스모크 테스트는 필드 존재 여부가 아니라 알려진
+    유효 분자 fixture로 값이 유한/타당한지 확인한다."""
     cfg, targets = ctx["cfg"], ctx["targets"]
     r = A1Runner(ctx["pins"], cfg, targets)
     rep = []
+    arrays_dir = ctx["out_dir"] / "gate_arrays"
+    arrays_dir.mkdir(parents=True, exist_ok=True)
 
     def chk(name, ok, detail=""):
         rep.append({"gate": name, "passed": bool(ok), "detail": str(detail)})
         print(f"  [{'PASS' if ok else 'FAIL'}] {name} {detail}")
 
+    def make_attempt(t, mask_name, repeat, arm, size_override=None):
+        tid = t["target_id"]
+        k_den = derive_key(cfg["rng"]["master_seed"], tid, mask_name, repeat, "denoise")
+        size = size_override if size_override is not None else 30
+        return {"attempt_id": f"gate|{tid}|{mask_name}|r{repeat}|{arm}", "target_id": tid,
+                "mask": mask_name, "repeat": repeat, "arm": arm, "size": size, "denoise_key": k_den}
+
     t0 = ctx["targets"]["targets"][0]
     t1 = ctx["targets"]["targets"][1]
-    mv_full = mask_vector(cfg["masks"]["primary"]["observed"])
-    mv_part = mask_vector(cfg["masks"]["auxiliary"][0]["observed"])
+    prim_name = cfg["masks"]["primary"]["name"]
+    aux_name = cfg["masks"]["auxiliary"][0]["name"]
+    r.mask_obs.setdefault(prim_name, cfg["masks"]["primary"]["observed"])
+    all_arms = cfg["arms"]
+    first_XE = {}
     for t in (t0, t1):
-        for mv, tag in ((mv_full, "full"), (mv_part, "partial")):
-            key = derive_key(cfg["rng"]["master_seed"], t["target_id"], tag, 0, "denoise")
-            X1, E1 = r.generate_raw(t["a1_normalized7"], mv, 30, key)
-            # 무관한 RNG 소비(CPU/CUDA/S-1 유사 호출)를 사이에 끼워도 같은 attempt는 같아야 한다
+        for mname in (prim_name, aux_name):
+            # 실제 production 경로: generate(attempt) -- generate_raw() 우회 금지
+            arm0 = all_arms[0]
+            a1 = make_attempt(t, mname, 0, arm0, size_override=30)
+            X1, E1 = r.generate(a1)
+            atomic_savez(arrays_dir / f"{t['target_id']}_{mname}_r0_{arm0}.npz",
+                        X=X1.astype(np.int8), E=E1.astype(np.int8))
+            first_XE[(t["target_id"], mname)] = (X1, E1)
+            # 무관한 RNG 소비를 사이에 끼워도 같은 attempt(같은 arm)는 같아야 한다
             _ = torch.rand(1000)
             if torch.cuda.is_available():
                 _ = torch.rand(1000, device="cuda")
             _ = torch.multinomial(torch.ones(10), 5)
-            X2, E2 = r.generate_raw(t["a1_normalized7"], mv, 30, key)
-            chk(f"same_attempt_reproducible[{t['target_id']},{tag}]",
+            X2, E2 = r.generate(a1)
+            chk(f"same_attempt_reproducible_via_generate[{t['target_id']},{mname}]",
                 np.array_equal(X1, X2) and np.array_equal(E1, E2))
-            # forced size 연결: prior 경로/S-1 경로가 같은 (조건,마스크,크기,seed)면 같은 A-1 출력
-            X3, E3 = r.generate_raw(t["a1_normalized7"], mv, 30, key)
-            chk(f"forced_size_same_output_any_arm[{t['target_id']},{tag}]",
+            # arm이 달라도 (target,mask,repeat,size,denoise_key)가 같으면 A-1 출력이 같아야
+            # 한다(크기 정책 arm 간 차이는 "어떤 크기를 고르는지"에만 있고, 고른 뒤 생성
+            # 자체는 arm과 무관해야 함) -- generate()를 arm 순서를 바꿔가며 호출해 상태 누수 확인
+            for other_arm in all_arms[1:]:
+                a_other = make_attempt(t, mname, 0, other_arm, size_override=30)
+                Xo, Eo = r.generate(a_other)
+                chk(f"forced_size_same_output_across_arms[{t['target_id']},{mname},{other_arm}]",
+                    np.array_equal(X1, Xo) and np.array_equal(E1, Eo))
+            # interleave: 다른 target/mask로 generate 한 번 끼운 뒤 원래 attempt 재호출해도 동일
+            a_interleave = make_attempt(t1 if t is t0 else t0, aux_name if mname == prim_name else prim_name,
+                                        1, all_arms[-1], size_override=28)
+            _ = r.generate(a_interleave)
+            X3, E3 = r.generate(a1)
+            chk(f"no_state_leak_after_interleaved_generate[{t['target_id']},{mname}]",
                 np.array_equal(X1, X3) and np.array_equal(E1, E3))
-    # seed가 다르면 출력이 달라야(seed가 실제로 작동하는지)
-    kA = derive_key(cfg["rng"]["master_seed"], t0["target_id"], "full", 0, "denoise")
-    kB = derive_key(cfg["rng"]["master_seed"], t0["target_id"], "full", 1, "denoise")
-    XA, EA = r.generate_raw(t0["a1_normalized7"], mv_full, 30, kA)
-    XB, EB = r.generate_raw(t0["a1_normalized7"], mv_full, 30, kB)
-    chk("different_seed_different_output", not (np.array_equal(XA, XB) and np.array_equal(EA, EB)))
+
+    # seed(반복 번호)가 다르면 출력이 달라야 한다(seed가 실제로 작동하는지) -- generate() 경유
+    aA = make_attempt(t0, prim_name, 0, all_arms[0], size_override=30)
+    aB = make_attempt(t0, prim_name, 1, all_arms[0], size_override=30)
+    XA, EA = r.generate(aA)
+    XB, EB = r.generate(aB)
+    chk("different_repeat_different_output_via_generate", not (np.array_equal(XA, XB) and np.array_equal(EA, EB)))
     # 크기가 바뀌면 출력 shape이 요청 크기와 일치
-    Xs, Es = r.generate_raw(t0["a1_normalized7"], mv_full, 25, kA)
+    aS = make_attempt(t0, prim_name, 0, all_arms[0], size_override=25)
+    Xs, Es = r.generate(aS)
     chk("output_shape_matches_requested_size", Xs.shape == (25,) and Es.shape == (25, 25), f"{Xs.shape} {Es.shape}")
-    # evaluate 경로 스모크: 한 attempt를 평가해 필드가 채워지는지
-    fake_attempt = {"size": 30}
-    res = r.evaluate(fake_attempt, X1, E1)
-    chk("evaluate_returns_fields", all(k in res for k in ("strict_valid", "single_valid", "props", "n_fragments")))
+
+    # evaluate 스모크: 필드 존재만 확인하던 이전 버전 대신, 알려진 유효 분자(에탄올, C-C-O)
+    # fixture로 finite/타당한 값이 실제로 채워지는지 확인한다.
+    from rdkit import Chem
+    ethanol = Chem.MolFromSmiles("CCO")
+    info_fake = {"strict_valid": True, "single_valid": True, "frag_ratio": 1.0, "n_fragments": 1,
+                "mol": ethanol}
+    orig_analyze = r.train3.analyze_molecule
+    r.train3.analyze_molecule = lambda X, E: info_fake
+    try:
+        res = r.evaluate({"size": 3}, np.zeros(3, dtype=np.int8), np.zeros((3, 3), dtype=np.int8))
+    finally:
+        r.train3.analyze_molecule = orig_analyze
+    ok_fields = all(k in res for k in ("strict_valid", "single_valid", "props", "n_fragments"))
+    ok_values = (res.get("props") is not None and all(
+        v is not None and np.isfinite(v) for v in res["props"].values()))
+    chk("evaluate_known_molecule_gives_finite_props", ok_fields and ok_values,
+        detail=res.get("props"))
 
     runner_sha = sha256_file(__file__)
     report = {"all_passed": all(x["passed"] for x in rep), "gates": rep, "runner_sha256": runner_sha,
               "common_sha256": sha256_file(_HERE / "pilot_common.py"),
-              "config_sha256": ctx["cfg_sha"], "pins_sha256": ctx["pins_sha"]}
+              "config_sha256": ctx["cfg_sha"], "pins_sha256": ctx["pins_sha"],
+              # [P1-2] gate report가 어떤 입력(targets/prior/plan)을 대상으로 통과했는지도
+              # 못박아, 다른 입력에 재사용되지 못하게 한다.
+              "targets_sha256": sha256_file(ctx["inputs_dir"] / "targets.json"),
+              "prior_sha256": sha256_file(ctx["inputs_dir"] / "prior.json"),
+              "inputs_manifest_sha256": sha256_file(ctx["inputs_dir"] / "inputs_manifest.json")}
     (ctx["out_dir"] / "generation_gate_report.json").write_text(json.dumps(report, indent=2))
     print(f"generation gates: {'ALL PASS' if report['all_passed'] else 'FAILED'}")
     return 0 if report["all_passed"] else 1
@@ -319,8 +490,23 @@ def mode_run(args, ctx):
     assert gr["runner_sha256"] == sha256_file(__file__), "gate 이후 runner 코드가 바뀜"
     assert gr["common_sha256"] == sha256_file(_HERE / "pilot_common.py")
     assert gr["config_sha256"] == ctx["cfg_sha"] and gr["pins_sha256"] == ctx["pins_sha"]
+    # [astra_review_20260927.md P1-2] gate report가 지금 실행하려는 입력(targets/prior/
+    # inputs_manifest)과 같은 대상에 대해 통과했는지도 확인한다 -- 다른 입력에 재사용 금지.
+    inputs_dir = ctx["inputs_dir"]
+    assert gr.get("targets_sha256") == sha256_file(inputs_dir / "targets.json"), \
+        "gate report가 통과한 targets.json과 지금 입력이 다름"
+    assert gr.get("prior_sha256") == sha256_file(inputs_dir / "prior.json"), \
+        "gate report가 통과한 prior.json과 지금 입력이 다름"
+    assert gr.get("inputs_manifest_sha256") == sha256_file(inputs_dir / "inputs_manifest.json"), \
+        "gate report가 통과한 inputs_manifest.json과 지금 입력이 다름"
     dists = build_size_dists(cfg, targets, prior, s1, args.include_auxiliary)
     attempts = build_plan(cfg, targets, dists, args.include_auxiliary)
+    if ctx.get("resumed"):
+        # [astra_review_20260927.md P1-1] 어떤 쓰기보다 먼저: 기존 completed record가
+        # 지금 다시 계산한 plan과 attempt 단위로 정확히 일치하는지, 참조하는 배열 파일이
+        # 실제로 존재하고 SHA가 맞는지 확인한다. 하나라도 다르면 즉시 거부.
+        verify_resume_consistency(ctx["out_dir"], attempts)
+        print("resume 신원 검증 통과: 기존 completed record가 현재 plan과 일치함")
     (ctx["out_dir"] / "plan.json").write_text(json.dumps({"attempts": attempts}, indent=2))
     (ctx["out_dir"] / "size_dists.json").write_text(json.dumps(
         {f"{k[0]}|{k[1]}|{k[2]}": v.tolist() for k, v in dists.items()}))
@@ -360,28 +546,71 @@ def main():
     run_logger = RunLogger(__file__, source_paths=(cfg_path, pins_path, _HERE / "pilot_common.py")).start()
     run_logger.record_arguments(vars(args))
 
+    cfg_path_, pins_path_, cfg, pins, inputs_dir, targets, prior = load_inputs(args)
+    identity = {
+        "runner_sha256": sha256_file(__file__), "common_sha256": sha256_file(_HERE / "pilot_common.py"),
+        "config_sha256": sha256_file(cfg_path), "pins_sha256": sha256_file(pins_path),
+        "targets_sha256": sha256_file(inputs_dir / "targets.json"),
+        "prior_sha256": sha256_file(inputs_dir / "prior.json"),
+        "inputs_manifest_sha256": sha256_file(inputs_dir / "inputs_manifest.json"),
+        "s1_checkpoint_sha256": {tag: spec["sha256"] for tag, spec in cfg["s1_models"]["checkpoints"].items()},
+        "include_auxiliary": args.include_auxiliary,
+    }
+
+    resumed = False
     if args.resume_from:
         out_dir = Path(args.resume_from).resolve()
         assert out_dir.exists() and args.mode == "run", "resume은 run 모드에서 기존 디렉터리만"
+        lm_path = out_dir / "launch_manifest.json"
+        assert lm_path.exists(), f"resume 거부: {lm_path} 없음 -- 이 디렉터리의 신원을 확인할 수 없음"
+        prev = json.load(open(lm_path))
+        mismatches = {k: (prev.get(k), v) for k, v in identity.items() if prev.get(k) != v}
+        if mismatches:
+            raise RuntimeError(
+                "resume 거부: 현재 설정/입력이 이 run이 시작될 때와 다름(아래 필드 불일치, "
+                "어떤 쓰기도 하지 않고 중단):\n" +
+                "\n".join(f"  {k}: 기록={old!r} 현재={new!r}" for k, (old, new) in mismatches.items()))
+        resumed = True
     else:
         out_dir = out_root / f"{args.mode}_{run_logger.run_id}"
         out_dir.mkdir(parents=True, exist_ok=False)
 
-    cfg_path_, pins_path_, cfg, pins, inputs_dir, targets, prior = load_inputs(args)
-    ctx = {"cfg": cfg, "pins": pins, "targets": targets, "prior": prior, "out_dir": out_dir,
-           "cfg_sha": sha256_file(cfg_path), "pins_sha": sha256_file(pins_path),
-           "s1": load_s1(cfg, args.s1_root)}
-    (out_dir / "launch_manifest.json").write_text(json.dumps({
-        "mode": args.mode, "run_id": run_logger.run_id, "runner_sha256": sha256_file(__file__),
-        "common_sha256": sha256_file(_HERE / "pilot_common.py"), "config_sha256": ctx["cfg_sha"],
-        "pins_sha256": ctx["pins_sha"], "inputs_dir": str(inputs_dir),
-        "targets_sha256": sha256_file(inputs_dir / "targets.json"),
-        "prior_sha256": sha256_file(inputs_dir / "prior.json"),
-        "include_auxiliary": args.include_auxiliary,
-        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
-    }, indent=2))
-    code = {"plan": mode_plan, "gates": mode_gates, "run": mode_run}[args.mode](args, ctx)
-    run_logger.finish("completed" if code == 0 else f"exit_{code}", out_dir=str(out_dir))
+    # [astra_review_20260927.md P1-1] 동시 resume/실행을 lock으로 거부한다. 어떤 쓰기보다
+    # 먼저 획득하고, 끝나면(정상/예외 무관) 반드시 해제한다.
+    lock_path = out_dir / ".lock"
+    try:
+        lock_fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(lock_fd, f"pid={os.getpid()} run_id={run_logger.run_id} time={time.time()}\n".encode())
+        os.close(lock_fd)
+    except FileExistsError:
+        raise RuntimeError(
+            f"resume/실행 거부: {lock_path}가 이미 존재함(다른 프로세스가 이 디렉터리를 쓰고 있거나 "
+            "이전 실행이 비정상 종료됨). 정말 이전 실행이 끝났다면 수동으로 확인 후 lock 파일을 지울 것.")
+
+    try:
+        ctx = {"cfg": cfg, "pins": pins, "targets": targets, "prior": prior, "out_dir": out_dir,
+               "cfg_sha": identity["config_sha256"], "pins_sha": identity["pins_sha256"],
+               "inputs_dir": inputs_dir, "resumed": resumed,
+               "s1": load_s1(cfg, args.s1_root)}
+        manifest_body = {
+            "mode": args.mode, "run_id": run_logger.run_id, **identity,
+            "inputs_dir": str(inputs_dir), "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+            "created": time.time(),
+        }
+        if resumed:
+            # 기존 launch_manifest.json은 그대로 두고(최초 실행의 신원 기록 보존), 이번
+            # resume 세션의 기록을 새 timestamp 파일로 별도 추가한다.
+            (out_dir / f"resume_manifest_{run_logger.run_id}.json").write_text(
+                json.dumps(manifest_body, indent=2))
+        else:
+            (out_dir / "launch_manifest.json").write_text(json.dumps(manifest_body, indent=2))
+        code = {"plan": mode_plan, "gates": mode_gates, "run": mode_run}[args.mode](args, ctx)
+        run_logger.finish("completed" if code == 0 else f"exit_{code}", out_dir=str(out_dir))
+    finally:
+        try:
+            os.remove(lock_path)
+        except FileNotFoundError:
+            pass
     sys.exit(code)
 
 
