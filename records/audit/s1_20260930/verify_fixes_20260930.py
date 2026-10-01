@@ -231,6 +231,38 @@ def test_evaluation_failed_with_chemistry_info_counted_in_validity():
          res["evaluation_failed"]["n_with_chemistry_info_included_in_metrics"] == 1, res["evaluation_failed"])
 
 
+# ---------------------------------------------------------------------------
+# 8) [astra_review_20261001.md §6] load_completed가 planned_ids를 ledger_state에
+#    안 넘기면 계획 밖 completed 기록이 지표에 조용히 섞일 수 있었다(Astra의
+#    repeat=99 반례). 이제 planned_ids 밖 ID가 있으면 분석 자체를 거부해야 한다.
+def test_load_completed_rejects_out_of_plan_id():
+    with tempfile.TemporaryDirectory() as d:
+        ledger_path = Path(d) / "ledger.jsonl"
+        events = [
+            {"event": "started", "attempt_id": "t1|m0|r0|prior", "time": 1},
+            {"event": "generated", "attempt_id": "t1|m0|r0|prior", "arrays": "a.npz",
+             "arrays_sha256": "x", "time": 2},
+            {"event": "completed", "attempt_id": "t1|m0|r0|prior", "strict_valid": True,
+             "single_valid": True, "props": {}, "time": 3},
+            # 계획에 없는 attempt_id(Astra 반례와 동형: repeat=99)
+            {"event": "started", "attempt_id": "t1|m0|r99|prior", "time": 4},
+            {"event": "generated", "attempt_id": "t1|m0|r99|prior", "arrays": "b.npz",
+             "arrays_sha256": "y", "time": 5},
+            {"event": "completed", "attempt_id": "t1|m0|r99|prior", "strict_valid": True,
+             "single_valid": True, "props": {}, "time": 6},
+        ]
+        with open(ledger_path, "w", encoding="utf-8") as f:
+            for ev in events:
+                f.write(json.dumps(ev) + "\n")
+        try:
+            analyze_pilot.load_completed(ledger_path, planned_ids={"t1|m0|r0|prior"})
+            rejected = False
+        except RuntimeError:
+            rejected = True
+        check("out_of_plan_completed_id_rejected", rejected,
+             "계획 밖 attempt_id가 섞여도 분석이 그냥 진행되면 안 됨(Astra repeat=99 반례)")
+
+
 if __name__ == "__main__":
     test_partial_gnn_breakage_detected()
     test_evaluate_exception_does_not_kill_run()
@@ -239,5 +271,6 @@ if __name__ == "__main__":
     test_verify_run_identity_checks_normalization()
     test_inf_excluded_from_descriptive_mean()
     test_evaluation_failed_with_chemistry_info_counted_in_validity()
+    test_load_completed_rejects_out_of_plan_id()
     print(f"\n{sum(PASS)}/{len(PASS)} checks passed")
     sys.exit(0 if all(PASS) else 1)

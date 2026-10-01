@@ -54,15 +54,30 @@ def sanitize(obj):
     return obj
 
 
-def load_completed(ledger_path):
+def load_completed(ledger_path, planned_ids):
     """[astra_review_20260928.md P1-3, opus_review_20260928.md 1-2 수정] attempt_id별
     "최신 상태"만 집계한다(pilot_common.ledger_state). 이전 버전은 error 이벤트 개수를
     그대로 세어, "error -> 재시도 -> completed"로 끝난 attempt가 completed와 error
     양쪽에서 중복으로 잡혀 missing이 음수가 되는 버그가 있었다(두 리뷰 공통 반례).
     completed만 지표 계산에 쓰고, evaluation_failed(평가가 깨져 completed로 승격 못한
-    attempt)는 별도로 돌려줘 신뢰 못 하는 데이터가 지표에 섞이지 않게 한다."""
+    attempt)는 별도로 돌려줘 신뢰 못 하는 데이터가 지표에 섞이지 않게 한다.
+
+    [astra_review_20261001.md §6 "계획 밖 기록이 지표에 섞여도 완료 집계는 정상처럼
+    보임"] planned_ids(이 run의 plan.json에서 읽은 attempt_id 전체 집합)를 반드시
+    넘겨서 ledger_state가 계획 밖 ID/중복 completed를 감지하게 한다 -- 이전엔 이
+    인자를 안 넘겨서 계획 밖 completed 이벤트가 섞여도 조용히 지표(validity 분모 등)에
+    들어가고, 완료 집계(counts_per_arm, plan 재구성 기반)만 정상처럼 보이는 어긋남이
+    가능했다(Astra가 메모리 내 반례로 확인: 계획 밖 repeat=99 completed 하나 추가하면
+    validity 분모가 64->65로 늘어남). 계획 밖 ID나 중복 completed가 하나라도 있으면
+    분석을 거부한다(runner의 duplicate_completed_ids 거부 정책과 통일)."""
     events, corrupt_tail = read_ledger_safely(ledger_path)
-    state = ledger_state(events)
+    state = ledger_state(events, planned_ids=planned_ids)
+    if state["duplicate_completed_ids"]:
+        raise RuntimeError(f"분석 거부: attempt_id별 completed 이벤트가 2개 이상(ledger 손상 의심): "
+                           f"{state['duplicate_completed_ids']}")
+    if state["unknown_ids"]:
+        raise RuntimeError(f"분석 거부: plan.json에 없는 attempt_id가 ledger에 있음(계획 밖 기록): "
+                           f"{state['unknown_ids']}")
     latest = state["latest"]
     done = [ev for ev in latest.values() if ev["event"] == "completed"]
     eval_failed = [ev for ev in latest.values() if ev["event"] == "evaluation_failed"]
@@ -389,8 +404,16 @@ def main():
     all_target_ids = sorted(t["target_id"] for t in targets_doc["targets"])
     include_auxiliary = bool(lm.get("include_auxiliary", False))
 
+    # [astra_review_20261001.md §6] ledger 이벤트를 이 run의 plan.json(runner가 저장한
+    # 실제 attempt 전체 목록)과 대조한다 -- config에서 다시 계산하지 않는 이유는
+    # analyze_pilot.py가 S-1 모델을 안 띄우므로 재계산이 불가능하고, plan.json 자체가
+    # 이미 그 run이 실제로 실행한 attempt 목록의 1차 기록이기 때문이다.
+    plan_path = Path(a.run_dir) / "plan.json"
+    plan = json.load(open(plan_path))
+    planned_ids = {att["attempt_id"] for att in plan["attempts"]}
+
     records, eval_failed, errors, started, corrupt_tail, latest = load_completed(
-        Path(a.run_dir) / "ledger.jsonl")
+        Path(a.run_dir) / "ledger.jsonl", planned_ids)
     if corrupt_tail is not None:
         # [astra_review_20260928.md P2] runner는 손상된 ledger를 RuntimeError로 거부하는데
         # analyzer는 앞부분만으로 분석 파일을 쓰고 마지막에 경고만 출력했다(정책 불일치).
@@ -408,6 +431,9 @@ def main():
         "run_dir": str(Path(a.run_dir).resolve()), "launch_manifest_run_id": lm.get("run_id"),
         "config_sha256": sha256_file(a.config), "pins_sha256": sha256_file(a.pins),
         "targets_sha256": sha256_file(a.targets), "normalization_sha256": sha256_file(a.normalization),
+        # [astra_review_20261001.md §6] raw-array/ledger/plan SHA를 분석 provenance에 묶는다.
+        "plan_json_sha256": sha256_file(plan_path), "ledger_sha256": sha256_file(Path(a.run_dir) / "ledger.jsonl"),
+        "n_planned_ids": len(planned_ids),
     }
 
     out = Path(a.out) if a.out else Path(a.run_dir) / "analysis.json"
