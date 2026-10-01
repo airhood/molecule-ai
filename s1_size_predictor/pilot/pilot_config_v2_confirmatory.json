@@ -1,0 +1,115 @@
+{
+  "config_version": "pilot_v2_confirmatory",
+  "created": "2026-10-01",
+  "status": "PRE-REGISTERED -- 어떤 생성도 실행하기 전에 고정. astra_review_20261001.md §5 Q2 권고(새 target 32~48개로 별도 run, 모델/지표/예산/종료조건 결과 보기 전에 고정) 반영. pilot_v1(16 target, review_followup_20261001.md)의 재현/일반성 확인용 follow-up이며, pilot_v1과 다른 점은 targets 블록(n_targets/target_selection_seed/exclude)뿐이다. 실행 후 값을 바꾸려면 새 config_version으로 분리하고 이 파일은 수정하지 않는다.",
+  "question": "pilot_v1(16 target)에서 struct5_std_err_single이 3-seed 전부 prior 대비 일관되게 낮았으나(paired diff -0.11~-0.14, 95% CI는 0 포함) target 16개로는 통계적으로 미확정이었다. 새 target 32개(pilot_v1과 완전히 disjoint)에서 같은 방향/크기의 효과가 재현되는가 -- target 선택에 따른 우연이 아니라 target 전반에 걸친 일반적 효과인지를 본다. S-2 등 다음 단계로 넘어갈지는 이 결과를 보고 결정한다.",
+  "gpu": "GPU1 (CUDA_VISIBLE_DEVICES=1) -- 사용자 명시 허락(2026-09-30), pilot_v1과 동일",
+
+  "sample_size_justification": {
+    "method": "95% CI half-width ~= 1.96*sd/sqrt(n), sd = pilot_v1 16-target paired diff(3-seed 평균 - prior)의 표본표준편차",
+    "pilot_v1_observed": {"n_target": 16, "mean_diff": -0.1250, "sd_diff": 0.3035, "cohens_d": -0.412},
+    "half_width_by_n": {"16": 0.1487, "24": 0.1214, "32": 0.1051, "40": 0.0940, "48": 0.0859},
+    "chosen_n": 32,
+    "rationale": "n=32choice: Astra 권고 범위(32~48)의 하한. 기대 half-width(0.105)가 pilot_v1 관측 평균 효과(0.125)에 근접해 같은 크기 효과가 재현되면 CI가 0을 배제할 가능성이 있고, 비용(32*4*4=512 attempts, 주패널만, 약 25분/GPU1)도 합리적. 48로 늘리면 half-width가 0.086까지 더 좁아지지만(비용 768 attempts), 32에서 신호가 다시 애매하면 48로 확장하는 것도 가능 -- 단 그 경우 16+32(또는 48)를 '사후 target 추가'로 혼동하지 않고 pilot_v1/v2를 항상 별도로 보고한다(Astra 권고, 'CI가 0을 벗어날 때까지 target 추가' 금지)."
+  },
+
+  "frozen_a1": {
+    "model_source_repo_path": "records/experiments/pec/model3_pec_base_snapshot.py",
+    "model_source_sha256": "efef1ee4474f2d8867358b997b0c0a3a6cb02bf79209d5fde8b3b3d5e42523ad",
+    "checkpoint_server_path": "/home/cbgpu/molecule-AI-pec/checkpoints_c4_a1/best.pt",
+    "checkpoint_sha256": "c6041051a844cb84f2f61653667387d392650038bf86ac8946a440e46dd22f41",
+    "normalization": "original full-dataset stats.json (data/processed_ext7/stats.json), cond7 indices",
+    "stats_json_sha256": "3d7cedc4d3ac50b9e5b86b8dc13287174c5645ec4454a4163bb45c555b9a1fcd",
+    "load": "strict=True, missing/unexpected must both be empty (param_count 5754052)",
+    "T_STEPS": 150,
+    "guidance_w": 1.0,
+    "note": "pilot_v1과 완전히 동일한 고정 A-1. checkpoint 경로는 launch gate에서 서버 실물 SHA와 대조. 다르면 즉시 중단."
+  },
+
+  "s1_models": {
+    "normalization_sha256": "c14e01d66adc64af6237e918a32fcd206d7003d43e18cf1a9f0545ff4eabce7a",
+    "normalization_file": "features_v2_fixed/normalization.json",
+    "checkpoints": {
+      "seed42":   {"path": "checkpoints_v2_size_predictor_seed42/*/best.pt",   "sha256": "889b36e23e0bcb9d76b24e3498152415efc5db239e56a2a4635f9a573fc129e7"},
+      "seed123":  {"path": "checkpoints_v2_size_predictor_seed123/*/best.pt",  "sha256": "c8ff15e9135e6ccde88f63d0656c15531572163a76731dcd0b3cdfc1ff7eff56"},
+      "seed2024": {"path": "checkpoints_v2_size_predictor_seed2024/*/best.pt", "sha256": "9a6d50d02d9beaf9dda5ca1e634bbe402ca4cb9198fbf620c70f28d2dc092a3e"}
+    },
+    "load": "state['model'] strict load"
+  },
+
+  "arms": ["prior", "s1_seed42", "s1_seed123", "s1_seed2024"],
+  "prior": {
+    "definition": "pilot_v1과 동일(features_v2_fixed/train.pt 행 가중 빈도) -- target 선택과 무관하므로 재계산해도 pilot_v1과 수치상 동일해야 한다(재계산 자체는 prepare_pilot_inputs가 매번 train.pt에서 다시 함, 캐시 재사용 아님).",
+    "note": "prior 결과는 세 S-1 arm과 비교할 때 재사용하되 독립 대조군 3배로 세지 않는다. pilot_v1과 동일 원칙."
+  },
+
+  "size_sampling": {
+    "support": [2, 50],
+    "temperature": 1.0,
+    "top_k": null,
+    "one_draw_per": "(target, mask, repeat, arm)",
+    "pairing": "pilot_v1과 동일(같은 (target,mask,repeat)에 하나의 uniform U, 네 arm 공유) -- opus_review_20260928.md 1-4의 분산감소 과대평가 지적도 그대로 유지(이 버전에서 pairing 설계를 바꾸지 않음, 별도 후속 과제).",
+    "oracle": "target 분자의 실제 원자 수로 크기를 맞추는 동작 금지"
+  },
+
+  "targets": {
+    "pool": "S-1 val (features_v2_fixed/val.pt), test는 이번 pilot에서도 보류",
+    "n_targets": 32,
+    "target_selection_seed": 20261001,
+    "exclude_targets_from": "pilot_v1 targets.json (records/experiments/s1_pilot_v1_inputs/targets.json, 16개 target_id) -- pilot_v1과 완전히 disjoint한 새 target만 뽑는다. prepare_pilot_inputs_v2.py --exclude-targets-json로 적용.",
+    "selection_rule": "pilot_v1과 동일한 규칙(범위 2~50 내 val 행에서 ChEMBL ID 중복 제거 -> sorted ID -> numpy default_rng(seed).choice -> 오름차순 정렬)이되, pilot_v1의 16개 target_id를 후보 풀에서 미리 제외한 뒤 뽑는다. S-1 예측 정확도/생성 결과를 보고 고르지 않는다.",
+    "target_vector": "선택된 원본 행의 실제 공동 7-property raw vector(HOMO/LUMO=Hartree)",
+    "normalization_per_model": "동일 raw vector에 S-1은 normalization.json, A-1은 stats.json 통계를 각각 적용"
+  },
+
+  "repeats_per_target_mask_arm": 4,
+  "masks": {
+    "primary": {"name": "full_observed", "observed": ["HOMO", "LUMO", "LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"]},
+    "auxiliary": [
+      {"name": "structural5_only", "observed": ["LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"]},
+      {"name": "homo_lumo_only", "observed": ["HOMO", "LUMO"]}
+    ],
+    "auxiliary_policy": "astra_review_20261001.md §5 권고 3: 보조 mask는 별도 질문이므로 이번 confirmatory run에도 포함하지 않는다(주패널만 32*4*4=512회). partial-conditioning이 핵심 주장이 되면 그때 별도 사전등록."
+  },
+
+  "rng": {
+    "master_seed": 26092601,
+    "key_derivation": "pilot_v1과 동일 수식/master_seed -- target_id가 바뀌므로 derive_key가 자동으로 새 독립 스트림을 만든다(master_seed를 바꿀 필요 없음). int.from_bytes(sha256(f'{master_seed}|{target_id}|{mask}|{repeat}|{purpose}').digest()[:8], 'big') % 2**63; purpose in {'size_uniform','denoise'}; Python hash() 사용 금지",
+    "size_generator": "전용 torch.Generator(CPU), attempt마다 size_uniform key로 seed",
+    "denoise": "attempt마다 denoise key로 torch CPU/CUDA global RNG를 seed한 context에서 A-1 sample 호출, 호출 후 상태 복원 불필요(attempt 단위 재현만 요구)",
+    "reproducibility_gate": "같은 attempt를 두 번 수행/arm 순서를 바꿔도 크기와 출력(X,E)이 동일해야 한다"
+  },
+
+  "evaluation": {
+    "validity": "pilot_v1과 동일(train3.analyze_molecule strict/single, 분모=전체 완료 생성 시도 수).",
+    "property_mae_population": "single-valid 전체 분자(주평가). strict-valid는 보조로 별도 보고.",
+    "structural5_properties": ["LogP", "TPSA", "HBA", "RotBonds", "AromaticRings"],
+    "structural5_summary": "pilot_v1과 동일 사전 정의 주지표(struct5_std_err_single) -- 이 confirmatory run의 1차 판정 지표도 이것 하나로 고정, 다른 지표로 갈아타지 않는다(astra_review_20261001.md §5 '모델/지표/예산/종료조건을 결과 보기 전에 고정' 반영).",
+    "homo_lumo": "qm_props GNN 추정 기반 proxy MAE로만 표기(DFT 오차라 부르지 않음). 부분 mask에서는 관측된 속성만 목표 달성 지표에 포함, 미관측은 별도 진단.",
+    "aggregation": "target별로 먼저 계산 -> target 간 동일 가중. 유효 생성물 0인 (arm,target)은 결측으로 기록하고 개수를 보고.",
+    "ci": "pilot_v1과 동일(target 단위 paired bootstrap, seed=20260926, n_boot=10000). pilot_v1/v2는 항상 별도로 보고하고, 합친 값은 보조 분석으로만 둔다(astra_review_20261001.md §5-1).",
+    "also_report": ["요청 n_atoms vs 실제 heavy atom count", "생성 크기 분포", "유효 분자 unique/중복 수", "elapsed time", "실패/오류 수(OOM·예외는 chemical invalid와 구분)"],
+    "target_hit_rate": "이 버전에서도 사용하지 않음(pilot_v1과 동일)."
+  },
+
+  "evaluator": {
+    "source": "qm_props.py (gnn_homo_lumo) + c1_prop_regressor.py",
+    "weights": "c1_regressor.pt",
+    "sha256": null,
+    "rdkit_version": null,
+    "unit": "Hartree",
+    "gate": "pilot_v1과 동일 정책 -- sha256/rdkit_version이 null이면 launch gate에서 실패해야 한다. A1Runner.__init__이 실행 시점에 pins와 대조."
+  },
+
+  "launch_gate_required": [
+    "고유 run dir + RunLogger/launcher 원본 로그",
+    "A-1/S-1/evaluator/normalization/prior/target/config SHA 전부 일치",
+    "A-1 strict load missing=unexpected=0, 실제 import된 model3.__file__ SHA",
+    "raw->S-1 정규화가 features table과 일치, raw->A-1 정규화가 QMugsDataset 값과 일치",
+    "마스킹된 유한 값 변경 시 S-1 확률/A-1 조건 경로 불변",
+    "같은 attempt 재현/arm 순서 변경 재현",
+    "attempt별 원본 X/E, SMILES, validity, 추정 물성, RNG key 저장 + 완료 ledger",
+    "pilot_v1과 target이 완전히 disjoint한지 확인(새 게이트, pilot_v2 전용)",
+    "사전 Astra 검토 통과 전에는 생성 실행 금지"
+  ]
+}
