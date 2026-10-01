@@ -1,0 +1,23 @@
+[
+  {
+    "name": "ethanol",
+    "strict_valid": true,
+    "single_valid": true,
+    "n_fragments": 1,
+    "frag_ratio": 1.0
+  },
+  {
+    "name": "pentavalent_carbon",
+    "strict_valid": false,
+    "single_valid": false,
+    "n_fragments": 1,
+    "frag_ratio": 1.0
+  },
+  {
+    "name": "two_isolated_atoms",
+    "strict_valid": false,
+    "single_valid": false,
+    "n_fragments": 2,
+    "frag_ratio": 0.5
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "captured_at": "20261001T073042+0000",
+  "note": "Working tree modifications, not committed. Followup to astra_review_20260928.md/opus_review_20260928.md.",
+  "files": [
+    {
+      "path": "s1_size_predictor/pilot/pilot_run.py",
+      "sha256": "2cf788826aee7493174612ea953e2465172bf3b3ceddccaeeb7849e9caebe831"
+    },
+    {
+      "path": "s1_size_predictor/pilot/analyze_pilot.py",
+      "sha256": "b1d2b150cc1a96f102c063c3978bc4b4fea6b8484161a6900c34e4a03aae71b1"
+    },
+    {
+      "path": "s1_size_predictor/pilot/pilot_common.py",
+      "sha256": "ac0a3357f3c6634bd6c60d9410894844e16a2618581d877aa58117aee7dc85c4"
+    },
+    {
+      "path": "s1_size_predictor/pilot/pilot_config.json",
+      "sha256": "eff876452a4616e014fa6ed9c1a97b2cff473af890950cb11bebe4cba5dc28db"
+    },
+    {
+      "path": "records/audit/s1_20260930/verify_fixes_20260930.py",
+      "sha256": "e72ee4a584322d7e1b7d3b58b547e6abc694805749eafac897161c2e3ab46e35"
+    },
+    {
+      "path": "records/audit/s1_20260930/gate_fixture_results.json",
+      "sha256": "8e5cb9305f869dd47f49d7fdc420e6ba5f5a2e6d9136c24cfa7c580f3df5ca7a"
+    }
+  ]
+}
